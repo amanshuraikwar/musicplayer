@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6AD0A4</color>
+    <color name="colorPrimaryDark">#484848</color>
+    <color name="colorAccent">#6AD0A4</color>
+
+    <color name="white">#ffffff</color>
+    <color name="whiteSmoke">#F0F0F0</color>
+    <color name="lightGrey">#DBDBDB</color>
+    <color name="charcoal">#484848</color>
+    <color name="aqua">#6ad0a4</color>
+    <color name="lightAqua">#8ee6c3</color>
+    <color name="darkGrey">#a6a6a6</color>
+</resources>

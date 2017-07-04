@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Music Player</string>
+    <string name="preference_file_key">com.sonu.android.musicplayer.qazwsxedcrfvtgb</string>
+    <string name="first_run_status">first_run_pref_key</string>
+</resources>
