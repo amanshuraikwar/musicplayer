@@ -1,5 +1,7 @@
 package app.sonu.com.musicplayer.di.component;
 
+import android.support.v4.media.MediaBrowserCompat;
+
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.data.db.model.Song;
 import app.sonu.com.musicplayer.di.module.ApplicationModule;
@@ -24,6 +26,16 @@ import io.reactivex.subjects.PublishSubject;
         PrefsModule.class, LocalStorageModule.class, DbModule.class, BusModule.class})
 public interface ApplicationComponent {
     DataManager getDataManager();
+
     @Named(BusModule.PROVIDER_SELECTED_SONG)
-    PublishSubject<Song> getSelectedSong();
+    PublishSubject<MediaBrowserCompat.MediaItem> getSelectedSongSubject();
+
+    @Named(BusModule.PROVIDER_PLAY_SONG)
+    PublishSubject<MediaBrowserCompat.MediaItem> getPlaySongSubject();
+
+    @Named(BusModule.PROVIDER_MUSIC_PLAYER_SLIDE)
+    PublishSubject<Float> getMusicPlayerSlideSubject();
+
+    @Named(BusModule.PROVIDER_MUSIC_PLAYER_PANEL)
+    PublishSubject<Integer> getMusicPlayerPanelSubject();
 }

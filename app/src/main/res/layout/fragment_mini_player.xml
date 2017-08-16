@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/miniPlayerRl"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/miniPlayerNavUpIv"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/default_album_art_note"
+        android:clickable="true"
+        android:drawSelectorOnTop="true"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/miniPlayerMpb"
+        android:layout_toEndOf="@id/miniPlayerNavUpIv">
+
+        <TextView
+            android:id="@+id/miniPlayerSongTitleTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/miniPlayerPlayPauseIv"
+            android:textSize="18sp"
+            android:textColor="@color/charcoal"
+            android:lines="1"
+            android:ellipsize="end"
+            android:text="The game of love"/>
+
+        <ImageView
+            android:id="@+id/miniPlayerPlayPauseIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_play_arrow_grey_24dp"
+            android:clickable="true"
+            android:background="?selectableItemBackgroundBorderless"
+            android:drawSelectorOnTop="true"/>
+
+    </RelativeLayout>
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/miniPlayerMpb"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/miniPlayerNavUpIv"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_useIntrinsicPadding="false"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"/>
+
+</RelativeLayout>

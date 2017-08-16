@@ -7,4 +7,10 @@ import app.sonu.com.musicplayer.base.ui.BaseMvpView;
  */
 
 public interface MainMvpView extends BaseMvpView {
+    void setSlidingUpPaneCollapsed();
+    void setSlidingUpPaneExpanded();
+    void setSlidingUpPaneHidden();
+    boolean isSlidingUpPaneHidden();
+    void hideMiniPlayer();
+    void showMiniPlayer();
 }

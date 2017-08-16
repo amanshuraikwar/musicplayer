@@ -28,11 +28,6 @@ public class FileVisitable extends BaseVisitable<FileOnClickListener, FileViewLi
         return typeFactory.type(this);
     }
 
-    @Override
-    public int getUniqueId() {
-        return 1;
-    }
-
     public int getPlayDuration() {
         return playDuration;
     }

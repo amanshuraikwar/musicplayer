@@ -1,8 +1,14 @@
 package app.sonu.com.musicplayer.data.db.model;
 
 import android.database.Cursor;
+import android.os.Bundle;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.MediaMetadataCompat;
 
 import org.litepal.crud.DataSupport;
+
+import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 
 /**
  * Created by sonu on 1/7/17.
@@ -10,6 +16,7 @@ import org.litepal.crud.DataSupport;
 
 public class Song extends DataSupport {
 
+    private int queuePosition;
     private int songId;
     private String title;
     private String artist;
@@ -17,6 +24,21 @@ public class Song extends DataSupport {
     private int duration;
     private String path;
     private String composer;
+
+    public Song(MediaBrowserCompat.MediaItem item) {
+        MediaDescriptionCompat description
+            = item.getDescription();
+
+        Bundle extras = description.getExtras();
+
+        this.songId = 1;
+        this.title = item.getDescription().getTitle().toString();
+        this.artist = extras.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
+        this.album = extras.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+        this.duration = (int) extras.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        this.path = extras.getString(MusicProviderSource.CUSTOM_METADATA_KEY_TRACK_SOURCE);
+        this.composer = null;
+    }
 
     public Song(Cursor cursor) {
         this.songId = Integer.parseInt(cursor.getString(0));
@@ -26,6 +48,14 @@ public class Song extends DataSupport {
         this.duration = Integer.parseInt(cursor.getString(4));
         this.path = cursor.getString(5);
         this.composer = cursor.getString(6);
+    }
+
+    public int getQueuePosition() {
+        return queuePosition;
+    }
+
+    public void setQueuePosition(int queuePosition) {
+        this.queuePosition = queuePosition;
     }
 
     public int getSongId() {

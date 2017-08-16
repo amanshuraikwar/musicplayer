@@ -18,6 +18,4 @@ public abstract class BaseVisitable
     public void setOnClickListener(OnClickListener onClickListener){
         this.onClickListener = onClickListener;
     }
-
-    public abstract int getUniqueId();
 }

@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6AD0A4</color>
-    <color name="colorPrimaryDark">#484848</color>
-    <color name="colorAccent">#6AD0A4</color>
+    <color name="colorPrimary">@color/lightGrey</color>
+    <color name="colorPrimaryDark">@color/grey</color>
+    <color name="colorAccent">@color/grey</color>
 
-    <color name="white">#ffffff</color>
-    <color name="whiteSmoke">#F0F0F0</color>
-    <color name="lightGrey">#DBDBDB</color>
+    <color name="greyTransparent">#88757575</color>
+    <color name="coalTransparent">#882f2f2f</color>
+    <color name="blackTransparent">#880a0a0a</color>
+    <color name="fullTransparent">#00000000</color>
+
+    <color name="white">#f5f5f5</color>
+    <color name="whiteSmoke">#eeeeee</color>
+    <color name="lightGrey">#e0e0e0</color>
+    <color name="grey">#757575</color>
     <color name="charcoal">#484848</color>
     <color name="aqua">#6ad0a4</color>
     <color name="lightAqua">#8ee6c3</color>
     <color name="darkGrey">#a6a6a6</color>
+    <color name="black">#0a0a0a</color>
+    <color name="coal">#2f2f2f</color>
+    <color name="blue">#2196f3</color>
 </resources>

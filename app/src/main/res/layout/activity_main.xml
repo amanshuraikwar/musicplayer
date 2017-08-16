@@ -7,45 +7,78 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--<android.support.design.widget.AppBarLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:elevation="0dp">-->
-
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/sliding_layout"
+        android:id="@+id/slidingUpPaneLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
-        sothree:umanoPanelHeight="68dp"
-        sothree:umanoShadowHeight="4dp">
+        sothree:umanoOverlay="false"
+        sothree:umanoPanelHeight="64dp"
+        sothree:umanoInitialState="hidden"
+        sothree:umanoShadowHeight="2dp">
 
-        <LinearLayout
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/overview_coordinator_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/my_toolbar"
+            <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"/>
+                android:layout_height="wrap_content"
+                android:theme="@style/ThemeOverlay.AppCompat.Light"
+                android:background="@color/whiteSmoke">
 
-            <!--</android.support.design.widget.AppBarLayout>-->
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/my_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:titleTextColor="@color/charcoal"/>
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tabLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="64dp"
+                    app:tabMode="scrollable"
+                    app:tabTextColor="@color/grey"
+                    app:tabSelectedTextColor="@color/charcoal"/>
+            </android.support.design.widget.AppBarLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/mediaListsVp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+        </android.support.design.widget.CoordinatorLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <fragment
-                android:name="app.sonu.com.musicplayer.ui.allsongs.AllSongsFragment"
-                android:id="@+id/fragmentFileView"
+                android:id="@+id/musicPlayerFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:name="app.sonu.com.musicplayer.ui.musicplayer.MusicPlayerFragment"/>
 
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="app.sonu.com.musicplayer.ui.musicplayer.MusicPlayerFragment" />
+            <RelativeLayout
+                android:id="@+id/miniBarRl"
+                android:layout_width="match_parent"
+                android:layout_height="64dp">
 
+                <fragment
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:name="app.sonu.com.musicplayer.ui.miniplayer.MiniPlayerFragment"/>
+            </RelativeLayout>
+        </FrameLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
     <android.support.design.widget.NavigationView
@@ -53,7 +86,4 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start" />
-        <!--app:headerLayout="@layout/header"-->
-        <!--app:menu="@null"/>-->
-
 </android.support.v4.widget.DrawerLayout>

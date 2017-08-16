@@ -1,39 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/musicPlayerParentLl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#00000000">
 
-    <RelativeLayout
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/musicPlayerSupl"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:padding="16dp"
-        android:background="@color/charcoal">
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:umanoOverlay="false"
+        sothree:umanoPanelHeight="238dp"
+        sothree:umanoShadowHeight="2dp"
+        sothree:umanoInitialState="collapsed">
 
-        <ImageView
-            android:id="@+id/playArrowIv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            android:src="@drawable/ic_play_arrow_white_24dp"/>
-
-        <TextView
-            android:id="@+id/songTitleTv"
+        <FrameLayout
+            android:id="@+id/musicPlayerUpperHalfRl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/playArrowIv"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:lines="1"
-            android:ellipsize="end"
-            android:text="The game of love"/>
+            android:layout_height="match_parent">
 
-    </RelativeLayout>
-</LinearLayout>
+            <ImageView
+                android:id="@+id/albumArtIv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/charcoal"
+                android:src="@drawable/ic_music_note_light_grey_24dp"
+                android:scaleType="center"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/drawable_transparent_gradient">
+
+                <ImageView
+                    android:id="@+id/collapseIv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_close_white_24dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:drawSelectorOnTop="true"
+                    android:clickable="true"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/collapseIv"
+                    android:layout_toStartOf="@+id/moreOptionsIv"
+                    android:text="Now Playing"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"/>
+
+                <ImageView
+                    android:id="@+id/moreOptionsIv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_more_vert_white_24dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:drawSelectorOnTop="true"
+                    android:clickable="true"/>
+            </RelativeLayout>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/musicPlayerLowerHalfLl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#2f2f2f">
+
+            <include layout="@layout/layout_music_player_bottom_half" />
+        </RelativeLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</FrameLayout>

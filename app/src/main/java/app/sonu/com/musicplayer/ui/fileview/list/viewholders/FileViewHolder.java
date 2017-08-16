@@ -6,6 +6,7 @@ import app.sonu.com.musicplayer.ui.fileview.list.onclicklisteners.FileOnClickLis
 import app.sonu.com.musicplayer.ui.fileview.list.visitables.FileVisitable;
 import butterknife.BindView;
 
+import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.view.View;
 import android.widget.TextView;
@@ -27,7 +28,7 @@ public class FileViewHolder extends BaseViewHolder<FileVisitable, FileOnClickLis
     }
 
     @Override
-    public void bind(FileVisitable visitable, FileOnClickListener onClickListener) {
+    public void bind(FileVisitable visitable, FileOnClickListener onClickListener, Context context) {
         fileNameTv.setText(visitable.getCoreFile().getName());
     }
 }

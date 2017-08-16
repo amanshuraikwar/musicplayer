@@ -1,130 +1,126 @@
 package app.sonu.com.musicplayer.ui.allsongs;
 
+import android.content.Context;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import org.litepal.crud.DataSupport;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
+import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.data.db.model.Song;
-import app.sonu.com.musicplayer.ui.allsongs.list.SongVisitable;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
 import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by sonu on 2/7/17.
  */
 
-public class AllSongsPresenter extends BasePresenter<AllSongsMvpView> implements
-        AllSongsMvpPresenter{
+public class AllSongsPresenter extends
+        BasePresenter<AllSongsMvpView> implements
+        AllSongsMvpPresenter, MediaBrowserManager.MediaBrowserCallback {
 
     private static final String TAG = AllSongsPresenter.class.getSimpleName();
-    private PublishSubject<Song> selectedSongSubject;
 
-    private Observable<List<Song>> songListObservable =
-            Observable.just(mDataManager.getSongListFromLocalStorage());
+    private MediaBrowserManager mMediaBrowserManager;
+    private Context mContext;
+    private PublishSubject<MediaBrowserCompat.MediaItem> mSelectedItemPublishSubject;
 
     public AllSongsPresenter(DataManager dataManager,
-                             PublishSubject<Song> selectedSongSubject) {
+                             MediaBrowserManager mediaBrowserManager,
+                             PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject) {
         super(dataManager);
-        this.selectedSongSubject = selectedSongSubject;
+        this.mMediaBrowserManager = mediaBrowserManager;
+        mMediaBrowserManager.setCallback(this);
+        mSelectedItemPublishSubject = selectedItemPublishSubject;
     }
 
     @Override
     public void onDetach() {
-
+        //nothing
     }
 
     @Override
     public void onStart() {
+        //nothing
+    }
 
-        songListObservable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Song>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        mMvpView.startLoading();
-                    }
+    @Override
+    public void onCreate(FragmentActivity activity) {
+        Log.d(TAG, "onCreate:called");
+        //init media browser
+        mMediaBrowserManager.initMediaBrowser(activity);
 
-                    @Override
-                    public void onNext(List<Song> value) {
-                        mMvpView.displayList(value);
-                    }
+        mContext = activity;
+    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        mMvpView.stopLoading();
-                    }
+    @Override
+    public void onCreateView() {
+        Log.d(TAG, "onCreateView:called");
+        //check if media browser is already connected or not
+        if (mMediaBrowserManager.isMediaBrowserConnected()) {
+            mMvpView.displayList(mMediaBrowserManager.getItemList());
+        } else {
+            mMediaBrowserManager.connectMediaBrowser();
+        }
+    }
 
-                    @Override
-                    public void onComplete() {
-                        mMvpView.stopLoading();
-                    }
-                });
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy:called");
+        mMediaBrowserManager.disconnectMediaBrowser();
+    }
 
-//        mMvpView.startLoading();
-//        if (mDataManager.isFirstRun()) {
-////            mDataManager.eraseDb();
-//            List<Song> songs = mDataManager.getSongListFromLocalStorage();
-//            for (Song song : songs) {
-//                Log.d(TAG, "onStart: song = "+song);
-//            }
-//            mMvpView.displayList(getVisitableList(songs));
-//
-////            mDataManager.addSongsToDb(songs);
-//
-////            List<Song> songss = DataSupport.where("title like ?", "%sa%").find(Song.class);
-//
-////            Log.d(TAG, "onStart: song---- = "+songss);
-////
-////            mMvpView.displayList(getVisitableList(mDataManager.getAllSongsFromDb()));
-//        } else {
-//            mMvpView.displayList(getVisitableList(mDataManager.getAllSongsFromDb()));
-//        }
-//
+    @Override
+    public void onSongClicked(MediaBrowserCompat.MediaItem item) {
+        Log.d(TAG, "onSongClick:item="+item);
 
+        mMediaBrowserManager
+                .getMediaController()
+                .getTransportControls()
+                .playFromMediaId(item.getMediaId(), null);
+
+        mSelectedItemPublishSubject.onNext(item);
     }
 
     @Override
     public void onRefresh() {
-        songListObservable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Song>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        mMvpView.startLoading();
-                    }
+        Log.d(TAG, "onRefresh:called");
+        //todo implement
+        mMvpView.stopLoading();
+    }
 
-                    @Override
-                    public void onNext(List<Song> value) {
-                        mMvpView.displayList(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mMvpView.stopLoading();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        mMvpView.stopLoading();
-                    }
-                });
+    // media browser callback
+    @Override
+    public void onMediaBrowserConnected() {
+        Log.d(TAG, "onMediaBrowserConnected:called");
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override
-    public void onSongClick(Song song) {
-        Log.d(TAG, "onSongClick:called");
-        selectedSongSubject.onNext(song);
+    public void onMediaBrowserConnectionSuspended() {
+        Log.e(TAG, "onMediaBrowserConnectionSuspended:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
+    }
+
+    @Override
+    public void onMediaBrowserConnectionFailed() {
+        Log.e(TAG, "onMediaBrowserConnectionFailed:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
+    }
+
+    @Override
+    public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
+        Log.d(TAG, "onMediaBrowserChildrenLoaded:called");
+        mMvpView.displayList(items);
+    }
+
+    @Override
+    public void onMediaBrowserSubscriptionError(String id) {
+        Log.e(TAG, "onMediaBrowserSubscriptionError:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
 }

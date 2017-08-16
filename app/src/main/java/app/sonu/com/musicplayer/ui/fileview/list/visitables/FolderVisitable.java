@@ -27,8 +27,4 @@ public class FolderVisitable extends BaseVisitable<FolderOnClickListener, FileVi
         return typeFactory.type(this);
     }
 
-    @Override
-    public int getUniqueId() {
-        return 2;
-    }
 }

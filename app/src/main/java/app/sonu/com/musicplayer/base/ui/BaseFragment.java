@@ -31,4 +31,10 @@ public abstract class BaseFragment<Presenter extends BaseMvpPresenter> extends F
         super.onStart();
         mPresenter.onStart();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.onDetach();
+    }
 }

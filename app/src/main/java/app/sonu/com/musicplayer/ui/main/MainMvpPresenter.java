@@ -7,5 +7,5 @@ import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
  */
 
 public interface MainMvpPresenter extends BaseMvpPresenter<MainMvpView> {
-
+    void onSlidingUpPanelSlide(float slideOffset);
 }

@@ -3,8 +3,6 @@
     package="app.sonu.com.musicplayer">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name="app.sonu.com.musicplayer.MyApplication"
@@ -14,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name="app.sonu.com.musicplayer.ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +20,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".mediaplayer.MediaPlayerService" />
+
+        <service
+            android:name=".mediaplayer.MediaPlayerServiceNew"
+            android:exported="false"
+            android:description="@string/music_playing_service_description"/>
+
+        <service android:name=".mediaplayernew.MusicService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

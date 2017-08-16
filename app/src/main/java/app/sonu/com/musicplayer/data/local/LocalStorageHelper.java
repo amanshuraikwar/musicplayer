@@ -1,5 +1,7 @@
 package app.sonu.com.musicplayer.data.local;
 
+import android.support.v4.media.MediaMetadataCompat;
+
 import java.io.File;
 import java.util.List;
 
@@ -12,5 +14,7 @@ import app.sonu.com.musicplayer.data.db.model.Song;
 public interface LocalStorageHelper {
     List<File> getFileList();
     List<File> getFileList(String pathOfFolder);
-    List<Song> getSongListFromLocalStorage();
+    List<MediaMetadataCompat> getSongListFromLocalStorage();
+    List<MediaMetadataCompat> getAlbumListFromLocalStorage();
+    List<MediaMetadataCompat> getArtistListFromLocalStorage();
 }

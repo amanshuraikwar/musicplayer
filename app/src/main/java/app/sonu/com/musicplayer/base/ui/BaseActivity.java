@@ -1,5 +1,6 @@
 package app.sonu.com.musicplayer.base.ui;
 
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
@@ -8,11 +9,11 @@ import javax.inject.Inject;
  * Created by sonu on 29/6/17.
  */
 
-public abstract class BaseActivity<Presenter extends BaseMvpPresenter> extends AppCompatActivity
+public abstract class BaseActivity<MvpPresenter extends BaseMvpPresenter> extends AppCompatActivity
         implements BaseMvpView {
 
     @Inject
-    protected Presenter mPresenter;
+    protected MvpPresenter mPresenter;
 
     @Override
     public void onStart() {
@@ -26,5 +27,9 @@ public abstract class BaseActivity<Presenter extends BaseMvpPresenter> extends A
         mPresenter.onStart();
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.onDetach();
+    }
 }

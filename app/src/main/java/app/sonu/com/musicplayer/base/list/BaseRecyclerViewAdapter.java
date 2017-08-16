@@ -16,6 +16,7 @@ public class BaseRecyclerViewAdapter<TypeFactory extends BaseTypeFactory> extend
 
     private List<BaseVisitable> elements;
     private TypeFactory typeFactory;
+    private Context mContext;
 
     public BaseRecyclerViewAdapter(List<BaseVisitable> elements, TypeFactory typeFactory) {
         this.elements = elements;
@@ -24,14 +25,14 @@ public class BaseRecyclerViewAdapter<TypeFactory extends BaseTypeFactory> extend
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        View contactView = LayoutInflater.from(context).inflate(viewType, parent, false);
+        mContext = parent.getContext();
+        View contactView = LayoutInflater.from(mContext).inflate(viewType, parent, false);
         return typeFactory.createViewHolder(contactView, viewType);
     }
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
-        holder.bind(elements.get(position), elements.get(position).getOnClickListener());
+        holder.bind(elements.get(position), elements.get(position).getOnClickListener(), mContext);
     }
 
     @Override

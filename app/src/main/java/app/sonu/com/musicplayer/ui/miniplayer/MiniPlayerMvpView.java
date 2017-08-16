@@ -1,0 +1,17 @@
+package app.sonu.com.musicplayer.ui.miniplayer;
+
+import app.sonu.com.musicplayer.base.ui.BaseMvpView;
+
+/**
+ * Created by sonu on 9/8/17.
+ */
+
+public interface MiniPlayerMvpView extends BaseMvpView {
+    void displaySong(String title, String albumArtPath);
+    void showPauseIcon();
+    void showPlayIcon();
+    void setSeekBarPosition(int position);
+    void updateDuration(long dur);
+    void scheduleSeekbarUpdate();
+    void stopSeekbarUpdate();
+}

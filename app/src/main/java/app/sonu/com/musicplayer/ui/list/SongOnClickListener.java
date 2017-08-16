@@ -1,4 +1,6 @@
-package app.sonu.com.musicplayer.ui.allsongs.list;
+package app.sonu.com.musicplayer.ui.list;
+
+import android.support.v4.media.MediaBrowserCompat;
 
 import app.sonu.com.musicplayer.base.list.BaseListItemOnClickListener;
 import app.sonu.com.musicplayer.data.db.model.Song;
@@ -8,5 +10,5 @@ import app.sonu.com.musicplayer.data.db.model.Song;
  */
 
 public interface SongOnClickListener extends BaseListItemOnClickListener {
-    void onSongClick(Song currentSong);
+    void onSongClick(MediaBrowserCompat.MediaItem item);
 }

@@ -1,6 +1,9 @@
 package app.sonu.com.musicplayer.data;
 
+import android.support.v4.media.MediaMetadataCompat;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.sonu.com.musicplayer.data.db.DbHelper;
@@ -39,8 +42,18 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public List<Song> getSongListFromLocalStorage() {
+    public List<MediaMetadataCompat> getSongListFromLocalStorage() {
         return mLocalStorageHelper.getSongListFromLocalStorage();
+    }
+
+    @Override
+    public List<MediaMetadataCompat> getAlbumListFromLocalStorage() {
+        return mLocalStorageHelper.getAlbumListFromLocalStorage();
+    }
+
+    @Override
+    public List<MediaMetadataCompat> getArtistListFromLocalStorage() {
+        return mLocalStorageHelper.getArtistListFromLocalStorage();
     }
 
     @Override
@@ -51,6 +64,26 @@ public class AppDataManager implements DataManager {
     @Override
     public boolean setFirstRun(Boolean flag) {
         return mPrefsHelper.setFirstRun(flag);
+    }
+
+    @Override
+    public ArrayList<Song> getSongQueue() {
+        return mPrefsHelper.getSongQueue();
+    }
+
+    @Override
+    public boolean setSongQueue(ArrayList<Song> songQueue) {
+        return mPrefsHelper.setSongQueue(songQueue);
+    }
+
+    @Override
+    public int getCurrentSongIndex() {
+        return mPrefsHelper.getCurrentSongIndex();
+    }
+
+    @Override
+    public boolean setCurrentSongIndex(int index) {
+        return mPrefsHelper.setCurrentSongIndex(index);
     }
 
     @Override

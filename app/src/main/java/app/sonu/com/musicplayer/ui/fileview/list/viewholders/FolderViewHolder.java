@@ -6,6 +6,7 @@ import app.sonu.com.musicplayer.ui.fileview.list.onclicklisteners.FolderOnClickL
 import app.sonu.com.musicplayer.ui.fileview.list.visitables.FolderVisitable;
 import butterknife.BindView;
 
+import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.view.View;
 import android.widget.TextView;
@@ -30,7 +31,7 @@ public class FolderViewHolder extends BaseViewHolder<FolderVisitable, FolderOnCl
     }
 
     @Override
-    public void bind(final FolderVisitable visitable, final FolderOnClickListener onClickListener) {
+    public void bind(final FolderVisitable visitable, final FolderOnClickListener onClickListener, Context context) {
         folderNameTv.setText(visitable.getCoreFile().getName());
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override
