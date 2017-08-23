@@ -136,10 +136,13 @@ public class UiModule {
                                                          musicPlayerSlideSubject,
                                                  @Named(BusModule.PROVIDER_MUSIC_PLAYER_PANEL)
                                                          PublishSubject<Integer>
-                                                         musicPlayerPanelPublishSubject) {
+                                                         musicPlayerPanelPublishSubject,
+                                                 @Named(BusModule.PROVIDER_QUEUE_INDEX_UPDATED)
+                                                         PublishSubject<Integer>
+                                                         queueIndexUpdatedPublishSubject) {
         return new MusicPlayerPresenter(dataManager, selectedSongSubject, playSongSubject,
                 musicPlayerSlideSubject, new MediaBrowserManager(null),
-                musicPlayerPanelPublishSubject);
+                musicPlayerPanelPublishSubject, queueIndexUpdatedPublishSubject);
     }
 
     @Provides

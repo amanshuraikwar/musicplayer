@@ -30,10 +30,6 @@ public class QueueItemVisitable extends BaseVisitable<QueueItemOnClickListener, 
         return typeFactory.type(this);
     }
 
-    public MediaSessionCompat.QueueItem getItem() {
-        return item;
-    }
-
     public int getIndexToDisplay() {
         return indexToDisplay;
     }

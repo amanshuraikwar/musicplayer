@@ -44,4 +44,8 @@ public class BaseRecyclerViewAdapter<TypeFactory extends BaseTypeFactory> extend
     public int getItemViewType(int position) {
         return elements.get(position).type(typeFactory);
     }
+
+    public List<BaseVisitable> getElements() {
+        return elements;
+    }
 }

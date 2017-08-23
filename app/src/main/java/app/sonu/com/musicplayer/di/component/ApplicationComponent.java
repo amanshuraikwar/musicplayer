@@ -44,4 +44,7 @@ public interface ApplicationComponent {
 
     @Named(BusModule.PROVIDER_ARTIST_CLICK)
     PublishSubject<MediaBrowserCompat.MediaItem> getArtistClickProvider();
+
+    @Named(BusModule.PROVIDER_QUEUE_INDEX_UPDATED)
+    PublishSubject<Integer> getQueuIndexUpdatedProvider();
 }

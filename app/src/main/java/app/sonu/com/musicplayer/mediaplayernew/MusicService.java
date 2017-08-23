@@ -16,11 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
+import app.sonu.com.musicplayer.di.module.BusModule;
 import app.sonu.com.musicplayer.di.module.UiModule;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaNotificationManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.PlaybackManager;
@@ -28,6 +30,7 @@ import app.sonu.com.musicplayer.mediaplayernew.manager.QueueManager;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.LocalMusicSource;
 import app.sonu.com.musicplayer.mediaplayernew.playback.LocalPlayback;
 import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by sonu on 27/7/17.
@@ -58,6 +61,10 @@ public class MusicService extends MediaBrowserServiceCompat
 
     @Inject
     DataManager mDataManager;
+
+    @Inject
+    @Named(BusModule.PROVIDER_QUEUE_INDEX_UPDATED)
+    PublishSubject<Integer> mQueueIndexUpdatedSubject;
 
     @Override
     public void onCreate() {
@@ -114,7 +121,7 @@ public class MusicService extends MediaBrowserServiceCompat
                     @Override
                     public void onCurrentQueueIndexUpdated(int currentIndex) {
                         Log.d(TAG, "onCurrentQueueIndexUpdated:called");
-                        //todo figure out what to do
+                        mQueueIndexUpdatedSubject.onNext(currentIndex);
                     }
                 });
 

@@ -144,6 +144,7 @@ public class QueueManager {
         }
 
         mMetadataUpdateListener.onMetadataChanged(metadata);
+        mMetadataUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
     }
 
     public boolean skipQueuePosition(int amount) {

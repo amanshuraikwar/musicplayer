@@ -54,6 +54,7 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
     private PublishSubject<Float> musicPlayerSlideSubject;
     private MediaBrowserManager mMediaBrowserManager;
     private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
+    private PublishSubject<Integer> mQueueIndexUpdatedSubject;
 
     private Context mContext;
 
@@ -141,7 +142,8 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                                 PublishSubject<MediaBrowserCompat.MediaItem> playSongSubject,
                                 PublishSubject<Float> musicPlayerSlideSubject,
                                 MediaBrowserManager browserManager,
-                                PublishSubject<Integer> musicPlayerPanelPublishSubject) {
+                                PublishSubject<Integer> musicPlayerPanelPublishSubject,
+                                PublishSubject<Integer> queueIndexUpdatedSubject) {
         super(dataManager);
         this.selectedSongSubject = selectedSongSubject;
         this.playSongSubject = playSongSubject;
@@ -150,6 +152,7 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
         mMediaBrowserManager.setCallback(this);
         mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
         mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
+        mQueueIndexUpdatedSubject = queueIndexUpdatedSubject;
     }
 
     private String getFormattedDuration(@NonNull long duration) {
@@ -236,6 +239,27 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 //
 //            }
 //        });
+        mQueueIndexUpdatedSubject.subscribe(new Observer<Integer>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Integer value) {
+                mMvpView.updateQueueIndex(value);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     @Override
@@ -348,6 +372,14 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                         .setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
                 break;
         }
+    }
+
+    @Override
+    public void onQueueItemClick(MediaSessionCompat.QueueItem item) {
+        mMediaBrowserManager
+                .getMediaController()
+                .getTransportControls()
+                .playFromMediaId(item.getDescription().getMediaId(), null);
     }
 
     //media browser implementations

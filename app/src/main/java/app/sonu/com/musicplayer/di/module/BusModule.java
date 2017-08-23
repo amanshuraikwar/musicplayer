@@ -23,6 +23,7 @@ public class BusModule {
     public static final String PROVIDER_MUSIC_PLAYER_PANEL = "PROVIDER_MUSIC_PLAYER_PANEL";
     public static final String PROVIDER_ALBUM_CLICK = "PROVIDER_ALBUM_CLICK";
     public static final String PROVIDER_ARTIST_CLICK = "PROVIDER_ARTIST_CLICK";
+    public static final String PROVIDER_QUEUE_INDEX_UPDATED = "PROVIDER_QUEUE_INDEX_UPDATED";
 
     @Provides
     @Singleton
@@ -63,6 +64,13 @@ public class BusModule {
     @Singleton
     @Named(PROVIDER_ARTIST_CLICK)
     PublishSubject<MediaBrowserCompat.MediaItem> getArtistClickProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Singleton
+    @Named(PROVIDER_QUEUE_INDEX_UPDATED)
+    PublishSubject<Integer> getQueuIndexUpdatedProvider() {
         return PublishSubject.create();
     }
 }

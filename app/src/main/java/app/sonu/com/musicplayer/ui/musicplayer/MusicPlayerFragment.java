@@ -91,6 +91,11 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
 
     private ScheduledFuture<?> mScheduleFuture;
 
+    private QueueRecyclerViewAdapter mQueueAdapter;
+
+    int mCurrentQueueIndex;
+    LinearLayoutManager mQueueLayoutManager;
+
     @BindView(R.id.musicPlayerParentLl)
     View musicPlayerParent;
 
@@ -209,6 +214,7 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         @Override
         public void onQueueItemClick(MediaSessionCompat.QueueItem item) {
             Log.d(TAG, "onQueueItemClick:called");
+            mPresenter.onQueueItemClick(item);
         }
 
         @Override
@@ -300,8 +306,8 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         });
 
         if (playingQueueRv.getLayoutManager() == null) {
-            playingQueueRv.setLayoutManager(
-                    new LinearLayoutManager(getActivity().getApplicationContext()));
+            mQueueLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+            playingQueueRv.setLayoutManager(mQueueLayoutManager);
         }
 
         musicPlayerSupl.setDragView(null);
@@ -510,10 +516,12 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
 
     @Override
     public void displayQueue(List<MediaSessionCompat.QueueItem> queue) {
-        playingQueueRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(queue),
-                        new MediaListTypeFactory()));
+        mQueueAdapter = new QueueRecyclerViewAdapter(getVisitableList(queue),
+                new MediaListTypeFactory());
+        playingQueueRv.setAdapter(mQueueAdapter);
         playingQueueRv.invalidate();
+
+        updateQueueIndex(mCurrentQueueIndex);
     }
 
     @Override
@@ -561,6 +569,17 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     @Override
     public void resetSeekbar() {
         songCurrentPositionSeekBar.setProgress(0);
+    }
+
+    @Override
+    public void updateQueueIndex(int index) {
+        if (mQueueAdapter != null) {
+            mCurrentQueueIndex = index;
+            mQueueAdapter.updateQueueIndex(index);
+            mQueueLayoutManager.scrollToPositionWithOffset(index, 0);
+        } else {
+            mCurrentQueueIndex = index;
+        }
     }
 
     /**

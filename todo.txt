@@ -1,0 +1,9 @@
+[] design ui of app with colors of album art
+[] model localplayback class again
+[] resolve the bug with fragments
+[] resolve the bug with notificaiton
+[] resolve the bug with no activity playback
+[] implement efficient queue control
+[] improve performance of search
+[] make search ui separate and separate fragment
+[done] make search in albums and artists too
