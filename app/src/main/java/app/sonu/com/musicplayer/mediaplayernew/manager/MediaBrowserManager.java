@@ -12,6 +12,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import app.sonu.com.musicplayer.R;
@@ -54,6 +55,14 @@ public class MediaBrowserManager {
     public void setControllerCallback(@NonNull MediaControllerCallback callback){
         Log.d(TAG, "setControllerCallback:called");
         mMediaControllerCallback = callback;
+    }
+
+    public String getMediaId() {
+        return mMediaId;
+    }
+
+    public void setMediaId(String mMediaId) {
+        this.mMediaId = mMediaId;
     }
 
     public void initMediaBrowser(FragmentActivity activity) {
@@ -112,8 +121,15 @@ public class MediaBrowserManager {
         Log.d(TAG, "disconnectMediaBrowser:called");
         if (mMediaBrowser != null) {
             if (mMediaBrowser.isConnected()) {
+                if (mMediaControllerCallback != null) {
+                    MediaControllerCompat
+                            .getMediaController(mActivity)
+                            .unregisterCallback(mMediaControllerCallback);
+                }
+                if (mMediaId != null) {
+                    mMediaBrowser.unsubscribe(mMediaId, mSubscriptionCallback);
+                }
                 mMediaBrowser.disconnect();
-                mMediaBrowser.unsubscribe(mMediaId, mSubscriptionCallback);
             } else {
                 Log.w(TAG, "disconnectMediaBrowser:mMediaBrowser not connected, will not disconnect");
             }
@@ -130,6 +146,17 @@ public class MediaBrowserManager {
     public MediaControllerCompat getMediaController() {
         Log.d(TAG, "getMediaController:called");
         return MediaControllerCompat.getMediaController(mActivity);
+    }
+
+    public void search(String query) {
+        mMediaBrowser.search(query, null, new MediaBrowserCompat.SearchCallback() {
+            @Override
+            public void onSearchResult(@NonNull String query,
+                                       Bundle extras,
+                                       @NonNull List<MediaBrowserCompat.MediaItem> items) {
+                mMediaBrowserCallback.onSearchResult(items);
+            }
+        });
     }
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
@@ -200,6 +227,8 @@ public class MediaBrowserManager {
                 }
             };
 
+
+
     /**
      * callbacks of media browser to be implemented in any presenter of ui element
      */
@@ -209,6 +238,7 @@ public class MediaBrowserManager {
         void onMediaBrowserConnectionFailed();
         void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items);
         void onMediaBrowserSubscriptionError(String id);
+        void onSearchResult(List<MediaBrowserCompat.MediaItem> items);
     }
 
     public static class MediaControllerCallback extends MediaControllerCompat.Callback {

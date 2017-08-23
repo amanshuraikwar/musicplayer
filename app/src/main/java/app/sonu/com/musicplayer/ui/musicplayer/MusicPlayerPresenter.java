@@ -82,19 +82,26 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                     if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
                         mMvpView.showPauseIcon();
                         mMvpView.scheduleSeekbarUpdate();
-                    } else if (state.getState() == PlaybackStateCompat.STATE_PAUSED
-                            || state.getState() == PlaybackStateCompat.STATE_NONE
-                            || state.getState() == PlaybackStateCompat.STATE_ERROR
-                            || state.getState() == PlaybackStateCompat.STATE_STOPPED) {
+                    } else if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
                         mMvpView.showPlayIcon();
                         mMvpView.stopSeekbarUpdate();
+
+                        //to set the seekbar to correct position if somehow paused at
+                        //a different position than shown on the ui
+                        updateProgress();
+                    } else if (state.getState() == PlaybackStateCompat.STATE_NONE
+                            || state.getState() == PlaybackStateCompat.STATE_ERROR
+                            || state.getState() == PlaybackStateCompat.STATE_STOPPED){
+                        mMvpView.showPlayIcon();
+                        mMvpView.stopSeekbarUpdate();
+                        mMvpView.resetSeekbar();
                     }
                 }
 
                 @Override
                 public void onQueueChanged(List<MediaSessionCompat.QueueItem> queue) {
                     Log.d(TAG, "onQueueChanged:called");
-                    super.onQueueChanged(queue);
+                    mMvpView.displayQueue(queue);
                 }
 
                 @Override
@@ -110,6 +117,21 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                         mMvpView.setShuffleModeEnabled();
                     } else {
                         mMvpView.setShuffleModeDisabled();
+                    }
+                }
+
+                @Override
+                public void onRepeatModeChanged(int repeatMode) {
+                    Log.d(TAG, "onRepeatModeChanged:called");
+                    switch (repeatMode) {
+                        case PlaybackStateCompat.REPEAT_MODE_NONE:
+                            mMvpView.setRepeatModeNone();
+                            break;
+                        case PlaybackStateCompat.REPEAT_MODE_ALL:
+                            mMvpView.setRepeatModeAll();
+                            break;
+                        case PlaybackStateCompat.REPEAT_MODE_ONE:
+                            mMvpView.setRepeatModeOne();
                     }
                 }
             };
@@ -278,9 +300,9 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onSeekbarStopTrackingTouch(int progress) {
+        Log.d(TAG, "onSeekbarStopTrackingTouch:called progress="+progress);
         mMediaBrowserManager.getMediaController()
                 .getTransportControls().seekTo(progress);
-        mMvpView.scheduleSeekbarUpdate();
     }
 
     @Override
@@ -305,7 +327,27 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onRepeatButtonClick() {
-
+        int curRepeatMode = mMediaBrowserManager.getMediaController().getRepeatMode();
+        switch (curRepeatMode) {
+            case PlaybackStateCompat.REPEAT_MODE_NONE:
+                mMediaBrowserManager
+                        .getMediaController()
+                        .getTransportControls()
+                        .setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ALL:
+                mMediaBrowserManager
+                        .getMediaController()
+                        .getTransportControls()
+                        .setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ONE:
+                mMediaBrowserManager
+                        .getMediaController()
+                        .getTransportControls()
+                        .setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+                break;
+        }
     }
 
     //media browser implementations
@@ -331,6 +373,11 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onMediaBrowserSubscriptionError(String id) {
+
+    }
+
+    @Override
+    public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
 
     }
 }

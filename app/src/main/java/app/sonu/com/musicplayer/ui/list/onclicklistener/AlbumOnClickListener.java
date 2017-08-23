@@ -1,4 +1,4 @@
-package app.sonu.com.musicplayer.ui.list;
+package app.sonu.com.musicplayer.ui.list.onclicklistener;
 
 import android.support.v4.media.MediaBrowserCompat;
 

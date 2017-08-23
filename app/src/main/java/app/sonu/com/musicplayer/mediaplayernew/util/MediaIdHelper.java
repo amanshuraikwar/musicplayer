@@ -103,4 +103,12 @@ public class MediaIdHelper {
         }
         return mediaID.split(String.valueOf(CATEGORY_SEPARATOR));
     }
+
+    public static @NonNull String getHierarchyId(@NonNull String mediaID) {
+        int pos = mediaID.indexOf(LEAF_SEPARATOR);
+        if (pos >= 0) {
+            mediaID = mediaID.substring(0, pos);
+        }
+        return mediaID;
+    }
 }

@@ -23,6 +23,12 @@ public interface MusicProviderSource {
     String CUSTOM_METADATA_KEY_NUM_ALBUMS = "__NUM_ALBUMS__";
     String CUSTOM_METADATA_KEY_NUM_TRACKS = "__NUM_TRACKS__";
 
+    String CUSTOM_METADATA_KEY_SEARCH_ITEM_TYPE = "__SEARCH_ITEM_TYPE__";
+
+    String SEARCH_RESULT_ITEM_TYPE_SONG = "Songs";
+    String SEARCH_RESULT_ITEM_TYPE_ALBUM = "Albums";
+    String SEARCH_RESULT_ITEM_TYPE_ARTIST = "Artists";
+
     Iterator<MediaMetadataCompat> getAllSongsIterator();
     Iterator<MediaMetadataCompat> getAlbumsIterator();
     Iterator<MediaMetadataCompat> getArtistsIterator();

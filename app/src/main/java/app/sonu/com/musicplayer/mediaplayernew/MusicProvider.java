@@ -10,6 +10,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +35,21 @@ public class MusicProvider {
     private ConcurrentMap<String, MediaMetadataCompat> mArtistListByKey;
     private ConcurrentMap<String, MediaMetadataCompat> mAlbumListByKey;
     private ConcurrentMap<String, MediaMetadataCompat> mMusicListById;
+
+    private ArrayList<MediaMetadataCompat> allSongs;
+    private ArrayList<MediaMetadataCompat> allAlbums;
+    private ArrayList<MediaMetadataCompat> allArtists;
+
+    private static final Comparator<MediaMetadataCompat> mediaMetadataComparator =
+            new Comparator<MediaMetadataCompat>() {
+                @Override
+                public int compare(MediaMetadataCompat o1, MediaMetadataCompat o2) {
+                    return o1
+                            .getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE)
+                            .compareTo(
+                                    o2.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE));
+                }
+            };
 
     @SuppressWarnings("WeakerAccess")
     public enum State {
@@ -134,6 +150,16 @@ public class MusicProvider {
                     }
                     mMusicListByArtistKey.get(artistKey).add(item);
                 }
+
+                allSongs = new ArrayList<>(mMusicListById.values());
+                Collections.sort(allSongs, mediaMetadataComparator);
+
+                allAlbums = new ArrayList<>(mAlbumListByKey.values());
+                Collections.sort(allAlbums, mediaMetadataComparator);
+
+                allArtists = new ArrayList<>(mArtistListByKey.values());
+                Collections.sort(allArtists, mediaMetadataComparator);
+
                 mCurrentState = State.INITIALIZED;
             }
         } catch (Exception e){
@@ -174,7 +200,7 @@ public class MusicProvider {
         }
 
         if (MediaIdHelper.MEDIA_ID_ALL_SONGS.equals(mediaId)) {
-            for (MediaMetadataCompat metadata : mMusicListById.values()) {
+            for (MediaMetadataCompat metadata : getSongs()) {
                 mediaItems.add(
                         createMediaItem(
                                 metadata,
@@ -195,14 +221,14 @@ public class MusicProvider {
             for (MediaMetadataCompat metadata : getMusicsByAlbumKey(album)) {
                 mediaItems.add(createMediaItem(metadata,
                         MediaIdHelper.MEDIA_ID_ALBUMS,
-                        MediaMetadataCompat.METADATA_KEY_ALBUM));
+                        MusicProviderSource.CUSTOM_METADATA_KEY_ALBUM_KEY));
             }
         } else if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_ARTISTS)) {
             String artist = MediaIdHelper.getHierarchy(mediaId)[1];
             for (MediaMetadataCompat metadata : getMusicsByArtistKey(artist)) {
                 mediaItems.add(createMediaItem(metadata,
                         MediaIdHelper.MEDIA_ID_ARTISTS,
-                        MediaMetadataCompat.METADATA_KEY_ARTIST));
+                        MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY));
             }
         } else {
             Log.w(TAG, "getChildren:skipping unmatched mediaId: "+mediaId);
@@ -215,7 +241,8 @@ public class MusicProvider {
         if (mCurrentState != State.INITIALIZED) {
             return Collections.emptyList();
         }
-        return mAlbumListByKey.values();
+
+        return allAlbums;
     }
 
     public Iterable<MediaMetadataCompat> getSongs() {
@@ -223,7 +250,8 @@ public class MusicProvider {
         if (mCurrentState != State.INITIALIZED) {
             return Collections.emptyList();
         }
-        return mMusicListById.values();
+
+        return allSongs;
     }
 
     public Iterable<MediaMetadataCompat> getArtists() {
@@ -232,7 +260,8 @@ public class MusicProvider {
             return Collections.emptyList();
         }
         Log.i(TAG, "getArtists:noOfArtists="+mArtistListByKey.values().size());
-        return mArtistListByKey.values();
+
+        return allArtists;
     }
 
     public Iterable<MediaMetadataCompat> getMusicsByAlbumKey(String albumKey) {
@@ -265,7 +294,7 @@ public class MusicProvider {
         String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
                 null,
                 MediaIdHelper.MEDIA_ID_ALBUMS,
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM)
+                metadata.getString(MusicProviderSource.CUSTOM_METADATA_KEY_ALBUM_KEY)
         );
 
         MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
@@ -295,7 +324,7 @@ public class MusicProvider {
         String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
                 null,
                 MediaIdHelper.MEDIA_ID_ARTISTS,
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                metadata.getString(MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY)
         );
 
         MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
@@ -363,8 +392,167 @@ public class MusicProvider {
 
     }
 
+    private MediaBrowserCompat.MediaItem createSearchMediaItem(
+            MediaMetadataCompat metadata,
+            String byMediaId) {
+        // Since mediaMetadata fields are immutable, we need to create a copy, so we
+        // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
+        // when we get a onPlayFromMusicID call, so we can create the proper queue based
+        // on where the music was selected from (by artist, by genre, random, etc)
+
+        if (byMediaId.equals(MediaIdHelper.MEDIA_ID_ALL_SONGS)) {
+            Bundle extras = new Bundle();
+
+            extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST,
+                    metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
+            extras.putString(MediaMetadataCompat.METADATA_KEY_ALBUM,
+                    metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM));
+            extras.putLong(MediaMetadataCompat.METADATA_KEY_DURATION,
+                    metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+            extras.putString(
+                    MusicProviderSource.CUSTOM_METADATA_KEY_SEARCH_ITEM_TYPE,
+                    MusicProviderSource.SEARCH_RESULT_ITEM_TYPE_SONG);
+
+            String hierarchyAwareMediaId;
+
+            hierarchyAwareMediaId = MediaIdHelper.createMediaId(
+                    metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
+                    byMediaId);
+
+            MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
+                    .setExtras(extras)
+                    .setMediaId(hierarchyAwareMediaId)
+                    .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
+                    .setSubtitle(metadata.getString(
+                            MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
+
+            if (metadata.getString(
+                    MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != null) {
+                builder.setIconUri(
+                        Uri.parse(
+                                metadata.getString(
+                                        MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)));
+            }
+
+            MediaDescriptionCompat descriptionCompat = builder.build();
+
+            return new MediaBrowserCompat.MediaItem(descriptionCompat,
+                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+
+        } else if (byMediaId.equals(MediaIdHelper.MEDIA_ID_ALBUMS)) {
+            return createSearchBrowsableMediaItemForAlbum(metadata);
+        } else if (byMediaId.equals(MediaIdHelper.MEDIA_ID_ARTISTS)) {
+            return createSearchBrowsableMediaItemForArtist(metadata);
+        }
+
+        return null;
+    }
+
+    private MediaBrowserCompat.MediaItem createSearchBrowsableMediaItemForArtist(
+            MediaMetadataCompat metadata) {
+
+        String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
+                null,
+                MediaIdHelper.MEDIA_ID_ARTISTS,
+                metadata.getString(MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY)
+        );
+
+        Bundle extras = new Bundle();
+        extras.putString(
+                MusicProviderSource.CUSTOM_METADATA_KEY_SEARCH_ITEM_TYPE,
+                MusicProviderSource.SEARCH_RESULT_ITEM_TYPE_ARTIST);
+
+        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
+                .setExtras(extras)
+                .setMediaId(hierarchyAwareMediaId)
+                .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
+                .setSubtitle(metadata.getString(
+                        MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
+
+        MediaDescriptionCompat descriptionCompat = builder.build();
+
+        return new MediaBrowserCompat.MediaItem(descriptionCompat,
+                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
+    }
+
+    private MediaBrowserCompat.MediaItem createSearchBrowsableMediaItemForAlbum(
+            MediaMetadataCompat metadata) {
+
+        String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
+                null,
+                MediaIdHelper.MEDIA_ID_ALBUMS,
+                metadata.getString(MusicProviderSource.CUSTOM_METADATA_KEY_ALBUM_KEY)
+        );
+
+        Bundle extras = new Bundle();
+        extras.putString(
+                MusicProviderSource.CUSTOM_METADATA_KEY_SEARCH_ITEM_TYPE,
+                MusicProviderSource.SEARCH_RESULT_ITEM_TYPE_ALBUM);
+
+        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
+                .setExtras(extras)
+                .setMediaId(hierarchyAwareMediaId)
+                .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
+                .setSubtitle(metadata.getString(
+                        MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
+
+        MediaDescriptionCompat descriptionCompat = builder.build();
+
+        return new MediaBrowserCompat.MediaItem(descriptionCompat,
+                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
+    }
+
     public MediaMetadataCompat getMusic(String musicId) {
         return mMusicListById.containsKey(musicId) ? mMusicListById.get(musicId) : null;
+    }
+
+    public List<MediaBrowserCompat.MediaItem> getSongsBySearchQuery(String query) {
+        ArrayList<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
+        for (MediaMetadataCompat metadata : getSongs()) {
+            if (metadata
+                        .getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE)
+                        .toLowerCase()
+                        .replaceAll("\\s","")
+                        .contains(query)
+                    ) {
+                mediaItems.add(
+                        createSearchMediaItem(
+                                metadata,
+                                MediaIdHelper.MEDIA_ID_ALL_SONGS)
+                );
+            }
+        }
+
+        for (MediaMetadataCompat metadata : getAlbums()) {
+            if (metadata
+                    .getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE)
+                    .toLowerCase()
+                    .replaceAll("\\s","")
+                    .contains(query)
+                    ) {
+                mediaItems.add(
+                        createSearchMediaItem(
+                                metadata,
+                                MediaIdHelper.MEDIA_ID_ALBUMS)
+                );
+            }
+        }
+
+        for (MediaMetadataCompat metadata : getArtists()) {
+            if (metadata
+                    .getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE)
+                    .toLowerCase()
+                    .replaceAll("\\s","")
+                    .contains(query)
+                    ) {
+                mediaItems.add(
+                        createSearchMediaItem(
+                                metadata,
+                                MediaIdHelper.MEDIA_ID_ARTISTS)
+                );
+            }
+        }
+        return mediaItems;
     }
 
     public interface Callback {

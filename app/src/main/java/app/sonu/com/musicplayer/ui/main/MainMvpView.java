@@ -1,5 +1,9 @@
 package app.sonu.com.musicplayer.ui.main;
 
+import android.support.v4.media.MediaBrowserCompat;
+
+import java.util.List;
+
 import app.sonu.com.musicplayer.base.ui.BaseMvpView;
 
 /**
@@ -13,4 +17,9 @@ public interface MainMvpView extends BaseMvpView {
     boolean isSlidingUpPaneHidden();
     void hideMiniPlayer();
     void showMiniPlayer();
+    void startAlbumFragment(MediaBrowserCompat.MediaItem item);
+    void startArtistFragment(MediaBrowserCompat.MediaItem item);
+    void displaySearchResults(List<MediaBrowserCompat.MediaItem> itemList);
+    void displayToast(String message);
+    void hideSearchView();
 }

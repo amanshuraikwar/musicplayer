@@ -1,6 +1,7 @@
 package app.sonu.com.musicplayer.ui.musicplayer;
 
 import android.content.ComponentName;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -16,6 +17,9 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -35,6 +40,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -42,11 +50,17 @@ import java.util.concurrent.TimeUnit;
 
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
+import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
 import app.sonu.com.musicplayer.data.db.model.Song;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
 import app.sonu.com.musicplayer.mediaplayernew.MusicService;
+import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.QueueItemOnClickListener;
+import app.sonu.com.musicplayer.ui.list.visitable.QueueItemVisitable;
+import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
 import app.sonu.com.musicplayer.ui.main.SlidingUpPaneCallback;
 import app.sonu.com.musicplayer.utils.ColorUtil;
 import butterknife.BindView;
@@ -116,6 +130,30 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     @BindView(R.id.repeatIb)
     ImageButton repeatIb;
 
+    @BindView(R.id.playingQueueRv)
+    RecyclerView playingQueueRv;
+
+    @BindView(R.id.titleTextTv)
+    TextView titleTextTv;
+
+    @BindView(R.id.bodyTextTv)
+    TextView bodyTextTv;
+
+    @BindView(R.id.backgroundTextTv)
+    TextView backgroundTextTv;
+
+    @BindView(R.id.topBarLl)
+    View topBarLl;
+
+    @BindView(R.id.topBarTitleTv)
+    TextView topBarTitleTv;
+
+    @BindView(R.id.moreOptionsIv)
+    ImageView moreOptionsIv;
+
+    @BindView(R.id.musicPlayerLowerHalfLl)
+    View musicPlayerLowerHalfLl;
+
     @OnClick(R.id.playPauseIb)
     void onPlayPauseIbClick(){
         Log.d(TAG, "playPauseIb onClick:called");
@@ -154,6 +192,30 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
 
     @BindView(R.id.collapseIv)
     ImageView collapseIv;
+
+    @BindView(R.id.heartIv)
+    ImageView heartIv;
+
+    @BindView(R.id.musicPlayerMainLl)
+    View musicPlayerMainLl;
+
+    @BindView(R.id.gotoAlbumIv)
+    ImageView gotoAlbumIv;
+
+    @BindView(R.id.gotoArtistIv)
+    ImageView gotoArtistIv;
+
+    private QueueItemOnClickListener mQueueItemOnClickListener = new QueueItemOnClickListener() {
+        @Override
+        public void onQueueItemClick(MediaSessionCompat.QueueItem item) {
+            Log.d(TAG, "onQueueItemClick:called");
+        }
+
+        @Override
+        public void OnClick() {
+            //nothing
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -237,6 +299,13 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             }
         });
 
+        if (playingQueueRv.getLayoutManager() == null) {
+            playingQueueRv.setLayoutManager(
+                    new LinearLayoutManager(getActivity().getApplicationContext()));
+        }
+
+        musicPlayerSupl.setDragView(null);
+
         return view;
     }
 
@@ -281,11 +350,7 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
                                                        DataSource dataSource,
                                                        boolean isFirstResource) {
 
-//                                    collapseIv.setColorFilter(
-//                                            ColorUtil.getColor(
-//                                                    ColorUtil.generatePalette(resource),
-//                                                    Color.DKGRAY),
-//                                            PorterDuff.Mode.SRC_IN);
+                            updateUiColor(resource);
                             return false;
                         }
                     })
@@ -300,9 +365,53 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
                                 .getResources()
                                 .getDrawable(R.drawable.default_album_art_note_big));
             }
+            updateUiColor(null);
         }
 
         totalTimeTv.setText(songDuration);
+    }
+
+    private void updateUiColor(Bitmap resource) {
+
+        if (resource == null) {
+            setUiColorWithSwatch(null);
+        } else {
+            ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    setUiColorWithSwatch(ColorUtil.getColorSwatch(palette));
+                }
+            });
+        }
+    }
+
+    private void setUiColorWithSwatch(Palette.Swatch swatch) {
+
+        int backgroundColor = ColorUtil.getBackgroundColor(swatch);
+        int titleColor = ColorUtil.getTitleColor(swatch);
+        int bodyColor = ColorUtil.getBodyColor(swatch);
+
+        titleTextTv.setBackgroundColor(titleColor);
+        bodyTextTv.setBackgroundColor(bodyColor);
+        backgroundTextTv.setBackgroundColor(backgroundColor);
+
+        collapseIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
+        moreOptionsIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
+        gotoAlbumIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
+        gotoArtistIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
+        heartIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
+        topBarLl.setBackgroundColor(ColorUtil.makeColorTransparent(backgroundColor));
+        topBarTitleTv.setTextColor(titleColor);
+        musicPlayerLowerHalfLl.setBackgroundColor(backgroundColor);
+        songTitleMainTv.setTextColor(titleColor);
+        songArtistMainTv.setTextColor(bodyColor);
+
+        elapsedTimeTv.setTextColor(bodyColor);
+        totalTimeTv.setTextColor(bodyColor);
+
+        //todo
+        songCurrentPositionSeekBar.setProgressTintList(ColorStateList.valueOf(bodyColor));
+        songCurrentPositionSeekBar.setThumbTintList(ColorStateList.valueOf(bodyColor));
     }
 
     @Override
@@ -397,5 +506,79 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
                             .getResources()
                             .getDrawable(R.drawable.ic_shuffle_light_grey_24dp));
         }
+    }
+
+    @Override
+    public void displayQueue(List<MediaSessionCompat.QueueItem> queue) {
+        playingQueueRv.setAdapter(
+                new MediaRecyclerViewAdapter(getVisitableList(queue),
+                        new MediaListTypeFactory()));
+        playingQueueRv.invalidate();
+    }
+
+    @Override
+    public void setRepeatModeNone() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            repeatIb
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_repeat_light_grey_24dp));
+        } else {
+            repeatIb.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_repeat_light_grey_24dp));
+        }
+    }
+
+    @Override
+    public void setRepeatModeAll() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            repeatIb
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_repeat_grey_24dp));
+        } else {
+            repeatIb.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_repeat_grey_24dp));
+        }
+    }
+
+    @Override
+    public void setRepeatModeOne() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            repeatIb
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_repeat_one_grey_24dp));
+        } else {
+            repeatIb.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_repeat_one_grey_24dp));
+        }
+    }
+
+    @Override
+    public void resetSeekbar() {
+        songCurrentPositionSeekBar.setProgress(0);
+    }
+
+    /**
+     * this method is defined in fragment because of attached onclicklistener
+     * @param queue
+     * @return
+     */
+    private List<BaseVisitable> getVisitableList(List<MediaSessionCompat.QueueItem> queue) {
+        List<BaseVisitable> visitableList = new ArrayList<>();
+        int index = 0;
+        for (MediaSessionCompat.QueueItem item : queue) {
+            QueueItemVisitable visitable = new QueueItemVisitable(item);
+            visitable.setOnClickListener(mQueueItemOnClickListener);
+            visitable.setIndexToDisplay(index);
+            visitableList.add(visitable);
+            index++;
+        }
+
+        return visitableList;
     }
 }

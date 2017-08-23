@@ -1,6 +1,7 @@
 package app.sonu.com.musicplayer.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
@@ -15,64 +16,80 @@ import java.util.Comparator;
 
 public class ColorUtil {
 
+    private static final int BACKGROUND_COLOR_FALLBACK = Color.parseColor("#e0e0e0");
+    private static final int TITLE_COLOR_FALLBACK = Color.parseColor("#484848");
+    private static final int BODY_COLOR_FALLBACK = Color.parseColor("#757575");
+
+    private static final int TITLE_COLOR_DARK = Color.parseColor("#484848");
+    private static final int BODY_COLOR_DARK = Color.parseColor("#757575");
+
+    private static final int TITLE_COLOR_LIGHT = Color.parseColor("#f5f5f5");
+    private static final int BODY_COLOR_LIGHT = Color.parseColor("#eeeeee");
+
     @Nullable
-    public static Palette generatePalette(Bitmap bitmap) {
-        if (bitmap == null) return null;
-        return Palette.from(bitmap).generate();
+    public static void generatePalette(Bitmap bitmap,
+                                          Palette.PaletteAsyncListener paletteAsyncListener) {
+        if (bitmap == null){
+            return;
+        }
+        Palette.from(bitmap).generate(paletteAsyncListener);
     }
 
-    @ColorInt
-    public static int getColor(@Nullable Palette palette, int fallback) {
+    public static int getBackgroundColor(Palette.Swatch swatch) {
+        if (swatch == null) {
+            return BACKGROUND_COLOR_FALLBACK;
+        }
+
+        return swatch.getRgb();
+    }
+
+    public static int getTitleColor(Palette.Swatch swatch) {
+        if (swatch == null) {
+            return TITLE_COLOR_FALLBACK;
+        }
+        if (isColorDark(swatch.getRgb())) {
+            return TITLE_COLOR_LIGHT;
+        } else {
+            return TITLE_COLOR_DARK;
+        }
+    }
+
+    public static int getBodyColor(Palette.Swatch swatch) {
+        if (swatch == null) {
+            return BODY_COLOR_FALLBACK;
+        }
+
+        if (isColorDark(swatch.getRgb())) {
+            return BODY_COLOR_LIGHT;
+        } else {
+            return BODY_COLOR_DARK;
+        }
+    }
+
+    public static Palette.Swatch getColorSwatch(@Nullable Palette palette) {
         if (palette != null) {
-            if (palette.getVibrantSwatch() != null) {
-                return palette.getVibrantSwatch().getRgb();
-            } else if (palette.getMutedSwatch() != null) {
-                return palette.getMutedSwatch().getRgb();
-            } else if (palette.getDarkVibrantSwatch() != null) {
-                return palette.getDarkVibrantSwatch().getRgb();
-            } else if (palette.getDarkMutedSwatch() != null) {
-                return palette.getDarkMutedSwatch().getRgb();
-            } else if (palette.getLightVibrantSwatch() != null) {
-                return palette.getLightVibrantSwatch().getRgb();
+            if (palette.getMutedSwatch() != null) {
+                return palette.getMutedSwatch();
+            } else
+                if (palette.getDarkMutedSwatch() != null) {
+                return palette.getDarkMutedSwatch();
             } else if (palette.getLightMutedSwatch() != null) {
-                return palette.getLightMutedSwatch().getRgb();
-            } else if (!palette.getSwatches().isEmpty()) {
-                return Collections.max(palette.getSwatches(),
-                        SwatchComparator.getInstance()).getRgb();
+                return palette.getLightMutedSwatch();
             }
         }
-        return fallback;
+        return null;
     }
 
-    private static class SwatchComparator implements Comparator<Palette.Swatch> {
-        private static SwatchComparator sInstance;
-
-        static SwatchComparator getInstance() {
-            if (sInstance == null) {
-                sInstance = new SwatchComparator();
-            }
-            return sInstance;
-        }
-
-        @Override
-        public int compare(Palette.Swatch lhs, Palette.Swatch rhs) {
-            return lhs.getPopulation() - rhs.getPopulation();
+    private static boolean isColorDark(int color){
+        double darkness = 1-(0.299*Color.red(color) + 0.587*Color.green(color) + 0.114*Color.blue(color))/255;
+        if(darkness < 0.2) {
+            return false; // It's a light color
+        } else {
+            return true; // It's a dark color
         }
     }
 
-//    @ColorInt
-//    public static int shiftBackgroundColorForLightText(@ColorInt int backgroundColor) {
-//        while (ColorUtils.isColorLight(backgroundColor)) {
-//            backgroundColor = ColorUtil.darkenColor(backgroundColor);
-//        }
-//        return backgroundColor;
-//    }
-//
-//    @ColorInt
-//    public static int shiftBackgroundColorForDarkText(@ColorInt int backgroundColor) {
-//        while (!ColorUtil.isColorLight(backgroundColor)) {
-//            backgroundColor = ColorUtil.lightenColor(backgroundColor);
-//        }
-//        return backgroundColor;
-//    }
+    public static int makeColorTransparent(int color){
+        return Color.argb(125, Color.red(color) , Color.green(color), Color.blue(color));
+    }
 }

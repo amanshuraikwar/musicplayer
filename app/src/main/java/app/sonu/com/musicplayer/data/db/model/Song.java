@@ -6,15 +6,13 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
-import org.litepal.crud.DataSupport;
-
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 
 /**
  * Created by sonu on 1/7/17.
  */
 
-public class Song extends DataSupport {
+public class Song {
 
     private int queuePosition;
     private int songId;

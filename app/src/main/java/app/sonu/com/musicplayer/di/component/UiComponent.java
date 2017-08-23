@@ -3,8 +3,10 @@ package app.sonu.com.musicplayer.di.component;
 import app.sonu.com.musicplayer.di.PerActivity;
 import app.sonu.com.musicplayer.di.module.UiModule;
 import app.sonu.com.musicplayer.mediaplayernew.MusicService;
+import app.sonu.com.musicplayer.ui.album.AlbumFragment;
 import app.sonu.com.musicplayer.ui.albums.AlbumsFragment;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsFragment;
+import app.sonu.com.musicplayer.ui.artist.ArtistFragment;
 import app.sonu.com.musicplayer.ui.artists.ArtistsFragment;
 import app.sonu.com.musicplayer.ui.fileview.FileViewFragment;
 import app.sonu.com.musicplayer.ui.main.MainActivity;
@@ -29,6 +31,8 @@ public interface UiComponent {
     void inject(ArtistsFragment artistsFragment);
     void inject(MusicPlayerFragment musicPlayerFragment);
     void inject(MiniPlayerFragment miniPlayerFragment);
+    void inject(AlbumFragment albumFragment);
+    void inject(ArtistFragment artistFragment);
     void inject(MusicService musicService);
 }
 

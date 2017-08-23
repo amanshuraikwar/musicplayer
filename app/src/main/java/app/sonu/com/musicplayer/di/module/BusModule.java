@@ -21,6 +21,8 @@ public class BusModule {
     public static final String PROVIDER_PLAY_SONG = "PROVIDER_PLAY_SONG";
     public static final String PROVIDER_MUSIC_PLAYER_SLIDE = "PROVIDER_MUSIC_PLAYER_SLIDE";
     public static final String PROVIDER_MUSIC_PLAYER_PANEL = "PROVIDER_MUSIC_PLAYER_PANEL";
+    public static final String PROVIDER_ALBUM_CLICK = "PROVIDER_ALBUM_CLICK";
+    public static final String PROVIDER_ARTIST_CLICK = "PROVIDER_ARTIST_CLICK";
 
     @Provides
     @Singleton
@@ -47,6 +49,20 @@ public class BusModule {
     @Singleton
     @Named(PROVIDER_MUSIC_PLAYER_PANEL)
     PublishSubject<Integer> getMusicPlayerPanelProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Singleton
+    @Named(PROVIDER_ALBUM_CLICK)
+    PublishSubject<MediaBrowserCompat.MediaItem> getAlbumClickProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Singleton
+    @Named(PROVIDER_ARTIST_CLICK)
+    PublishSubject<MediaBrowserCompat.MediaItem> getArtistClickProvider() {
         return PublishSubject.create();
     }
 }

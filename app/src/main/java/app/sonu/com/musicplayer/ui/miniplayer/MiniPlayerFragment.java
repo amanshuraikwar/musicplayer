@@ -156,17 +156,15 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
                                                        Target<Bitmap> target,
                                                        DataSource dataSource,
                                                        boolean isFirstResource) {
-                            miniPlayerMpb.setProgressTintList(
-                                    ColorStateList.valueOf(
-                                            ColorUtil.getColor(
-                                                            ColorUtil.generatePalette(resource),
-                                                            Color.DKGRAY)));
-//                            miniPlayerPlayPauseIv
-//                                    .setColorFilter(
-//                                            ColorUtil.getColor(
-//                                                    ColorUtil.generatePalette(resource),
-//                                                    Color.DKGRAY),
-//                                            PorterDuff.Mode.SRC_IN);
+                            ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+                                    miniPlayerMpb.setProgressTintList(
+                                            ColorStateList.valueOf(
+                                                    ColorUtil.getBackgroundColor(
+                                                            ColorUtil.getColorSwatch(palette))));
+                                }
+                            });
                             return false;
                         }
                     })
@@ -243,5 +241,10 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         if (mScheduleFuture != null) {
             mScheduleFuture.cancel(false);
         }
+    }
+
+    @Override
+    public void resetSeekbar() {
+        miniPlayerMpb.setProgress(0);
     }
 }

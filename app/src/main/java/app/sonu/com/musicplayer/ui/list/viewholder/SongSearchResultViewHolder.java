@@ -1,9 +1,8 @@
-package app.sonu.com.musicplayer.ui.list;
+package app.sonu.com.musicplayer.ui.list.viewholder;
 
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
-import android.support.v4.media.MediaMetadataCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,25 +12,30 @@ import com.bumptech.glide.request.RequestOptions;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.SearchResultOnClickListener;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.SongSearchResultOnClickListener;
+import app.sonu.com.musicplayer.ui.list.visitable.SearchResultVisitable;
+import app.sonu.com.musicplayer.ui.list.visitable.SongSearchResultVisitable;
 import butterknife.BindView;
 
 /**
  * Created by sonu on 2/7/17.
  */
 
-public class SongViewHolder extends BaseViewHolder<SongVisitable, SongOnClickListener> {
+public class SongSearchResultViewHolder extends BaseViewHolder<SongSearchResultVisitable,
+        SongSearchResultOnClickListener> {
 
     @LayoutRes
-    public static final int LAYOUT = R.layout.item_song;
+    public static final int LAYOUT = R.layout.item_song_search_result;
 
-    @BindView(R.id.songTitleTv)
-    TextView songTitleTv;
+    @BindView(R.id.titleTv)
+    TextView titleTv;
 
-    @BindView(R.id.songDurationTv)
-    TextView songDurationTv;
+//    @BindView(R.id.extraInfoTv)
+//    TextView extraInfoTv;
 
-    @BindView(R.id.songArtistTv)
-    TextView songArtistTv;
+    @BindView(R.id.subtitleTv)
+    TextView subtitleTv;
 
     @BindView(R.id.parentRl)
     View parentView;
@@ -39,26 +43,26 @@ public class SongViewHolder extends BaseViewHolder<SongVisitable, SongOnClickLis
     @BindView(R.id.iconIv)
     ImageView iconIv;
 
-    public SongViewHolder(View itemView) {
+    public SongSearchResultViewHolder(View itemView) {
         super(itemView);
     }
 
     @Override
-    public void bind(final SongVisitable visitable,
-                     final SongOnClickListener onClickListener,
+    public void bind(final SongSearchResultVisitable visitable,
+                     final SongSearchResultOnClickListener onClickListener,
                      Context context) {
-        songTitleTv.setText(visitable.getMediaItem().getDescription().getTitle());
-        songDurationTv.setText(
-                getFormattedDuration(
-                        visitable
-                                .getMediaItem()
-                                .getDescription()
-                                .getExtras()
-                                .getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-                )
-        );
+        titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
+//        songDurationTv.setText(
+//                getFormattedDuration(
+//                        visitable
+//                                .getMediaItem()
+//                                .getDescription()
+//                                .getExtras()
+//                                .getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+//                )
+//        );
 
-        songArtistTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
+        subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
         options.centerCrop();
@@ -83,19 +87,8 @@ public class SongViewHolder extends BaseViewHolder<SongVisitable, SongOnClickLis
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClickListener.onSongClick(visitable.getMediaItem());
+                onClickListener.onSearchResultClick(visitable.getMediaItem());
             }
         });
-    }
-
-    private String getFormattedDuration(long duration) {
-        duration = duration/1000;
-        String formattedDuration = "";
-
-        formattedDuration += duration/60;
-        formattedDuration += ":";
-        formattedDuration += String.format("%02d", duration%60);
-
-        return formattedDuration;
     }
 }

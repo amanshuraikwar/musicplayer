@@ -1,9 +1,8 @@
-package app.sonu.com.musicplayer.ui.list;
+package app.sonu.com.musicplayer.ui.list.viewholder;
 
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
-import android.support.v4.media.MediaMetadataCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,6 +12,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.ui.list.visitable.AlbumVisitable;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.AlbumOnClickListener;
 import butterknife.BindView;
 
 /**

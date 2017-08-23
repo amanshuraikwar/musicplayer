@@ -38,4 +38,10 @@ public interface ApplicationComponent {
 
     @Named(BusModule.PROVIDER_MUSIC_PLAYER_PANEL)
     PublishSubject<Integer> getMusicPlayerPanelSubject();
+
+    @Named(BusModule.PROVIDER_ALBUM_CLICK)
+    PublishSubject<MediaBrowserCompat.MediaItem> getAlbumClickProvider();
+
+    @Named(BusModule.PROVIDER_ARTIST_CLICK)
+    PublishSubject<MediaBrowserCompat.MediaItem> getArtistClickProvider();
 }

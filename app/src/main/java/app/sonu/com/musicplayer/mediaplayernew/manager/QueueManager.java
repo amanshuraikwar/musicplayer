@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -29,8 +30,6 @@ public class QueueManager {
     private List<MediaSessionCompat.QueueItem> mPlayingQueue;
     private int mCurrentIndex;
 
-    private int mShuffleMode;
-
     public QueueManager(MusicProvider musicProvider,
                         MetadataUpdateListener metadataUpdateListener) {
         this.mMusicProvider = musicProvider;
@@ -38,8 +37,6 @@ public class QueueManager {
 
         mPlayingQueue = Collections.synchronizedList(new ArrayList<MediaSessionCompat.QueueItem>());
         mCurrentIndex = 0;
-        mShuffleMode = 0;
-
     }
 
     public MediaSessionCompat.QueueItem getCurrentMusic() {
@@ -50,6 +47,10 @@ public class QueueManager {
         }
 
         return mPlayingQueue.get(mCurrentIndex);
+    }
+
+    public String getCurrentMusicMediaId() {
+        return getCurrentMusic() == null ? null : getCurrentMusic().getDescription().getMediaId();
     }
 
     private boolean setCurrentQueueIndex(int index) {
@@ -77,10 +78,6 @@ public class QueueManager {
         Log.d(TAG, "setCurrentQueue:called");
         mPlayingQueue = newQueue;
 
-        if (getShuffleMode() == 1) {
-            Collections.shuffle(mPlayingQueue);
-        }
-
         int index = 0;
         if (initialMediaId != null) {
             index = QueueHelper.getQueueIndexOf(initialMediaId, mPlayingQueue);
@@ -101,6 +98,35 @@ public class QueueManager {
                     mediaId);
         }
         updateMetadata();
+    }
+
+    public void setQueueFromMediaId(String mediaId, boolean forceNewQueue) {
+        Log.d(TAG, "setQueueFromMediaId:called");
+        if (isQueueReusable(mediaId) && !forceNewQueue) {
+            Log.d(TAG, "setQueueFromMediaId:queue is reusable");
+            setCurrentQueueItem(mediaId);
+        } else {
+            Log.d(TAG, "setQueueFromMediaId:queue is not reusable");
+            setCurrentQueue("now playing",
+                    QueueHelper.getPlayingQueue(mediaId, mMusicProvider),
+                    mediaId);
+        }
+        updateMetadata();
+    }
+
+    public void shuffleMusic(String mediaId) {
+        if (mPlayingQueue != null) {
+            ArrayList<MediaSessionCompat.QueueItem> newQueue = new ArrayList<>();
+            newQueue.add(QueueHelper.getQueueItem(mediaId, mMusicProvider));
+            mPlayingQueue.remove(QueueHelper.getQueueIndexOf(mediaId, mPlayingQueue));
+            Collections.shuffle(mPlayingQueue);
+            newQueue.addAll(mPlayingQueue);
+            mPlayingQueue = newQueue;
+            mCurrentIndex = 0;
+
+            mMetadataUpdateListener.onQueueUpdated("now playing", mPlayingQueue);
+            mMetadataUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
+        }
     }
 
     private void updateMetadata() {
@@ -165,27 +191,8 @@ public class QueueManager {
         return Arrays.equals(newBrowseHierarchy, currentBrowseHierarchy);
     }
 
-    public void setShuffleMode(int mode) {
-        Log.d(TAG, "setShuffleMode:called");
-        if (mode == 0 || mode == 1) {
-            if (mShuffleMode != mode) {
-                Log.i(TAG, "setShuffleMode:mode="+mode);
-                mShuffleMode = mode;
-                String mediaId = getCurrentMusic().getDescription().getMediaId();
-                if (mShuffleMode == 1) {
-                    setCurrentQueue("now playing",
-                            QueueHelper.getPlayingQueue(mediaId, mMusicProvider), mediaId);
-                } else {
-                    setCurrentQueue("now playing",
-                            QueueHelper.getPlayingQueue(mediaId, mMusicProvider), mediaId);
-                }
-                mMetadataUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
-            }
-        }
-    }
-
-    public int getShuffleMode() {
-        return mShuffleMode;
+    public boolean isLastItemPlaying() {
+        return mCurrentIndex == (mPlayingQueue.size() - 1);
     }
 
     public interface MetadataUpdateListener {

@@ -30,7 +30,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.google.android.exoplayer:exoplayer:r2.4.1'
+//    compile 'com.google.android.exoplayer:exoplayer:r2.4.1'
 
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
@@ -55,18 +55,22 @@ dependencies {
     compile "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
     apt "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
 
-    compile 'com.android.support:palette-v7:25.3.1'
+    compile "com.android.support:palette-v7:$rootProject.supportLibraryVersion"
 
-    compile 'org.litepal.android:core:1.5.1'
+//    compile 'org.litepal.android:core:1.5.1'
 
-    compile 'com.sothree.slidinguppanel:library:3.3.1'
+    compile "com.sothree.slidinguppanel:library:$rootProject.slidingUpPanelVersion"
 
-    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+    compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    apt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
 
-    compile 'me.zhanghai.android.materialprogressbar:library:1.4.1'
+    compile "me.zhanghai.android.materialprogressbar:library:$rootProject.materialProgressbarVersion"
 
-    compile "com.android.support:multidex:1.0.1"
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
+    compile "com.simplecityapps:recyclerview-fastscroll:$rootProject.fastscrollVersion"
+
+    compile "com.miguelcatalan:materialsearchview:$rootProject.materialSearchViewVersion"
+
+    compile "com.android.support:multidex:$rootProject.multidexVersion"
+    compile "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
+    testCompile "junit:junit:$rootProject.junitVersion"
 }

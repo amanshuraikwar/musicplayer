@@ -14,4 +14,5 @@ public interface MiniPlayerMvpView extends BaseMvpView {
     void updateDuration(long dur);
     void scheduleSeekbarUpdate();
     void stopSeekbarUpdate();
+    void resetSeekbar();
 }

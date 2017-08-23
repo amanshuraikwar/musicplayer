@@ -123,4 +123,9 @@ public class AllSongsPresenter extends
         Log.e(TAG, "onMediaBrowserSubscriptionError:called");
         mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
+
+    @Override
+    public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
+        //
+    }
 }

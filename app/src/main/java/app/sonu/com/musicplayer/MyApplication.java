@@ -2,8 +2,6 @@ package app.sonu.com.musicplayer;
 
 import android.app.Application;
 
-import org.litepal.LitePal;
-
 import app.sonu.com.musicplayer.di.component.ApplicationComponent;
 import app.sonu.com.musicplayer.di.component.DaggerApplicationComponent;
 import app.sonu.com.musicplayer.di.module.ApplicationModule;
@@ -21,7 +19,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LitePal.initialize(this);
+//        LitePal.initialize(this);
 
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))

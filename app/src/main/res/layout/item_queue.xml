@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/queueItemParentRl"
+    android:id="@+id/itemParentRl"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
+    android:focusable="true"
     android:clickable="true"
-    android:background="@color/coal">
+    android:foreground="?android:attr/selectableItemBackground">
 
     <TextView
-        android:id="@+id/queueIndexTv"
+        android:id="@+id/indexTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:padding="8dp"
-        android:textColor="@color/lightGrey"
+        android:textColor="@color/grey"
         android:text="3"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_toEndOf="@+id/queueIndexTv"
+        android:layout_toEndOf="@+id/indexTv"
         android:layout_toStartOf="@+id/moreOptionsIv"
         android:layout_centerVertical="true"
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
         <TextView
-            android:id="@+id/songTitleMainTv"
+            android:id="@+id/titleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lose yourself to Dance"
-            android:textColor="@color/white"
+            android:textColor="@color/charcoal"
             android:textSize="18sp"
             android:lines="1"
             android:ellipsize="marquee"/>
 
         <TextView
-            android:id="@+id/songArtistMainTv"
+            android:id="@+id/subtitleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Daft Punk"
-            android:textColor="@color/lightGrey"/>
+            android:textColor="@color/grey"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/moreOptionsIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_more_vert_light_grey_24dp"
+        android:src="@drawable/ic_more_vert_grey_24dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:padding="8dp"

@@ -1,18 +1,20 @@
-package app.sonu.com.musicplayer.ui.list;
+package app.sonu.com.musicplayer.ui.list.visitable;
 
 import android.support.v4.media.MediaBrowserCompat;
 
 import app.sonu.com.musicplayer.base.list.BaseVisitable;
+import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.SongOnClickListener;
 
 /**
- * Created by sonu on 30/7/17.
+ * Created by sonu on 2/7/17.
  */
 
-public class ArtistVisitable extends BaseVisitable<ArtistOnClickListener, MediaListTypeFactory> {
+public class SongVisitable extends BaseVisitable<SongOnClickListener, MediaListTypeFactory> {
 
     private MediaBrowserCompat.MediaItem item;
 
-    public ArtistVisitable(MediaBrowserCompat.MediaItem item) {
+    public SongVisitable(MediaBrowserCompat.MediaItem item) {
         this.item = item;
     }
 

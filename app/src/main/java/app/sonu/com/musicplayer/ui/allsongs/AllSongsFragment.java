@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,8 +23,8 @@ import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
 import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
-import app.sonu.com.musicplayer.ui.list.SongOnClickListener;
-import app.sonu.com.musicplayer.ui.list.SongVisitable;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.SongOnClickListener;
+import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

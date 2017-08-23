@@ -24,6 +24,8 @@ public class PlaybackManager implements Playback.Callback {
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
 
+    private int mShuffleMode, mRepeatMode;
+
     public PlaybackManager(PlaybackServiceCallback serviceCallback,
                            MusicProvider musicProvider,
                            QueueManager queueManager,
@@ -34,22 +36,38 @@ public class PlaybackManager implements Playback.Callback {
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
+
+        mShuffleMode = 0;
+        mRepeatMode = PlaybackStateCompat.REPEAT_MODE_NONE;
     }
 
-    private void handlePlayRequest(){
+    public void handlePlayRequest(){
         Log.d(TAG, "handlePlayRequest: mState=" + mPlayback.getState());
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
-            mServiceCallback.onPlaybackStart();
-            mPlayback.play(currentMusic);
+
+            if (mPlayback.play(currentMusic)){
+                mServiceCallback.onPlaybackStart();
+            }
         }
     }
 
-    private void handlePauseRequest() {
+    public void handlePauseRequest() {
         Log.d(TAG, "handlePauseRequest: mState=" + mPlayback.getState());
-        if (mPlayback.isPlaying()) {
-            mPlayback.pause();
+        if (mPlayback.pause()) {
             mServiceCallback.onPlaybackStop();
+        }
+    }
+
+    public void handleStopRequest(String withError) {
+        Log.d(TAG, "handleStopRequest: mState=" + mPlayback.getState());
+        if (withError != null) {
+            Log.e(TAG, "handleStopRequest:error="+withError);
+        }
+
+        if (mPlayback.stop()) {
+            mServiceCallback.onPlaybackStop();
+            updatePlaybackState(withError);
         }
     }
 
@@ -63,17 +81,29 @@ public class PlaybackManager implements Playback.Callback {
      * @param error if not null, error message to present to the user.
      */
     public void updatePlaybackState(String error) {
-        Log.d(TAG, "updatePlaybackState:playback state=" + mPlayback.getState());
+        Log.d(TAG, "updatePlaybackState:called");
+        Log.i(TAG, "updatePlaybackState:playbackState=" + mPlayback.getState());
+
         long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         if (mPlayback != null) {
             position = mPlayback.getCurrentPosition();
         }
+
+        Log.i(TAG, "updatePlaybackState:position="+position);
 
         //noinspection ResourceType
         PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(getAvailableActions());
 
         int state = mPlayback.getState();
+
+        if (state == Playback.CUSTOM_PLAYBACK_STATE_PAUSED) {
+            state = PlaybackStateCompat.STATE_PAUSED;
+        } else if (state == Playback.CUSTOM_PLAYBACK_STATE_PLAYING) {
+            state = PlaybackStateCompat.STATE_PLAYING;
+        } else if (state == Playback.CUSTOM_PLAYBACK_STATE_STOPPED) {
+            state = PlaybackStateCompat.STATE_STOPPED;
+        }
 
         // If there is an error message, send it to the playback state:
         if (error != null) {
@@ -117,8 +147,23 @@ public class PlaybackManager implements Playback.Callback {
     //implements playback.callback
     @Override
     public void onCompletion() {
-        mQueueManager.skipQueuePosition(1);
-        handlePlayRequest();
+        switch (mRepeatMode) {
+            case PlaybackStateCompat.REPEAT_MODE_ONE:
+                handlePlayRequest();
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_NONE:
+                if (mQueueManager.isLastItemPlaying()) {
+                    updatePlaybackState(null);
+                } else {
+                    mQueueManager.skipQueuePosition(1);
+                    handlePlayRequest();
+                }
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ALL:
+                mQueueManager.skipQueuePosition(1);
+                handlePlayRequest();
+                break;
+        }
     }
 
     @Override
@@ -140,7 +185,9 @@ public class PlaybackManager implements Playback.Callback {
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
-            mPlayback.play();
+            if (!mPlayback.play()) {
+                handlePlayRequest();
+            }
         }
 
         @Override
@@ -155,6 +202,7 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToQueueItem(long id) {
+            //todo implement
             super.onSkipToQueueItem(id);
         }
 
@@ -165,7 +213,13 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-            mQueueManager.skipQueuePosition(1);
+            if (mQueueManager.isLastItemPlaying()) {
+                if (mRepeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
+                    mQueueManager.skipQueuePosition(1);
+                }
+            } else {
+                mQueueManager.skipQueuePosition(1);
+            }
             handlePlayRequest();
         }
 
@@ -177,17 +231,21 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onStop() {
-            mPlayback.stop();
+            handleStopRequest(null);
         }
 
         @Override
         public void onSeekTo(long pos) {
-            mPlayback.seekTo(pos);
+            mPlayback.seekTo((int) pos);
         }
 
         @Override
         public void onSetRepeatMode(int repeatMode) {
-            super.onSetRepeatMode(repeatMode);
+            Log.d(TAG, "onSetRepeatMode:called");
+            Log.i(TAG, "onSetRepeatMode:repeatMode="+repeatMode);
+            if (setRepeatMode(repeatMode)) {
+                mServiceCallback.onRepeatModeChanged(repeatMode);
+            }
         }
 
         //todo deprecated in 26.0.0-beta-2
@@ -195,14 +253,40 @@ public class PlaybackManager implements Playback.Callback {
         public void onSetShuffleModeEnabled(boolean enabled) {
             Log.d(TAG, "onSetShuffleModeEnabled:called");
             Log.d(TAG, "onSetShuffleModeEnabled:enabled="+enabled);
+            int mode = 0;
             if (enabled) {
-                mQueueManager.setShuffleMode(1);
-                mServiceCallback.onShuffleModeChanged(1);
-            } else {
-                mQueueManager.setShuffleMode(0);
-                mServiceCallback.onShuffleModeChanged(0);
+                mode = 1;
+            }
+
+            if (setShuffleMode(mode)) {
+                if (mQueueManager.getCurrentMusic() != null) {
+                    if (enabled) {
+                        mQueueManager.shuffleMusic(mQueueManager.getCurrentMusicMediaId());
+                    } else {
+                        mQueueManager.setQueueFromMediaId(
+                                mQueueManager.getCurrentMusicMediaId(), true);
+                    }
+                }
+                mServiceCallback.onShuffleModeChanged(mode);
             }
         }
+    }
+
+    private boolean setShuffleMode(int mode) {
+        if (mShuffleMode != mode) {
+            mShuffleMode = mode;
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean setRepeatMode(int repeatMode) {
+        if (mRepeatMode != repeatMode) {
+            mRepeatMode = repeatMode;
+            return true;
+        }
+        return false;
     }
 
     public interface PlaybackServiceCallback {
@@ -215,5 +299,9 @@ public class PlaybackManager implements Playback.Callback {
         void onPlaybackStateUpdated(PlaybackStateCompat newState);
 
         void onShuffleModeChanged(int mode);
+
+        void onRepeatModeChanged(int mode);
     }
 }
+
+

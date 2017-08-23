@@ -9,6 +9,7 @@ import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsPresenter;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by sonu on 30/7/17.
@@ -19,12 +20,15 @@ public class AlbumsPresenter extends BasePresenter<AlbumsMvpView>
 
     private static final String TAG = AllSongsPresenter.class.getSimpleName();
     private MediaBrowserManager mMediaBrowserManager;
+    private PublishSubject<MediaBrowserCompat.MediaItem> mAlbumClickSubject;
 
     public AlbumsPresenter(DataManager dataManager,
-                           MediaBrowserManager mediaBrowserManager) {
+                           MediaBrowserManager mediaBrowserManager,
+                           PublishSubject<MediaBrowserCompat.MediaItem> albumClickSubject) {
         super(dataManager);
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
+        mAlbumClickSubject = albumClickSubject;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class AlbumsPresenter extends BasePresenter<AlbumsMvpView>
 
     @Override
     public void onAlbumClicked(MediaBrowserCompat.MediaItem item) {
-
+        mAlbumClickSubject.onNext(item);
     }
 
     @Override
@@ -89,6 +93,11 @@ public class AlbumsPresenter extends BasePresenter<AlbumsMvpView>
 
     @Override
     public void onMediaBrowserSubscriptionError(String id) {
+
+    }
+
+    @Override
+    public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
 
     }
 }

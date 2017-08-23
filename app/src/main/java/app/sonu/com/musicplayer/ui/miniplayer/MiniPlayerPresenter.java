@@ -52,12 +52,15 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
                     if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
                         mMvpView.showPauseIcon();
                         mMvpView.scheduleSeekbarUpdate();
-                    } else if (state.getState() == PlaybackStateCompat.STATE_PAUSED
-                            || state.getState() == PlaybackStateCompat.STATE_NONE
+                    } else if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+                        mMvpView.showPlayIcon();
+                        mMvpView.stopSeekbarUpdate();
+                    } else if (state.getState() == PlaybackStateCompat.STATE_NONE
                             || state.getState() == PlaybackStateCompat.STATE_ERROR
                             || state.getState() == PlaybackStateCompat.STATE_STOPPED) {
                         mMvpView.showPlayIcon();
                         mMvpView.stopSeekbarUpdate();
+                        mMvpView.resetSeekbar();
                     }
                 }
             };
@@ -97,6 +100,7 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy:called");
         mMediaBrowserManager.disconnectMediaBrowser();
     }
 
@@ -157,6 +161,11 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
 
     @Override
     public void onMediaBrowserSubscriptionError(String id) {
+
+    }
+
+    @Override
+    public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
 
     }
 }

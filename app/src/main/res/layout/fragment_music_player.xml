@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/musicPlayerParentLl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#00000000">
+    android:background="#00000000"
+    android:fitsSystemWindows="false">
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
@@ -16,9 +17,10 @@
         android:layout_height="match_parent"
         android:gravity="bottom"
         sothree:umanoOverlay="false"
-        sothree:umanoPanelHeight="238dp"
+        sothree:umanoPanelHeight="@dimen/music_player_bottom_half_height"
         sothree:umanoShadowHeight="2dp"
-        sothree:umanoInitialState="collapsed">
+        sothree:umanoInitialState="collapsed"
+        sothree:umanoScrollableView="@+id/playingQueueRv">
 
         <FrameLayout
             android:id="@+id/musicPlayerUpperHalfRl"
@@ -33,57 +35,140 @@
                 android:src="@drawable/ic_music_note_light_grey_24dp"
                 android:scaleType="center"/>
 
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/topBarLl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:background="@drawable/drawable_transparent_gradient">
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/status_bar_padding" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/collapseIv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_close_white_24dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:drawSelectorOnTop="true"
+                        android:clickable="true"/>
+
+                    <TextView
+                        android:id="@+id/topBarTitleTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/collapseIv"
+                        android:layout_toStartOf="@+id/heartIv"
+                        android:text="Now Playing"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"/>
+
+                    <ImageView
+                        android:id="@+id/heartIv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@+id/moreOptionsIv"
+                        android:padding="16dp"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_heart_outline_white_24dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:drawSelectorOnTop="true"
+                        android:clickable="true"/>
+
+                    <ImageView
+                        android:id="@+id/moreOptionsIv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_more_vert_white_24dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:drawSelectorOnTop="true"
+                        android:clickable="true"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/iconsLl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="bottom|end"
+                android:visibility="gone">
+
                 <ImageView
-                    android:id="@+id/collapseIv"
+                    android:id="@+id/gotoAlbumIv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:src="@drawable/ic_album_light_grey_24dp"
                     android:padding="16dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_close_white_24dp"
                     android:background="?selectableItemBackgroundBorderless"
-                    android:drawSelectorOnTop="true"
                     android:clickable="true"/>
+
+                <ImageView
+                    android:id="@+id/gotoArtistIv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_person_light_grey_24dp"
+                    android:padding="16dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:layout_gravity="bottom"
+                android:visibility="gone">
 
                 <TextView
+                    android:id="@+id/titleTextTv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/collapseIv"
-                    android:layout_toStartOf="@+id/moreOptionsIv"
-                    android:text="Now Playing"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
 
-                <ImageView
-                    android:id="@+id/moreOptionsIv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_more_vert_white_24dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:drawSelectorOnTop="true"
-                    android:clickable="true"/>
-            </RelativeLayout>
+                <TextView
+                    android:id="@+id/bodyTextTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/backgroundTextTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+            </LinearLayout>
         </FrameLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/musicPlayerLowerHalfLl"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#2f2f2f">
+            android:orientation="vertical">
+
+            <!--<View-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="@dimen/status_bar_padding"-->
+                <!--android:background="@color/lightGrey"/>-->
 
             <include layout="@layout/layout_music_player_bottom_half" />
-        </RelativeLayout>
+
+        </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
-</FrameLayout>
+</LinearLayout>

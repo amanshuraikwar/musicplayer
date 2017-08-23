@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="search_view_margin_top">28dp</dimen>
+    <dimen name="status_bar_padding">24dp</dimen>
+    <!--238+24+24-->
+    <dimen name="music_player_bottom_half_height">286dp</dimen>
+</resources>

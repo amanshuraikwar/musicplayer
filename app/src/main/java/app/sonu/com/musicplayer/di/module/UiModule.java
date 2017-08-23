@@ -9,10 +9,14 @@ import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.di.ActivityContext;
 import app.sonu.com.musicplayer.di.PerActivity;
 import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
+import app.sonu.com.musicplayer.ui.album.AlbumMvpPresenter;
+import app.sonu.com.musicplayer.ui.album.AlbumPresenter;
 import app.sonu.com.musicplayer.ui.albums.AlbumsMvpPresenter;
 import app.sonu.com.musicplayer.ui.albums.AlbumsPresenter;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsMvpPresenter;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsPresenter;
+import app.sonu.com.musicplayer.ui.artist.ArtistMvpPresenter;
+import app.sonu.com.musicplayer.ui.artist.ArtistPresenter;
 import app.sonu.com.musicplayer.ui.artists.ArtistsMvpPresenter;
 import app.sonu.com.musicplayer.ui.artists.ArtistsPresenter;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
@@ -58,8 +62,14 @@ public class UiModule {
     @PerActivity
     MainPresenter getMainPresenter(DataManager dataManager,
                                    @Named(BusModule.PROVIDER_SELECTED_SONG)
-                                   PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject) {
-        return new MainPresenter(dataManager, selectedSongSubject);
+                                   PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject,
+                                   @Named(BusModule.PROVIDER_ALBUM_CLICK)
+                                   PublishSubject<MediaBrowserCompat.MediaItem> albumClickSubject,
+                                   @Named(BusModule.PROVIDER_ARTIST_CLICK)
+                                           PublishSubject<MediaBrowserCompat.MediaItem>
+                                           artistClickSubject) {
+        return new MainPresenter(dataManager, selectedSongSubject, albumClickSubject,
+                artistClickSubject, new MediaBrowserManager(MediaIdHelper.ALL_SONGS_ROOT_HINT));
     }
 
     @Provides
@@ -82,6 +92,16 @@ public class UiModule {
 
     @Provides
     @PerActivity
+    AllSongsPresenter getAllSongsPresenter(DataManager dataManager,
+                                           @Named(BusModule.PROVIDER_SELECTED_SONG)
+                                                   PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject) {
+        return new AllSongsPresenter(dataManager,
+                new MediaBrowserManager(MediaIdHelper.ALL_SONGS_ROOT_HINT),
+                selectedSongSubject);
+    }
+
+    @Provides
+    @PerActivity
     MiniPlayerPresenter getMiniPlayerPresenter(DataManager dataManager,
                                                @Named(BusModule.PROVIDER_MUSIC_PLAYER_PANEL)
                                                        PublishSubject<Integer>
@@ -94,16 +114,6 @@ public class UiModule {
     @PerActivity
     MiniPlayerMvpPresenter getMiniPlayerMvpPresenter(MiniPlayerPresenter miniPlayerPresenter) {
         return miniPlayerPresenter;
-    }
-
-    @Provides
-    @PerActivity
-    AllSongsPresenter getAllSongsPresenter(DataManager dataManager,
-                                           @Named(BusModule.PROVIDER_SELECTED_SONG)
-                                                   PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject) {
-        return new AllSongsPresenter(dataManager,
-                new MediaBrowserManager(MediaIdHelper.ALL_SONGS_ROOT_HINT),
-                selectedSongSubject);
     }
 
     @Provides
@@ -140,9 +150,12 @@ public class UiModule {
 
     @Provides
     @PerActivity
-    AlbumsPresenter getAlbumsPresenter(DataManager dataManager) {
+    AlbumsPresenter getAlbumsPresenter(DataManager dataManager,
+                                       @Named(BusModule.PROVIDER_ALBUM_CLICK)
+                                       PublishSubject<MediaBrowserCompat.MediaItem> albumClickSubject) {
         return new AlbumsPresenter(dataManager,
-                new MediaBrowserManager(MediaIdHelper.ALBUMS_ROOT_HINT));
+                new MediaBrowserManager(MediaIdHelper.ALBUMS_ROOT_HINT),
+                albumClickSubject);
     }
 
     @Provides
@@ -153,8 +166,43 @@ public class UiModule {
 
     @Provides
     @PerActivity
-    ArtistsPresenter getArtistsPresenter(DataManager dataManager) {
+    ArtistsPresenter getArtistsPresenter(DataManager dataManager,
+                                         @Named(BusModule.PROVIDER_ARTIST_CLICK)
+                                                 PublishSubject<MediaBrowserCompat.MediaItem> artistClickSubject) {
         return new ArtistsPresenter(dataManager,
-                new MediaBrowserManager(MediaIdHelper.ARTISTS_ROOT_HINT));
+                new MediaBrowserManager(MediaIdHelper.ARTISTS_ROOT_HINT),
+                artistClickSubject);
+    }
+
+    @Provides
+    @PerActivity
+    AlbumMvpPresenter getAlbumMvpPresenter(AlbumPresenter albumPresenter) {
+        return albumPresenter;
+    }
+
+    @Provides
+    @PerActivity
+    AlbumPresenter getAlbumPresenter(DataManager dataManager,
+                                           @Named(BusModule.PROVIDER_SELECTED_SONG)
+                                                   PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject) {
+        return new AlbumPresenter(dataManager,
+                new MediaBrowserManager(MediaIdHelper.ALBUMS_ROOT_HINT),
+                selectedSongSubject);
+    }
+
+    @Provides
+    @PerActivity
+    ArtistMvpPresenter getArtistMvpPresenter(ArtistPresenter artistPresenter) {
+        return artistPresenter;
+    }
+
+    @Provides
+    @PerActivity
+    ArtistPresenter getArtistPresenter(DataManager dataManager,
+                                     @Named(BusModule.PROVIDER_SELECTED_SONG)
+                                             PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject) {
+        return new ArtistPresenter(dataManager,
+                new MediaBrowserManager(MediaIdHelper.ARTISTS_ROOT_HINT),
+                selectedSongSubject);
     }
 }

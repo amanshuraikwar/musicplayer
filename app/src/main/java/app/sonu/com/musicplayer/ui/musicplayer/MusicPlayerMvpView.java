@@ -3,6 +3,9 @@ package app.sonu.com.musicplayer.ui.musicplayer;
 import android.net.Uri;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+
+import java.util.List;
 
 import app.sonu.com.musicplayer.base.ui.BaseMvpView;
 import app.sonu.com.musicplayer.data.db.model.Song;
@@ -25,4 +28,9 @@ public interface MusicPlayerMvpView extends BaseMvpView {
     void stopSeekbarUpdate();
     void setShuffleModeEnabled();
     void setShuffleModeDisabled();
+    void setRepeatModeNone();
+    void setRepeatModeAll();
+    void setRepeatModeOne();
+    void displayQueue(List<MediaSessionCompat.QueueItem> queue);
+    void resetSeekbar();
 }

@@ -5,6 +5,6 @@
     <item
         android:id="@+id/search"
         android:title="@string/searchMenuItemTitle"
-        android:icon="@drawable/ic_search_charcoal_24dp"
+        android:icon="@drawable/ic_search_grey_24dp"
         app:showAsAction="always"/>
 </menu>

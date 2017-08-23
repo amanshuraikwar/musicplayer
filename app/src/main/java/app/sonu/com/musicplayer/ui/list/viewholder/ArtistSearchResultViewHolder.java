@@ -1,4 +1,4 @@
-package app.sonu.com.musicplayer.ui.list;
+package app.sonu.com.musicplayer.ui.list.viewholder;
 
 import android.content.Context;
 import android.os.Build;
@@ -12,22 +12,30 @@ import com.bumptech.glide.request.RequestOptions;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.ArtistSearchResultOnClickListener;
+import app.sonu.com.musicplayer.ui.list.onclicklistener.SongSearchResultOnClickListener;
+import app.sonu.com.musicplayer.ui.list.visitable.ArtistSearchResultVisitable;
+import app.sonu.com.musicplayer.ui.list.visitable.SongSearchResultVisitable;
 import butterknife.BindView;
 
 /**
- * Created by sonu on 30/7/17.
+ * Created by sonu on 2/7/17.
  */
 
-public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnClickListener> {
+public class ArtistSearchResultViewHolder extends BaseViewHolder<ArtistSearchResultVisitable,
+        ArtistSearchResultOnClickListener> {
 
     @LayoutRes
-    public static final int LAYOUT = R.layout.item_artist;
+    public static final int LAYOUT = R.layout.item_artist_search_result;
 
-    @BindView(R.id.artistTitleTv)
-    TextView artistTitleTv;
+    @BindView(R.id.titleTv)
+    TextView titleTv;
 
-    @BindView(R.id.artistSubtitleTv)
-    TextView artistSubtitleTv;
+    @BindView(R.id.extraInfoTv)
+    TextView extraInfoTv;
+
+    @BindView(R.id.subtitleTv)
+    TextView subtitleTv;
 
     @BindView(R.id.parentRl)
     View parentView;
@@ -35,17 +43,26 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
     @BindView(R.id.iconIv)
     ImageView iconIv;
 
-    public ArtistViewHolder(View itemView) {
+    public ArtistSearchResultViewHolder(View itemView) {
         super(itemView);
     }
 
     @Override
-    public void bind(final ArtistVisitable visitable,
-                     final ArtistOnClickListener onClickListener,
+    public void bind(final ArtistSearchResultVisitable visitable,
+                     final ArtistSearchResultOnClickListener onClickListener,
                      Context context) {
-        artistTitleTv.setText(visitable.getMediaItem().getDescription().getTitle());
+        titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
+//        songDurationTv.setText(
+//                getFormattedDuration(
+//                        visitable
+//                                .getMediaItem()
+//                                .getDescription()
+//                                .getExtras()
+//                                .getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+//                )
+//        );
 
-        artistSubtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
+        subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
         options.centerCrop();
@@ -70,7 +87,7 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClickListener.onArtistClick(visitable.getMediaItem());
+                onClickListener.onSearchResultClick(visitable.getMediaItem());
             }
         });
     }

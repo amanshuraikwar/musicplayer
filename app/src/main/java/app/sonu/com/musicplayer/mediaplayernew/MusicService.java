@@ -2,6 +2,7 @@ package app.sonu.com.musicplayer.mediaplayernew;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -21,6 +22,7 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
+import app.sonu.com.musicplayer.mediaplayernew.manager.MediaNotificationManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.PlaybackManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.QueueManager;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.LocalMusicSource;
@@ -36,11 +38,23 @@ public class MusicService extends MediaBrowserServiceCompat
 
     private static final String TAG = MusicService.class.getSimpleName();
 
+    // The action of the incoming Intent indicating that it contains a command
+    // to be executed (see {@link #onStartCommand})
+    public static final String ACTION_CMD = "com.example.android.uamp.ACTION_CMD";
+    // The key in the extras of the incoming Intent indicating the command that
+    // should be executed (see {@link #onStartCommand})
+    public static final String CMD_NAME = "CMD_NAME";
+    // A value of a CMD_NAME key in the extras of the incoming Intent that
+    // indicates that the music playback should be paused (see {@link #onStartCommand})
+    public static final String CMD_PAUSE = "CMD_PAUSE";
+
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
     private MusicProvider mMusicProvider;
     private PlaybackManager mPlaybackManager;
+
+    private MediaNotificationManager mMediaNotificationManager;
 
     @Inject
     DataManager mDataManager;
@@ -112,18 +126,37 @@ public class MusicService extends MediaBrowserServiceCompat
 
         // Set the session's token so that client activities can communicate with it.
         setSessionToken(mMediaSession.getSessionToken());
+
+        try {
+            mMediaNotificationManager = new MediaNotificationManager(this);
+        } catch (RemoteException e) {
+            throw new IllegalStateException("Could not create a MediaNotificationManager", e);
+        }
     }
 
     @Override
-    public int onStartCommand(Intent intent,int flags, int startId) {
+    public int onStartCommand(Intent startIntent,int flags, int startId) {
         Log.d(TAG, "onStartCommand:called");
+
+        if (startIntent != null) {
+            String action = startIntent.getAction();
+            String command = startIntent.getStringExtra(CMD_NAME);
+            if (ACTION_CMD.equals(action)) {
+                if (CMD_PAUSE.equals(command)) {
+                    mPlaybackManager.handlePauseRequest();
+                }
+            }
+        }
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy:called");
+        // Service is being killed, so make sure we release our resources
+        mPlaybackManager.handleStopRequest(null);
         mMediaSession.release();
+        mMediaNotificationManager.stopNotification();
     }
 
     @Nullable
@@ -201,6 +234,14 @@ public class MusicService extends MediaBrowserServiceCompat
         }
     }
 
+    @Override
+    public void onSearch(@NonNull String query,
+                         Bundle extras,
+                         @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+        Log.d(TAG, "onLoadChildren:called");
+        result.sendResult(mMusicProvider.getSongsBySearchQuery(query));
+    }
+
     //playback service callback
     @Override
     public void onPlaybackStart() {
@@ -216,7 +257,7 @@ public class MusicService extends MediaBrowserServiceCompat
     @Override
     public void onNotificationRequired() {
         Log.d(TAG, "onNotificationRequired:called");
-        //todo implement
+        mMediaNotificationManager.startNotification();
     }
 
     @Override
@@ -240,5 +281,11 @@ public class MusicService extends MediaBrowserServiceCompat
         } else if (mode == 1) {
             mMediaSession.setShuffleModeEnabled(true);
         }
+    }
+
+    @Override
+    public void onRepeatModeChanged(int mode) {
+        Log.d(TAG, "onRepeatModeChanged:mode="+mode);
+        mMediaSession.setRepeatMode(mode);
     }
 }

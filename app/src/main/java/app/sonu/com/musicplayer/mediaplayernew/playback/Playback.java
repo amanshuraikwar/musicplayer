@@ -1,6 +1,7 @@
 package app.sonu.com.musicplayer.mediaplayernew.playback;
 
 import android.media.session.MediaSession;
+import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat.QueueItem;
 
@@ -9,16 +10,30 @@ import android.support.v4.media.session.MediaSessionCompat.QueueItem;
  */
 
 public interface Playback {
-    void start();
-    void stop();
-    void pause();
+
+    int CUSTOM_PLAYBACK_STATE_NONE = 0;
+    int CUSTOM_PLAYBACK_STATE_IDLE = 1;
+    int CUSTOM_PLAYBACK_STATE_STOPPED = 2;
+    int CUSTOM_PLAYBACK_STATE_PREPARING = 3;
+    int CUSTOM_PLAYBACK_STATE_PAUSED = 4;
+    int CUSTOM_PLAYBACK_STATE_PLAYING = 5;
+
     boolean isPlaying();
-    void play();
-    void play(QueueItem item);
+    boolean isStopped();
+    boolean isPaused();
+    boolean isIdle();
+    boolean isPreparing();
     int getState();
+    int getCurrentPosition();
+
+    void start();
+    boolean play(@NonNull QueueItem item);
+    boolean play();
+    boolean pause();
+    boolean stop();
+    void seekTo(int position);
+
     void setCallback(Callback callback);
-    long getCurrentPosition();
-    void seekTo(long position);
 
     interface Callback {
         /**
@@ -44,3 +59,4 @@ public interface Playback {
         void setCurrentMediaId(String mediaId);
     }
 }
+
