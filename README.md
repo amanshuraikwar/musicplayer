@@ -8,4 +8,8 @@ An android music player app with a flat vibe and some cool new upcoming features
   <img src="https://github.com/amanshuraikwar/musicplayer/blob/master/screenshots/ss-4.png" width="300">
   <img src="https://github.com/amanshuraikwar/musicplayer/blob/master/screenshots/ss-5.png" width="300">
   <img src="https://github.com/amanshuraikwar/musicplayer/blob/master/screenshots/ss-6.png" width="300">
+  <img src="https://github.com/amanshuraikwar/musicplayer/blob/master/screenshots/ss-7.png" width="300">
+  <img src="https://github.com/amanshuraikwar/musicplayer/blob/master/screenshots/ss-8.png" width="300">
+  <img src="https://github.com/amanshuraikwar/musicplayer/blob/master/screenshots/ss-9.png" width="300">
+  <img src="https://github.com/amanshuraikwar/musicplayer/blob/master/screenshots/ss-10.png" width="300">
 </p>
