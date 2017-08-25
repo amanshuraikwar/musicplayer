@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentTop="true"
-        android:clickable="true">
+        android:layout_alignParentTop="true">
 
         <RelativeLayout
             android:id="@+id/songMetadataRl"
@@ -32,7 +31,8 @@
                 android:orientation="vertical"
                 android:layout_toStartOf="@+id/moreOptionsIv"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="0dp">
+                android:layout_marginEnd="0dp"
+                android:clickable="true">
 
                 <TextView
                     android:id="@+id/songTitleMainTv"
@@ -43,14 +43,16 @@
                     android:textSize="22sp"
                     android:lines="1"
                     android:ellipsize="marquee"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/songArtistMainTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Daft Punk"
-                    android:textColor="@color/grey"/>
+                    android:textColor="@color/grey"
+                    android:clickable="true"/>
             </LinearLayout>
 
             <ImageView
@@ -82,7 +84,8 @@
                 android:text="2:38"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="8dp"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="16dp"
+                android:clickable="true"/>
 
             <SeekBar
                 android:id="@+id/songCurrentPositionSeekBar"
@@ -90,7 +93,8 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/elapsedTimeTv"
                 android:layout_toStartOf="@+id/totalTimeTv"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/totalTimeTv"
@@ -100,15 +104,16 @@
                 android:text="5:01"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="16dp"
-                android:layout_marginStart="8dp"/>
+                android:layout_marginStart="8dp"
+                android:clickable="true"/>
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/controlButtonsRl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:background="@color/white">
+            android:background="@color/white"
+            android:clickable="true">
 
             <ImageButton
                 android:id="@+id/repeatIb"
@@ -119,7 +124,8 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="16dp"
-                android:background="?selectableItemBackgroundBorderless" />
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"/>
 
             <ImageButton
                 android:id="@+id/skipPreviousIb"
@@ -129,7 +135,8 @@
                 android:padding="16dp"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@+id/playPauseIb"
-                android:background="?selectableItemBackgroundBorderless" />
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"/>
 
             <ImageButton
                 android:id="@+id/playPauseIb"
@@ -140,7 +147,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:background="?selectableItemBackgroundBorderless"
-                android:drawSelectorOnTop="true"/>
+                android:drawSelectorOnTop="true"
+                android:clickable="true"/>
 
             <ImageButton
                 android:id="@+id/skipNextIb"
@@ -150,7 +158,8 @@
                 android:padding="16dp"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/playPauseIb"
-                android:background="?selectableItemBackgroundBorderless" />
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"/>
 
             <ImageButton
                 android:id="@+id/shuffleIb"
@@ -161,13 +170,15 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="16dp"
-                android:background="?selectableItemBackgroundBorderless"/>
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"/>
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/lightGrey" />
+            android:background="@color/lightGrey"
+            android:clickable="true"/>
 
         <RelativeLayout
             android:id="@+id/playingQueueLl"
@@ -177,8 +188,8 @@
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:clickable="true"
-            android:background="@color/white">
+            android:background="@color/white"
+            android:clickable="true">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -189,7 +200,8 @@
                 android:textStyle="bold"
                 android:gravity="center"
                 android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"/>
+                android:layout_alignParentStart="true"
+                android:clickable="true"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -198,7 +210,8 @@
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_keyboard_arrow_up_grey_24dp"
                 android:background="?selectableItemBackgroundBorderless"
-                android:drawSelectorOnTop="true"/>
+                android:drawSelectorOnTop="true"
+                android:clickable="true"/>
         </RelativeLayout>
     </LinearLayout>
 
@@ -207,5 +220,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/musicPlayerMainLl"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:clickable="true"/>
 </RelativeLayout>

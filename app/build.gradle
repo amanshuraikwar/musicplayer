@@ -70,6 +70,10 @@ dependencies {
 
     compile "com.miguelcatalan:materialsearchview:$rootProject.materialSearchViewVersion"
 
+    compile 'com.klinkerapps:drag-dismiss-activity:1.4.0'
+
+    compile 'com.github.Commit451:ElasticDragDismissLayout:1.0.4'
+
     compile "com.android.support:multidex:$rootProject.multidexVersion"
     compile "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
     testCompile "junit:junit:$rootProject.junitVersion"

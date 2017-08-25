@@ -1,22 +1,33 @@
 package app.sonu.com.musicplayer.ui.artist;
 
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
+import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
+import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -33,7 +44,10 @@ import app.sonu.com.musicplayer.ui.artists.ArtistsMvpView;
 import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
 import app.sonu.com.musicplayer.ui.list.onclicklistener.SongOnClickListener;
+import app.sonu.com.musicplayer.ui.list.visitable.AlbumSongVisitable;
+import app.sonu.com.musicplayer.ui.list.visitable.ArtistSongVisitable;
 import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
+import app.sonu.com.musicplayer.utils.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -56,8 +70,11 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
         }
     };
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+//    @BindView(R.id.toolbar)
+//    Toolbar toolbar;
+
+    @BindView(R.id.elasticDragDismissLayout)
+    ElasticDragDismissFrameLayout elasticDragDismissFrameLayout;
 
     @BindView(R.id.titleTv)
     TextView titleTv;
@@ -70,6 +87,15 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
 
     @BindView(R.id.itemsRl)
     FastScrollRecyclerView itemsRl;
+
+    @BindView(R.id.topBarRl)
+    View topBarRl;
+
+    @BindView(R.id.backIb)
+    ImageButton backIb;
+
+    @BindView(R.id.artistMetadataRl)
+    View artistMetadataRl;
 
     @Nullable
     @Override
@@ -85,15 +111,31 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
             itemsRl.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         }
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAG, "navOnClick:called");
+//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                fragmentManager.beginTransaction().remove(ArtistFragment.this).commit();
+//            }
+//        });
+
+        ViewCompat.setNestedScrollingEnabled(itemsRl, false);
+
+        elasticDragDismissFrameLayout.addListener(new ElasticDragDismissListener() {
             @Override
-            public void onClick(View v) {
-                Log.d(TAG, "navOnClick:called");
+            public void onDrag(float elasticOffset, float elasticOffsetPixels, float rawOffset, float rawOffsetPixels) {
+
+            }
+
+            @Override
+            public void onDragDismissed() {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().remove(ArtistFragment.this).commit();
             }
         });
+
         return view;
     }
 
@@ -138,7 +180,7 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
     }
 
     @Override
-    public void displayAlbumData(String title, String subtitle, String artPath) {
+    public void displayArtistData(String title, String subtitle, String artPath) {
         titleTv.setText(title);
         subtitleTv.setText(subtitle);
 
@@ -147,20 +189,70 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
 
         if (artPath != null) {
             Glide.with(getActivity())
+                    .asBitmap()
+                    .listener(new RequestListener<Bitmap>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e,
+                                                    Object model,
+                                                    Target<Bitmap> target,
+                                                    boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource,
+                                                       Object model,
+                                                       Target<Bitmap> target,
+                                                       DataSource dataSource,
+                                                       boolean isFirstResource) {
+                            updateUiColor(resource);
+                            return false;
+                        }
+                    })
                     .load(artPath)
                     .apply(options)
                     .into(artIv);
         } else {
             Glide.with(getActivity()).clear(artIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                artIv.setImageDrawable(getActivity().getDrawable(R.drawable.default_album_art_album));
+                artIv.setImageDrawable(getActivity().getDrawable(R.drawable.default_album_art_artist));
             } else {
                 artIv.setImageDrawable(
                         getActivity()
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_album));
+                                .getDrawable(R.drawable.default_album_art_artist));
             }
+            updateUiColor(null);
         }
+    }
+
+    private void updateUiColor(Bitmap resource) {
+
+        if (resource == null) {
+            setUiColorWithSwatch(null);
+        } else {
+            ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    setUiColorWithSwatch(ColorUtil.getColorSwatch(palette));
+                }
+            });
+        }
+    }
+
+    private void setUiColorWithSwatch(Palette.Swatch swatch) {
+
+        int backgroundColor = ColorUtil.getBackgroundColor(swatch);
+        int titleColor = ColorUtil.getTitleColor(swatch);
+        int bodyColor = ColorUtil.getBodyColor(swatch);
+
+        topBarRl.setBackgroundColor(ColorUtil.makeColorTransparent(backgroundColor));
+        backIb.setColorFilter(titleColor, PorterDuff.Mode.SRC_IN);
+        artistMetadataRl.setBackgroundColor(backgroundColor);
+        elasticDragDismissFrameLayout.setBackgroundColor(bodyColor);
+
+        titleTv.setTextColor(titleColor);
+        subtitleTv.setTextColor(bodyColor);
     }
 
     @Override
@@ -176,11 +268,12 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> songList) {
         List<BaseVisitable> visitableList = new ArrayList<>();
         for (MediaBrowserCompat.MediaItem item : songList) {
-            SongVisitable songVisitable = new SongVisitable(item);
-            songVisitable.setOnClickListener(songOnClickListener);
-            visitableList.add(songVisitable);
+            ArtistSongVisitable visitable = new ArtistSongVisitable(item);
+            visitable.setOnClickListener(songOnClickListener);
+            visitableList.add(visitable);
         }
 
         return visitableList;
     }
 }
+

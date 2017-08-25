@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/musicPlayerParentLl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#00000000"
     android:fitsSystemWindows="false">
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -16,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
+        sothree:umanoDragView="@+id/musicPlayerMainLl"
         sothree:umanoOverlay="false"
         sothree:umanoPanelHeight="@dimen/music_player_bottom_half_height"
         sothree:umanoShadowHeight="2dp"
@@ -161,11 +159,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <!--<View-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="@dimen/status_bar_padding"-->
-                <!--android:background="@color/lightGrey"/>-->
 
             <include layout="@layout/layout_music_player_bottom_half" />
 

@@ -5,8 +5,10 @@ import android.view.View;
 import app.sonu.com.musicplayer.base.list.BaseTypeFactory;
 import app.sonu.com.musicplayer.base.list.BaseViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.AlbumSearchResultViewHolder;
+import app.sonu.com.musicplayer.ui.list.viewholder.AlbumSongViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.AlbumViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.ArtistSearchResultViewHolder;
+import app.sonu.com.musicplayer.ui.list.viewholder.ArtistSongViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.ArtistViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.QueueItemViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.SearchItemTypeTitleViewHolder;
@@ -14,8 +16,10 @@ import app.sonu.com.musicplayer.ui.list.viewholder.SearchResultViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.SongSearchResultViewHolder;
 import app.sonu.com.musicplayer.ui.list.viewholder.SongViewHolder;
 import app.sonu.com.musicplayer.ui.list.visitable.AlbumSearchResultVisitable;
+import app.sonu.com.musicplayer.ui.list.visitable.AlbumSongVisitable;
 import app.sonu.com.musicplayer.ui.list.visitable.AlbumVisitable;
 import app.sonu.com.musicplayer.ui.list.visitable.ArtistSearchResultVisitable;
+import app.sonu.com.musicplayer.ui.list.visitable.ArtistSongVisitable;
 import app.sonu.com.musicplayer.ui.list.visitable.ArtistVisitable;
 import app.sonu.com.musicplayer.ui.list.visitable.QueueItemVisitable;
 import app.sonu.com.musicplayer.ui.list.visitable.SearchItemTypeTitleVisitable;
@@ -56,6 +60,12 @@ public class MediaListTypeFactory extends BaseTypeFactory {
     public int type(SearchItemTypeTitleVisitable searchItemTypeTitleVisitable) {
         return SearchItemTypeTitleViewHolder.LAYOUT;
     }
+    public int type(AlbumSongVisitable albumSongVisitable) {
+        return AlbumSongViewHolder.LAYOUT;
+    }
+    public int type(ArtistSongVisitable artistSongVisitable) {
+        return ArtistSongViewHolder.LAYOUT;
+    }
 
     @Override
     public BaseViewHolder createViewHolder(View parent, int type) {
@@ -88,6 +98,12 @@ public class MediaListTypeFactory extends BaseTypeFactory {
                 break;
             case SearchItemTypeTitleViewHolder.LAYOUT:
                 viewHolder = new SearchItemTypeTitleViewHolder(parent);
+                break;
+            case AlbumSongViewHolder.LAYOUT:
+                viewHolder = new AlbumSongViewHolder(parent);
+                break;
+            case ArtistSongViewHolder.LAYOUT:
+                viewHolder = new ArtistSongViewHolder(parent);
                 break;
         }
 

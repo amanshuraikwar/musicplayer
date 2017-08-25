@@ -46,12 +46,12 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
     @Override
     public void onStart() {
         if (mMediaItem.getDescription().getIconUri() != null) {
-            mMvpView.displayAlbumData(
+            mMvpView.displayArtistData(
                     mMediaItem.getDescription().getTitle().toString(),
                     mMediaItem.getDescription().getSubtitle().toString(),
                     mMediaItem.getDescription().getIconUri().getEncodedPath());
         } else {
-            mMvpView.displayAlbumData(
+            mMvpView.displayArtistData(
                     mMediaItem.getDescription().getTitle().toString(),
                     mMediaItem.getDescription().getSubtitle().toString(),
                     null);

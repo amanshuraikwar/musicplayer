@@ -3,7 +3,20 @@
 [] resolve the bug with fragments
 [] resolve the bug with notificaiton
 [] resolve the bug with no activity playback
-[] implement efficient queue control
+[] separate fragment for queue
 [] improve performance of search
-[] make search ui separate and separate fragment
+[] make search ui separate
+[] separate fragment for search ui
+[] use bottom sheets instead of slidinguppanel
 [done] make search in albums and artists too
+[done] implement efficient queue control
+
+
+[want to play only 5 songs]
+[]select those five songs to make a queue of only those 5 songs
+[]select only one song to make a queue of only that song
+[]now add any songs
+
+[]can save current playing queue as a playlist
+
+[]selection can also be saved as a playlist
