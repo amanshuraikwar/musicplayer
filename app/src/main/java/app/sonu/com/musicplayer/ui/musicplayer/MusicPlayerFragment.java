@@ -277,14 +277,14 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             public void onPanelStateChanged(View panel,
                                             SlidingUpPanelLayout.PanelState previousState,
                                             SlidingUpPanelLayout.PanelState newState) {
-                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED ||
-                        newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
-                    //todo temp
-                    ((SlidingUpPaneCallback) getActivity()).setDragViewNow(null);
-                } else {
-                    //todo temp
-                    ((SlidingUpPaneCallback) getActivity()).setDragViewNow(musicPlayerUpperHalfRl);
-                }
+//                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED ||
+//                        newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
+//                    //todo temp
+//                    ((SlidingUpPaneCallback) getActivity()).setDragViewNow(null);
+//                } else {
+//                    //todo temp
+//                    ((SlidingUpPaneCallback) getActivity()).setDragViewNow(musicPlayerUpperHalfRl);
+//                }
             }
         });
 
@@ -310,7 +310,7 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             playingQueueRv.setLayoutManager(mQueueLayoutManager);
         }
 
-        musicPlayerSupl.setDragView(null);
+//        musicPlayerSupl.setDragView(null);
 
         return view;
     }
@@ -375,6 +375,8 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         }
 
         totalTimeTv.setText(songDuration);
+
+        ((SlidingUpPaneCallback) getActivity()).setAntiDragViewNow(musicPlayerLowerHalfLl);
     }
 
     private void updateUiColor(Bitmap resource) {

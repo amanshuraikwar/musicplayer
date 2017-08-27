@@ -41,6 +41,9 @@ public class QueueItemViewHolder extends BaseViewHolder<QueueItemVisitable, Queu
     @BindView(R.id.parentRl)
     View parentRl;
 
+    @BindView(R.id.playingIconIv)
+    ImageView playingIconIv;
+
     public QueueItemViewHolder(View itemView) {
         super(itemView);
     }
@@ -52,6 +55,14 @@ public class QueueItemViewHolder extends BaseViewHolder<QueueItemVisitable, Queu
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
         indexTv.setText(visitable.getIndexToDisplay()+"");
+
+        if (visitable.getIndexToDisplay() == 0) {
+            playingIconIv.setVisibility(View.VISIBLE);
+            indexTv.setVisibility(View.GONE);
+        } else {
+            playingIconIv.setVisibility(View.GONE);
+            indexTv.setVisibility(View.VISIBLE);
+        }
 
         if (visitable.getIndexToDisplay() < 0) {
             titleTv.setTextColor(disabledColor);

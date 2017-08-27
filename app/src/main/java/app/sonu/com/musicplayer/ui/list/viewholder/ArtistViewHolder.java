@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
 import app.sonu.com.musicplayer.R;
@@ -50,12 +51,13 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
         artistSubtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop();
+        options.centerCrop().placeholder(R.drawable.default_album_art_artist);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
             Glide.with(context)
                     .load(visitable.getMediaItem().getDescription().getIconUri().getEncodedPath())
                     .apply(options)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(iconIv);
         } else {
             Glide.with(context).clear(iconIv);

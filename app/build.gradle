@@ -59,7 +59,9 @@ dependencies {
 
 //    compile 'org.litepal.android:core:1.5.1'
 
-    compile "com.sothree.slidinguppanel:library:$rootProject.slidingUpPanelVersion"
+    compile 'com.github.kabouzeid:AndroidSlidingUpPanel:3.3.0-kmod3'
+
+    compile 'com.mikhaellopez:circularimageview:3.0.2'
 
     compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
     apt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"

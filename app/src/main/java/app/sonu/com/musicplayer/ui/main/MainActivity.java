@@ -239,9 +239,9 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
                 //todo figure out better way
                 //to handle unexpected behavior with nested sliding up pane layout
                 if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    slidingUpPanelLayout.setDragView(miniBarRl);
+//                    slidingUpPanelLayout.setDragView(miniBarRl);
                 } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    slidingUpPanelLayout.setDragView(dragView);
+//                    slidingUpPanelLayout.setDragView(dragView);
                 }
             }
         });
@@ -416,6 +416,7 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
     //todo figure out better way
     private View dragView;
+    private View antiDragView;
     @Override
     public void setDragView(View view) {
         dragView = view;
@@ -425,6 +426,11 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     public void setDragViewNow(View view) {
         dragView = view;
         slidingUpPanelLayout.setDragView(dragView);
+    }
+
+    @Override
+    public void setAntiDragViewNow(View view) {
+        slidingUpPanelLayout.setAntiDragView(view);
     }
 
     @Override

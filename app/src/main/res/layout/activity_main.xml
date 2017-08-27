@@ -35,14 +35,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:theme="@style/ThemeOverlay.AppCompat.Light"
-                        android:background="@color/white"
+                        android:background="#E1F5FE"
                         android:paddingTop="@dimen/status_bar_padding">
 
                         <android.support.v7.widget.Toolbar
                             android:id="@+id/my_toolbar"
                             android:layout_width="match_parent"
                             android:layout_height="?attr/actionBarSize"
-                            app:titleTextColor="@color/grey"/>
+                            app:titleTextColor="#263238"/>
 
                         <android.support.design.widget.TabLayout
                             android:id="@+id/tabLayout"
@@ -50,8 +50,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/home_icon_size_padding"
                             app:tabMode="scrollable"
-                            app:tabTextColor="@color/grey"
-                            app:tabSelectedTextColor="@color/charcoal"/>
+                            app:tabTextColor="#455A64"
+                            app:tabSelectedTextColor="#263238"
+                            app:tabIndicatorColor="#263238"/>
                     </android.support.design.widget.AppBarLayout>
 
                     <LinearLayout

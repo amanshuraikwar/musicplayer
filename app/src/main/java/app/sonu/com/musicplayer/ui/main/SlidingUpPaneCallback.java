@@ -11,4 +11,5 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 public interface SlidingUpPaneCallback {
     void setDragView(View view);
     void setDragViewNow(View view);
+    void setAntiDragViewNow(View view);
 }

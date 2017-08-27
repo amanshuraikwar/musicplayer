@@ -5,17 +5,21 @@
     android:id="@+id/miniPlayerRl"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="@color/white">
+    android:background="@color/veryWhite">
 
     <ImageView
         android:id="@+id/miniPlayerNavUpIv"
-        android:layout_width="64dp"
+        android:layout_width="72dp"
         android:layout_height="64dp"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
         android:src="@drawable/default_album_art_note"
         android:clickable="true"
-        android:drawSelectorOnTop="true"/>
+        android:drawSelectorOnTop="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,15 +32,16 @@
             android:id="@+id/miniPlayerSongTitleTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="0dp"
             android:layout_marginEnd="16dp"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/miniPlayerPlayPauseIv"
-            android:textSize="18sp"
-            android:textColor="@color/charcoal"
+            android:textSize="16sp"
+            android:textColor="@color/black"
             android:lines="1"
             android:ellipsize="end"
-            android:text="The game of love"/>
+            android:text="The game of love"
+            android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/miniPlayerPlayPauseIv"
@@ -57,7 +62,6 @@
         android:layout_width="match_parent"
         android:layout_height="4dp"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@id/miniPlayerNavUpIv"
         app:mpb_progressStyle="horizontal"
         app:mpb_useIntrinsicPadding="false"
         style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"/>

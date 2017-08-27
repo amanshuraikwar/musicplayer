@@ -9,6 +9,7 @@
     <color name="blackTransparent">#880a0a0a</color>
     <color name="fullTransparent">#00000000</color>
 
+    <color name="veryWhite">#ffffff</color>
     <color name="white">#FAFAFA</color>
     <color name="whiteSmoke">#eeeeee</color>
     <color name="lightGrey">#e0e0e0</color>

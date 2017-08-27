@@ -20,26 +20,28 @@ import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
 
 /**
- * Created by sonu on 27/7/17.
+ * responsible for providing music for a specified music source
  */
-
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
 
+    // source from where music is taken
     private MusicProviderSource mSource;
 
-    //caches of music list
+    // caches of music list
     private final ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByArtistKey;
     private final ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByAlbumKey;
 
-    private ConcurrentMap<String, MediaMetadataCompat> mArtistListByKey;
-    private ConcurrentMap<String, MediaMetadataCompat> mAlbumListByKey;
-    private ConcurrentMap<String, MediaMetadataCompat> mMusicListById;
+    private final ConcurrentMap<String, MediaMetadataCompat> mArtistListByKey;
+    private final ConcurrentMap<String, MediaMetadataCompat> mAlbumListByKey;
+    private final ConcurrentMap<String, MediaMetadataCompat> mMusicListById;
+    private final ConcurrentHashMap<String, String> mArtistArtByKey;
 
     private ArrayList<MediaMetadataCompat> allSongs;
     private ArrayList<MediaMetadataCompat> allAlbums;
     private ArrayList<MediaMetadataCompat> allArtists;
 
+    //comparing two metadata on the basis of their display title
     private static final Comparator<MediaMetadataCompat> mediaMetadataComparator =
             new Comparator<MediaMetadataCompat>() {
                 @Override
@@ -56,8 +58,10 @@ public class MusicProvider {
         NON_INITIALIZED, INITIALIZING, INITIALIZED
     }
 
+    //defining volatile to make it thread safe but not blocking
     private volatile State mCurrentState = State.NON_INITIALIZED;
 
+    @SuppressWarnings("WeakerAccess")
     public MusicProvider(MusicProviderSource musicProviderSource) {
         this.mSource = musicProviderSource;
 
@@ -66,12 +70,15 @@ public class MusicProvider {
         this.mAlbumListByKey = new ConcurrentHashMap<>();
         this.mMusicListByAlbumKey = new ConcurrentHashMap<>();
         this.mMusicListByArtistKey = new ConcurrentHashMap<>();
+        this.mArtistArtByKey = new ConcurrentHashMap<>();
     }
 
     /**
      * Get the list of music tracks from a server and caches the track information
      * for future reference, keying tracks by musicId and grouping by genre.
+     * @param callback callback method ia called then done retrieving media
      */
+    @SuppressWarnings("WeakerAccess")
     public void retrieveMediaAsync(final Callback callback) {
         Log.d(TAG, "retrieveMediaAsync:called");
         if (mCurrentState == State.INITIALIZED) {
@@ -99,6 +106,9 @@ public class MusicProvider {
         }.execute();
     }
 
+    /**
+     * retrieves media, synchronized to make it thread safe
+     */
     private synchronized void retrieveMedia() {
         Log.d(TAG, "retrieveMedia:called");
         try {
@@ -109,6 +119,10 @@ public class MusicProvider {
                 Iterator<MediaMetadataCompat> albumsIterator = mSource.getAlbumsIterator();
                 Iterator<MediaMetadataCompat> artistsIterator = mSource.getArtistsIterator();
 
+                // making music caches
+
+                // albumlistbykey has to be formed before making allsongs list
+                // album art from this list is used for making song lists
                 while (albumsIterator.hasNext()) {
                     MediaMetadataCompat item = albumsIterator.next();
                     mAlbumListByKey.put(
@@ -117,61 +131,84 @@ public class MusicProvider {
                     );
                 }
 
-                while (artistsIterator.hasNext()) {
-                    MediaMetadataCompat item = artistsIterator.next();
-                    mArtistListByKey.put(
-                            item.getString(MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY),
-                            item
-                    );
-                }
-
                 while (allSongsIterator.hasNext()) {
                     MediaMetadataCompat item = allSongsIterator.next();
                     String musicId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
 
+                    //setting album art to the song
                     item = setAlbumArt(item);
 
                     mMusicListById.put(musicId, item);
 
+                    // adding the current song to its album cache
                     String albumKey = item
                             .getString(MusicProviderSource.CUSTOM_METADATA_KEY_ALBUM_KEY);
+                    String artistKey = item
+                            .getString(MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY);
                     if (!mMusicListByAlbumKey.containsKey(albumKey)) {
                         mMusicListByAlbumKey.put(albumKey, new ArrayList<MediaMetadataCompat>());
                     }
                     mMusicListByAlbumKey.get(albumKey).add(item);
 
-                    String artistKey = item
-                            .getString(MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY);
+                    String albumArtUri =
+                            item.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+
+                    if (albumArtUri != null) {
+//                        Log.d(TAG, "album art uri is not null for song");
+                        if (!mArtistArtByKey.containsKey(artistKey)) {
+//                            Log.d(TAG, "album artist art by key does not contain key");
+//                            Log.i(TAG, "putting "+artistKey+" "+albumArtUri);
+                            mArtistArtByKey.put(artistKey, albumArtUri);
+                        }
+                    }
+
+                    // adding current song to its artist cache
                     if (!mMusicListByArtistKey.containsKey(artistKey)) {
                         mMusicListByArtistKey.put(artistKey, new ArrayList<MediaMetadataCompat>());
                     }
                     mMusicListByArtistKey.get(artistKey).add(item);
                 }
 
+                while (artistsIterator.hasNext()) {
+                    MediaMetadataCompat item = artistsIterator.next();
+                    mArtistListByKey.put(
+                            item.getString(MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY),
+                            setAlbumArtForArtist(item)
+                    );
+                }
+
+                // initializing <all> lists cache
                 allSongs = new ArrayList<>(mMusicListById.values());
-                Collections.sort(allSongs, mediaMetadataComparator);
-
                 allAlbums = new ArrayList<>(mAlbumListByKey.values());
-                Collections.sort(allAlbums, mediaMetadataComparator);
-
                 allArtists = new ArrayList<>(mArtistListByKey.values());
+
+                // sorting all the <all> lists according to their display title
+                Collections.sort(allSongs, mediaMetadataComparator);
+                Collections.sort(allAlbums, mediaMetadataComparator);
                 Collections.sort(allArtists, mediaMetadataComparator);
 
                 mCurrentState = State.INITIALIZED;
             }
         } catch (Exception e){
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "retrieveMedia:", e);
             e.printStackTrace();
         } finally {
             if (mCurrentState != State.INITIALIZED) {
-                // Something bad happened, so we reset state to NON_INITIALIZED to allow
-                // retries (eg if the network connection is temporary unavailable)
+                Log.w(TAG, "retrieveMedia:state is not initialized");
+                // setting state to non-initialized to allow retires
+                // if something bad happened
                 mCurrentState = State.NON_INITIALIZED;
             }
         }
     }
 
+    /**
+     * setting album art for a song according to its album key
+     * @param item old mediametadata
+     * @return new mediametadata with the album art
+     */
     private MediaMetadataCompat setAlbumArt(MediaMetadataCompat item) {
+        // we create a new object as MediaMetadataCompat is immutable
         return new MediaMetadataCompat
                 .Builder(item)
                 .putString(
@@ -183,10 +220,35 @@ public class MusicProvider {
                 .build();
     }
 
+    private MediaMetadataCompat setAlbumArtForArtist(MediaMetadataCompat item) {
+        // we create a new object as MediaMetadataCompat is immutable
+        return new MediaMetadataCompat
+                .Builder(item)
+                .putString(
+                        MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
+                        mArtistArtByKey.get(
+                                item.getString(MusicProviderSource.CUSTOM_METADATA_KEY_ARTIST_KEY)
+                        )
+                )
+                .build();
+    }
+
+
+    /**
+     * tells is the provider is initialized or not
+     * @return true if initialized else false
+     */
+    @SuppressWarnings("WeakerAccess")
     public boolean isInitialized() {
         return this.mCurrentState == State.INITIALIZED;
     }
 
+    /**
+     * returns children for given root media id
+     * @param mediaId root media id
+     * @return list of children
+     */
+    @SuppressWarnings("WeakerAccess")
     public List<MediaBrowserCompat.MediaItem> getChildren(String mediaId) {
         Log.d(TAG, "getChildren:called mediaId="+mediaId);
 
@@ -329,6 +391,14 @@ public class MusicProvider {
                 .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
                 .setSubtitle(metadata.getString(
                         MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
+
+        if (metadata.getString(
+                MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != null) {
+            builder.setIconUri(
+                    Uri.parse(
+                            metadata.getString(
+                                    MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)));
+        }
 
         MediaDescriptionCompat descriptionCompat = builder.build();
 
