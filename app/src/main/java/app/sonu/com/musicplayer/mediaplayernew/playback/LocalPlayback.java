@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -21,8 +22,11 @@ import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 
 /**
  * Created by sonu on 29/7/17.
+ * this class represents local playback of music
+ * @author amanshu
  */
 
+// todo model this class again and make a generic rule/state sheet to easily implement other playbacks
 public class LocalPlayback
         implements
         Playback,
@@ -48,18 +52,22 @@ public class LocalPlayback
     // we have full audio focus
     private static final int AUDIO_FOCUSED = 2;
 
+    private static final String focusStates[] = {"no focus no duck", "no focus can duck", "focus"};
+
     private final MusicProvider mMusicProvider;
     private final Context mContext;
 
     private Callback mCallback;
     private MediaPlayer mMediaPlayer;
-    private int mResumePosition;
-    private int mState;
+
+    private volatile int mResumePosition;
+    private volatile int mState;
+    private volatile boolean mPlayOnFocusGain;
+    private volatile boolean mAudioNoisyReceiverRegistered;
+    private volatile int mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
 
     private final AudioManager mAudioManager;
-    private boolean mPlayOnFocusGain;
-    private boolean mAudioNoisyReceiverRegistered;
-    private int mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
+
 
     private final IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -88,6 +96,24 @@ public class LocalPlayback
                 (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
         initMediaPlayer();
+    }
+
+    private void initMediaPlayer() {
+        Log.d(TAG, "initMediaPlayer():called");
+        mMediaPlayer = new MediaPlayer();
+
+        //Set up MediaPlayer event listeners
+        mMediaPlayer.setOnCompletionListener(this);
+        mMediaPlayer.setOnErrorListener(this);
+        mMediaPlayer.setOnPreparedListener(this);
+        mMediaPlayer.setOnSeekCompleteListener(this);
+        mMediaPlayer.setOnInfoListener(this);
+        mMediaPlayer.setOnBufferingUpdateListener(this);
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mMediaPlayer.setWakeMode(mContext, PowerManager.PARTIAL_WAKE_LOCK);
+
+        mResumePosition = 0;
+        mState = Playback.CUSTOM_PLAYBACK_STATE_NONE;
     }
 
     @Override
@@ -134,37 +160,62 @@ public class LocalPlayback
     }
 
     @Override
-    public boolean play(@NonNull MediaSessionCompat.QueueItem item) {
+    public synchronized boolean play(@NonNull MediaSessionCompat.QueueItem item) {
         Log.d(TAG, "play:called");
         Log.i(TAG, "play:item="+item);
+        Log.i(TAG, "play:state="+Playback.states[mState]);
 
-        mPlayOnFocusGain = true;
-        tryToGetAudioFocus();
-        registerAudioNoisyReceiver();
-
+        // if preparing we can't do anything
         if (isPreparing()) {
-            Log.w(TAG, "onPlay:player is preparing");
+            Log.w(TAG, "play:player is preparing");
             return false;
         }
 
-        stopPlayer();
+        // to play the player when configurePlayerState is called
+        mPlayOnFocusGain = true;
+        // try getting audio focus
+        tryToGetAudioFocus();
+        // register audio noisy receiver for headphone plug/unplug
+        registerAudioNoisyReceiver();
 
+        String mediaId = MediaIdHelper.getMediaId(item);
+        Log.i(TAG, "play:mediaId=" + mediaId);
+
+        // check for mediaId
+        if (mediaId == null) {
+            Log.w(TAG, "play:mediaId is null");
+            return false;
+        }
+
+        String musicId = MediaIdHelper.extractMusicIdFromMediaId(mediaId);
+        Log.i(TAG, "play:musicId=" + musicId);
+
+        // check for musicId
+        if (musicId == null) {
+            Log.w(TAG, "play:musicId is null");
+            return false;
+        }
+
+        MediaMetadataCompat track = mMusicProvider.getMusic(musicId);
+
+        // check for track in library
+        if (track == null) {
+            Log.w(TAG, "play:track not in library");
+            return false;
+        }
+
+        // stop player if playing
+        stopPlayer();
+        // reset player for a new source
         resetPlayer();
 
-        Log.i(TAG, "play:id=" + MediaIdHelper.extractMusicIdFromMediaId(
-                item.getDescription().getMediaId()));
-
-        MediaMetadataCompat track =
-                mMusicProvider.getMusic(
-                        MediaIdHelper.extractMusicIdFromMediaId(
-                                item.getDescription().getMediaId()));
-
         String source = track.getString(MusicProviderSource.CUSTOM_METADATA_KEY_TRACK_SOURCE);
+        Log.i(TAG, "play:source=" + source);
 
-        Log.d(TAG, "play:source=" + source);
-
+        // set new data source
         if (setPlayerDataSource(source)) {
-//            configurePlayerState();
+            Log.i(TAG, "play:set data resource successfully, go for preparing");
+            // prepare player
             return preparePlayer();
         } else {
             Log.w(TAG, "play:cannot set data source");
@@ -173,47 +224,93 @@ public class LocalPlayback
     }
 
     @Override
-    public boolean play() {
+    public synchronized boolean play() {
         Log.d(TAG, "play(no):called");
+        Log.i(TAG, "play(no):state="+Playback.states[mState]);
+
+        // if preparing we can't do anything
+        if (isPreparing()) {
+            Log.w(TAG, "play(no):player is preparing");
+            return false;
+        }
+
+        // set flag to true to start playing when configurePlayerState is called
         mPlayOnFocusGain = true;
+        // try to get audio focus
         tryToGetAudioFocus();
+        // register audio noisy receiver for headphone plug/unplug
         registerAudioNoisyReceiver();
 
         return configurePlayerState();
     }
 
     @Override
-    public boolean pause() {
+    public synchronized boolean pause() {
         Log.d(TAG, "pause():called");
+        Log.i(TAG, "pause:state="+Playback.states[mState]);
+
+        // if preparing we can't do anything
+        if (isPreparing()) {
+            Log.w(TAG, "pause:player is preparing");
+            return false;
+        }
+
         if (pausePlayer()) {
+            Log.i(TAG, "pause():paused successfully");
+            // we don't want to listen to headphone plug/unplug while paused
             unregisterAudioNoisyReceiver();
-            mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+            // tell playback manager for the state change
+            mCallback.onPlaybackStatusChanged(mState);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean stop() {
+    public synchronized boolean stop() {
         Log.d(TAG, "stop():called");
+        Log.i(TAG, "stop:state="+Playback.states[mState]);
+
+        // if preparing we can't do anything
+        if (isPreparing()) {
+            Log.w(TAG, "stop:player is preparing");
+            return false;
+        }
+
         if (stopPlayer()) {
+            Log.i(TAG, "stop:stopped successfully");
+            // we don't want audio focus when the player stops
             giveUpAudioFocus();
+            // we don't want to listen to headphone plug/unplug when player stops
             unregisterAudioNoisyReceiver();
-            mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_STOPPED);
+            // tell playback manager about state change
+            mCallback.onPlaybackStatusChanged(mState);
             return true;
         }
         return false;
     }
 
     @Override
-    public void seekTo(int position) {
+    public synchronized void seekTo(int position) {
         Log.d(TAG, "seekTo():called");
-        registerAudioNoisyReceiver();
+        Log.i(TAG, "seekTo:state="+Playback.states[mState]);
+        // if preparing we can't do anything
+        if (isPreparing()) {
+            Log.w(TAG, "seekTo:player is preparing");
+            return;
+        }
+
         seekPlayerTo(position);
     }
 
     @Override
-    public void setCallback(Callback callback) {
+    public synchronized void setCallback(Callback callback) {
+        // if preparing we can't do anything
+        if (isPreparing()) {
+            Log.w(TAG, "setCallback:player is preparing");
+            return;
+        }
+
         this.mCallback = callback;
     }
 
@@ -221,21 +318,28 @@ public class LocalPlayback
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "onCompletion():called");
+        // set state to paused
         mState = Playback.CUSTOM_PLAYBACK_STATE_PAUSED;
+        // seek player to zero to reset seekbar on ui
         mMediaPlayer.seekTo(0);
+        // set resume position zero if the ui plays
         mResumePosition = 0;
+        // tell playback manager that playback has completed
         mCallback.onCompletion();
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        return false;
+        mCallback.onError("what="+what+" extra="+extra);
+        return true;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         Log.d(TAG, "onPrepared:called");
+        // set state to paused if player cannot play
         mState = Playback.CUSTOM_PLAYBACK_STATE_PAUSED;
+        // set resume position zero because new song is being played
         mResumePosition = 0;
         configurePlayerState();
     }
@@ -245,24 +349,28 @@ public class LocalPlayback
         Log.d(TAG, "onSeekComplete:called");
         Log.d(TAG, "onSeekComplete:positionAfterSeek="+getCurrentPosition());
 
+        // store the resume position
         mResumePosition = mMediaPlayer.getCurrentPosition();
+
+        // tell playback manager about the state so that the
+        // ui can be updated with new seekbar position
         if (isPlaying()) {
-            mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PLAYING);
+            mCallback.onPlaybackStatusChanged(mState);
         } else if (isPaused()) {
-            mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+            mCallback.onPlaybackStatusChanged(mState);
         }
 
     }
 
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        //todo figure out
+        // nothing
         return false;
     }
 
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        //todo figure out
+        //nothing
     }
 
     private final AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener =
@@ -284,8 +392,10 @@ public class LocalPlayback
                             // Lost audio focus, but will gain it back (shortly), so note whether
                             // playback should resume
                             mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
-                            //todo think
-                            mPlayOnFocusGain = true;
+                            if (isPlaying()) {
+                                // set the flag to true, to resume playing when we gain focus
+                                mPlayOnFocusGain = true;
+                            }
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS:
                             // Lost audio focus, probably "permanently"
@@ -293,7 +403,7 @@ public class LocalPlayback
                             break;
                     }
 
-                    // Update the player state based on the change
+                    // update the player state based on the change
                     configurePlayerState();
 
                 }
@@ -322,14 +432,18 @@ public class LocalPlayback
     }
 
     private boolean configurePlayerState() {
-        Log.d(TAG, "configurePlayerState:called mCurrentAudioFocusState="+mCurrentAudioFocusState);
+        Log.d(TAG, "configurePlayerState:called");
+        Log.i(TAG,"mCurrentAudioFocusState="+focusStates[mCurrentAudioFocusState]);
+        Log.i(TAG, "configurePlayerState:state="+Playback.states[mState]);
 
         boolean isPlaying = false;
 
         if (mCurrentAudioFocusState == AUDIO_NO_FOCUS_NO_DUCK) {
             // We don't have audio focus and can't duck, so we have to pause
             if (pausePlayer()) {
-                mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
+                // tell playback manager about state change
+                mCallback.onPlaybackStatusChanged(mState);
+                mCallback.onError("cannot gain audio focus");
             }
         } else {
             registerAudioNoisyReceiver();
@@ -345,8 +459,10 @@ public class LocalPlayback
             if (mPlayOnFocusGain) {
                 if (playPlayer()) {
                     isPlaying = true;
-                    mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PLAYING);
+                    // tell playback manager about state change
+                    mCallback.onPlaybackStatusChanged(mState);
                 }
+                // set the flag to false to handle any unexpected behaviors
                 mPlayOnFocusGain = false;
             }
         }
@@ -355,46 +471,38 @@ public class LocalPlayback
     }
 
     private void registerAudioNoisyReceiver() {
+        Log.d(TAG, "registerAudioNoisyReceiver:called");
+        Log.i(TAG, "registerAudioNoisyReceiver:state="+Playback.states[mState]);
         if (!mAudioNoisyReceiverRegistered) {
+            Log.i(TAG, "registerAudioNoisyReceiver:registered");
             mContext.registerReceiver(mAudioNoisyReceiver, mAudioNoisyIntentFilter);
             mAudioNoisyReceiverRegistered = true;
         }
     }
 
     private void unregisterAudioNoisyReceiver() {
+        Log.d(TAG, "unregisterAudioNoisyReceiver:called");
+        Log.i(TAG, "unregisterAudioNoisyReceiver:state="+Playback.states[mState]);
         if (mAudioNoisyReceiverRegistered) {
+            Log.i(TAG, "unregisterAudioNoisyReceiver:unregistered");
             mContext.unregisterReceiver(mAudioNoisyReceiver);
             mAudioNoisyReceiverRegistered = false;
         }
     }
 
-    private void initMediaPlayer() {
-        Log.d(TAG, "initMediaPlayer():called");
-        mMediaPlayer = new MediaPlayer();
-
-        //Set up MediaPlayer event listeners
-        mMediaPlayer.setOnCompletionListener(this);
-        mMediaPlayer.setOnErrorListener(this);
-        mMediaPlayer.setOnPreparedListener(this);
-        mMediaPlayer.setOnSeekCompleteListener(this);
-        mMediaPlayer.setOnInfoListener(this);
-        mMediaPlayer.setOnBufferingUpdateListener(this);
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-        mResumePosition = 0;
-        mState = Playback.CUSTOM_PLAYBACK_STATE_NONE;
-    }
-
     private boolean stopPlayer() {
         Log.d(TAG, "stopPlayer():called");
+        Log.i(TAG, "stopPlayer:state="+Playback.states[mState]);
+
+        // already stopped?
         if (isStopped()) {
             return true;
         }
 
+        // is playing or paused then only we can stop
         if (isPlaying() || isPaused()) {
             mMediaPlayer.stop();
             mState = Playback.CUSTOM_PLAYBACK_STATE_STOPPED;
-//            mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_STOPPED);
             return true;
         }
 
@@ -403,6 +511,7 @@ public class LocalPlayback
 
     private void resetPlayer() {
         Log.d(TAG, "resetPlayer():called");
+        Log.i(TAG, "resetPlayer:state="+Playback.states[mState]);
         mMediaPlayer.reset();
 
         mState = Playback.CUSTOM_PLAYBACK_STATE_IDLE;
@@ -410,6 +519,9 @@ public class LocalPlayback
 
     private boolean setPlayerDataSource(String source) {
         Log.d(TAG, "setPlayerDataSource():called");
+        Log.i(TAG, "setPlayerDataSource:state="+Playback.states[mState]);
+
+        // if idle then only we can set source
         if (!isIdle()) {
             return false;
         }
@@ -428,17 +540,22 @@ public class LocalPlayback
 
     private boolean preparePlayer() {
         Log.d(TAG, "preparePlayer():called");
+        Log.i(TAG, "preparePlayer:state="+Playback.states[mState]);
+        // if stopped then only we can prepare player
         if (!isStopped()) {
             return false;
         }
 
-        mMediaPlayer.prepareAsync();
         mState = Playback.CUSTOM_PLAYBACK_STATE_PREPARING;
+        mMediaPlayer.prepareAsync();
+
         return true;
     }
 
     private void seekPlayerTo(int position) {
         Log.d(TAG, "seekPlayerTo():called");
+        Log.i(TAG, "seekPlayerTo:state="+Playback.states[mState]);
+        // if playing or paused then only we can seek player
         if (isPlaying() || isPaused()) {
             mMediaPlayer.seekTo(position);
         } else {
@@ -452,39 +569,41 @@ public class LocalPlayback
 
     private boolean pausePlayer() {
         Log.d(TAG, "pausePlayer():called");
-        Log.i(TAG, "pausePlayer():state="+mState);
+        Log.i(TAG, "pausePlayer:state="+Playback.states[mState]);
+
+        // already paused?
+        if (isPaused()) {
+            return true;
+        }
+
+        // if playing then only we can pause
         if (isPlaying()) {
             mResumePosition = mMediaPlayer.getCurrentPosition();
             mMediaPlayer.pause();
             mState = Playback.CUSTOM_PLAYBACK_STATE_PAUSED;
-//            mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PAUSED);
             return true;
-        } else {
-            if (isPaused()) {
-                return true;
-            } else {
-                return false;
-            }
         }
+
+        return false;
     }
 
     private boolean playPlayer() {
         Log.d(TAG, "playPlayer():called");
-        Log.d(TAG, "playPlayer():state="+mState);
+        Log.i(TAG, "playPlayer:state="+Playback.states[mState]);
+
+        // if stopped then we will prepare player from scratch
         if (isStopped()) {
-            preparePlayer();
-            return true;
-        } else {
-            if (isPaused() || isPlaying()) {
-                if (mResumePosition != 0) {
-                    mMediaPlayer.seekTo(mResumePosition);
-                }
-                mMediaPlayer.start();
-                mState = Playback.CUSTOM_PLAYBACK_STATE_PLAYING;
-//                mCallback.onPlaybackStatusChanged(PlaybackStateCompat.STATE_PLAYING);
-                return true;
+            return preparePlayer();
+        } else if (isPaused() || isPlaying()) { // only play if it is paused or playing
+            // seek to if the player is resuming from being paused
+            if (mResumePosition != 0) {
+                mMediaPlayer.seekTo(mResumePosition);
             }
-            return false;
+            mMediaPlayer.start();
+            mState = Playback.CUSTOM_PLAYBACK_STATE_PLAYING;
+            return true;
         }
+        return false;
     }
 }
+

@@ -16,23 +16,25 @@
         android:src="@drawable/default_album_art_note"
         android:clickable="true"
         android:drawSelectorOnTop="true"
-        android:paddingTop="8dp"
-        android:paddingBottom="4dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"/>
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:background="@color/charcoal"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/miniPlayerMpb"
-        android:layout_toEndOf="@id/miniPlayerNavUpIv">
+        android:layout_toEndOf="@id/miniPlayerNavUpIv"
+        android:paddingStart="16dp"
+        android:paddingEnd="0dp">
 
         <TextView
             android:id="@+id/miniPlayerSongTitleTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
             android:layout_marginEnd="16dp"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/miniPlayerPlayPauseIv"
@@ -40,8 +42,7 @@
             android:textColor="@color/black"
             android:lines="1"
             android:ellipsize="end"
-            android:text="The game of love"
-            android:textStyle="bold"/>
+            android:text="The game of love"/>
 
         <ImageView
             android:id="@+id/miniPlayerPlayPauseIv"
@@ -55,6 +56,20 @@
             android:background="?selectableItemBackgroundBorderless"
             android:drawSelectorOnTop="true"/>
 
+        <ImageView
+            android:id="@+id/shuffleNotifyIv"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_below="@+id/miniPlayerSongTitleTv"
+            android:layout_toEndOf="@+id/repeatNotifyIv"
+            android:src="@drawable/ic_shuffle_black_12dp"/>
+
+        <ImageView
+            android:id="@+id/repeatNotifyIv"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_below="@+id/miniPlayerSongTitleTv"
+            android:src="@drawable/ic_repeat_black_12dp"/>
     </RelativeLayout>
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
@@ -62,6 +77,7 @@
         android:layout_width="match_parent"
         android:layout_height="4dp"
         android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/miniPlayerNavUpIv"
         app:mpb_progressStyle="horizontal"
         app:mpb_useIntrinsicPadding="false"
         style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"/>

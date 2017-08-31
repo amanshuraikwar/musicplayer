@@ -12,8 +12,10 @@ import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
 
 /**
  * Created by sonu on 28/7/17.
+ * this class handles actual playback of the music according to queue
+ * it also handles shuffle and repeat actions on playing queue
+ * @author amanshu
  */
-
 public class PlaybackManager implements Playback.Callback {
 
     private static final String TAG = PlaybackManager.class.getSimpleName();
@@ -41,33 +43,34 @@ public class PlaybackManager implements Playback.Callback {
         mRepeatMode = PlaybackStateCompat.REPEAT_MODE_NONE;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void handlePlayRequest(){
-        Log.d(TAG, "handlePlayRequest: mState=" + mPlayback.getState());
+        Log.d(TAG, "handlePlayRequest:called");
+        Log.i(TAG, "handlePlayRequest:mState=" + Playback.states[mPlayback.getState()]);
+
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
-
             if (mPlayback.play(currentMusic)){
+                // tell service that playback started
                 mServiceCallback.onPlaybackStart();
             }
         }
     }
 
     public void handlePauseRequest() {
-        Log.d(TAG, "handlePauseRequest: mState=" + mPlayback.getState());
+        Log.d(TAG, "handlePauseRequest:called");
+        Log.i(TAG, "handlePauseRequest:mState=" + Playback.states[mPlayback.getState()]);
         if (mPlayback.pause()) {
             mServiceCallback.onPlaybackStop();
         }
     }
 
-    public void handleStopRequest(String withError) {
-        Log.d(TAG, "handleStopRequest: mState=" + mPlayback.getState());
-        if (withError != null) {
-            Log.e(TAG, "handleStopRequest:error="+withError);
-        }
+    public void handleStopRequest() {
+        Log.d(TAG, "handleStopRequest:");
+        Log.i(TAG, "handleStopRequest:mState=" + Playback.states[mPlayback.getState()]);
 
         if (mPlayback.stop()) {
             mServiceCallback.onPlaybackStop();
-            updatePlaybackState(withError);
         }
     }
 
@@ -77,7 +80,6 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * Update the current media player state, optionally showing an error message.
-     *
      * @param error if not null, error message to present to the user.
      */
     public void updatePlaybackState(String error) {
@@ -97,12 +99,15 @@ public class PlaybackManager implements Playback.Callback {
 
         int state = mPlayback.getState();
 
+        // setting appropriate state
         if (state == Playback.CUSTOM_PLAYBACK_STATE_PAUSED) {
             state = PlaybackStateCompat.STATE_PAUSED;
         } else if (state == Playback.CUSTOM_PLAYBACK_STATE_PLAYING) {
             state = PlaybackStateCompat.STATE_PLAYING;
         } else if (state == Playback.CUSTOM_PLAYBACK_STATE_STOPPED) {
             state = PlaybackStateCompat.STATE_STOPPED;
+        } else {
+            state = PlaybackStateCompat.STATE_NONE;
         }
 
         // If there is an error message, send it to the playback state:
@@ -115,6 +120,10 @@ public class PlaybackManager implements Playback.Callback {
         //noinspection ResourceType
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
 
+        Bundle b = new Bundle();
+        b.putInt(Playback.PLAYBACK_STATE_EXTRA_CURRENT_QUEUE_INDEX, mQueueManager.getmCurrentQueueIndex());
+        stateBuilder.setExtras(b);
+
         // Set the activeQueueItemId if the current index is valid.
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
@@ -123,11 +132,14 @@ public class PlaybackManager implements Playback.Callback {
 
         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
 
-        //todo understand
-        if (state == PlaybackStateCompat.STATE_PLAYING ||
-                state == PlaybackStateCompat.STATE_PAUSED) {
+        // tell service that notification is required
+        if (state == PlaybackStateCompat.STATE_PLAYING) {
             mServiceCallback.onNotificationRequired();
         }
+    }
+
+    public boolean isPlaying() {
+        return mPlayback.isPlaying();
     }
 
     private long getAvailableActions() {
@@ -135,7 +147,8 @@ public class PlaybackManager implements Playback.Callback {
                 PlaybackStateCompat.ACTION_PLAY_PAUSE |
                         PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
                         PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                        Playback.CUSTOM_ACTION_ADD_TO_PLAYLIST ;
         if (mPlayback.isPlaying()) {
             actions |= PlaybackStateCompat.ACTION_PAUSE;
         } else {
@@ -147,6 +160,7 @@ public class PlaybackManager implements Playback.Callback {
     //implements playback.callback
     @Override
     public void onCompletion() {
+        // handle according to repeat mode
         switch (mRepeatMode) {
             case PlaybackStateCompat.REPEAT_MODE_ONE:
                 handlePlayRequest();
@@ -168,25 +182,27 @@ public class PlaybackManager implements Playback.Callback {
 
     @Override
     public void onPlaybackStatusChanged(int state) {
-        Log.d(TAG, "onPlaybackStatusChanged:state="+state);
+        Log.d(TAG, "onPlaybackStatusChanged:called");
+        Log.i(TAG, "onPlaybackStatusChanged:state="+Playback.states[state]);
+
         updatePlaybackState(null);
     }
 
     @Override
     public void onError(String error) {
-
+        updatePlaybackState(error);
     }
 
     @Override
     public void setCurrentMediaId(String mediaId) {
-
+        //todo understand
     }
 
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
-            if (!mPlayback.play()) {
-                handlePlayRequest();
+            if(mPlayback.play()) {
+                mServiceCallback.onPlaybackStart();
             }
         }
 
@@ -231,7 +247,7 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onStop() {
-            handleStopRequest(null);
+            handleStopRequest();
         }
 
         @Override
@@ -277,7 +293,6 @@ public class PlaybackManager implements Playback.Callback {
             mShuffleMode = mode;
             return true;
         }
-
         return false;
     }
 
@@ -289,6 +304,7 @@ public class PlaybackManager implements Playback.Callback {
         return false;
     }
 
+    // to tell service about various stuff
     public interface PlaybackServiceCallback {
         void onPlaybackStart();
 

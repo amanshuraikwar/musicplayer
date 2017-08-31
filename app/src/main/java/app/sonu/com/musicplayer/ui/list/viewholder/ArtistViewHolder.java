@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.list.BaseViewHolder;
@@ -51,7 +52,7 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
         artistSubtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop().placeholder(R.drawable.default_album_art_artist);
+        options.centerCrop().placeholder(R.drawable.default_album_art_artist).circleCrop();
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
             Glide.with(context)

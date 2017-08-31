@@ -19,19 +19,32 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/status_bar_padding"
             android:layout_marginBottom="@dimen/status_bar_padding"
-            android:paddingStart="16dp"
+            android:paddingStart="0dp"
             android:paddingEnd="16dp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:clickable="true">
+            android:clickable="true"
+            android:animateLayoutChanges="true">
+
+            <ImageView
+                android:id="@+id/smallAlbumArtIv"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/songInfoLl"
+                android:visibility="gone"/>
 
             <LinearLayout
+                android:id="@+id/songInfoLl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:layout_toEndOf="@+id/smallAlbumArtIv"
                 android:layout_toStartOf="@+id/moreOptionsIv"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="0dp">
+                android:layout_marginStart="16dp"
+                android:animateLayoutChanges="true">
 
                 <TextView
                     android:id="@+id/songTitleMainTv"
@@ -50,6 +63,7 @@
                     android:layout_height="wrap_content"
                     android:text="Daft Punk"
                     android:textColor="@color/grey"/>
+
             </LinearLayout>
 
             <ImageView
@@ -205,5 +219,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/musicPlayerMainLl"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:requiresFadingEdge="vertical"/>
 </RelativeLayout>

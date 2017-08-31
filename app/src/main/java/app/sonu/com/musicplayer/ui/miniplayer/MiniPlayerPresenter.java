@@ -38,32 +38,77 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     Log.d(TAG, "onMetadataChanged:called");
-                    mMvpView.displaySong(
-                            metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE),
-                            metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
-                    mMvpView.updateDuration(
-                            metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+                    displayMetadata(metadata);
                 }
 
                 @Override
                 public void onPlaybackStateChanged(PlaybackStateCompat state) {
                     Log.d(TAG, "onPlaybackStateChanged:state="+state);
                     mLastPlaybackState = state;
-                    if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                        mMvpView.showPauseIcon();
-                        mMvpView.scheduleSeekbarUpdate();
-                    } else if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-                        mMvpView.showPlayIcon();
-                        mMvpView.stopSeekbarUpdate();
-                    } else if (state.getState() == PlaybackStateCompat.STATE_NONE
-                            || state.getState() == PlaybackStateCompat.STATE_ERROR
-                            || state.getState() == PlaybackStateCompat.STATE_STOPPED) {
-                        mMvpView.showPlayIcon();
-                        mMvpView.stopSeekbarUpdate();
-                        mMvpView.resetSeekbar();
-                    }
+                    updatePlaybackState();
+                }
+
+                @Override
+                public void onShuffleModeChanged(boolean enabled) {
+                    updateShuffleMode(enabled);
+                }
+
+                @Override
+                public void onRepeatModeChanged(int repeatMode) {
+                    updateRepeatMode(repeatMode);
                 }
             };
+
+    private void displayMetadata(MediaMetadataCompat metadata) {
+        if (metadata == null) {
+            return;
+        }
+        mMvpView.displaySong(
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE),
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
+        mMvpView.updateDuration(
+                metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+    }
+
+    private void updatePlaybackState() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        if (mLastPlaybackState .getState() == PlaybackStateCompat.STATE_PLAYING) {
+            mMvpView.showPauseIcon();
+            mMvpView.scheduleSeekbarUpdate();
+        } else if (mLastPlaybackState .getState() == PlaybackStateCompat.STATE_PAUSED) {
+            mMvpView.showPlayIcon();
+            mMvpView.stopSeekbarUpdate();
+        } else if (mLastPlaybackState .getState() == PlaybackStateCompat.STATE_NONE
+                || mLastPlaybackState .getState() == PlaybackStateCompat.STATE_ERROR
+                || mLastPlaybackState .getState() == PlaybackStateCompat.STATE_STOPPED) {
+            mMvpView.showPlayIcon();
+            mMvpView.stopSeekbarUpdate();
+            mMvpView.resetSeekbar();
+        }
+    }
+
+    private void updateShuffleMode(boolean enabled) {
+        if (enabled) {
+            mMvpView.setShuffleModeEnabled();
+        } else {
+            mMvpView.setShuffleModeDisabled();
+        }
+    }
+
+    private void updateRepeatMode(int repeatMode) {
+        switch (repeatMode) {
+            case PlaybackStateCompat.REPEAT_MODE_NONE:
+                mMvpView.setRepeatModeNone();
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ALL:
+                mMvpView.setRepeatModeAll();
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ONE:
+                mMvpView.setRepeatModeOne();
+        }
+    }
 
     public MiniPlayerPresenter(DataManager dataManager,
                                MediaBrowserManager browserManager,
@@ -141,7 +186,7 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
     //media browser manager implementations
     @Override
     public void onMediaBrowserConnected() {
-
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override
@@ -156,7 +201,11 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
 
     @Override
     public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
-
+        mLastPlaybackState = mMediaBrowserManager.getMediaController().getPlaybackState();
+        updatePlaybackState();
+        displayMetadata(mMediaBrowserManager.getMediaController().getMetadata());
+        updateShuffleMode(mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
+        updateRepeatMode(mMediaBrowserManager.getMediaController().getRepeatMode());
     }
 
     @Override

@@ -35,6 +35,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -159,6 +161,8 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     @BindView(R.id.musicPlayerLowerHalfLl)
     View musicPlayerLowerHalfLl;
 
+
+
     @OnClick(R.id.playPauseIb)
     void onPlayPauseIbClick(){
         Log.d(TAG, "playPauseIb onClick:called");
@@ -209,6 +213,9 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
 
     @BindView(R.id.gotoArtistIv)
     ImageView gotoArtistIv;
+
+    @BindView(R.id.smallAlbumArtIv)
+    ImageView smallAlbumArtIv;
 
     private QueueItemOnClickListener mQueueItemOnClickListener = new QueueItemOnClickListener() {
         @Override
@@ -277,14 +284,14 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             public void onPanelStateChanged(View panel,
                                             SlidingUpPanelLayout.PanelState previousState,
                                             SlidingUpPanelLayout.PanelState newState) {
-//                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED ||
-//                        newState == SlidingUpPanelLayout.PanelState.DRAGGING) {
-//                    //todo temp
-//                    ((SlidingUpPaneCallback) getActivity()).setDragViewNow(null);
-//                } else {
-//                    //todo temp
-//                    ((SlidingUpPaneCallback) getActivity()).setDragViewNow(musicPlayerUpperHalfRl);
-//                }
+                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    smallAlbumArtIv.setVisibility(View.VISIBLE);
+                } else {
+                    smallAlbumArtIv.setVisibility(View.GONE);
+                    if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                        mQueueLayoutManager.scrollToPositionWithOffset(mCurrentQueueIndex, 0);
+                    }
+                }
             }
         });
 
@@ -333,7 +340,7 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         Glide.with(getActivity()).clear(albumArtIv);
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop();
+        options.centerCrop().placeholder(R.drawable.default_album_art_note);
 
         if (albumArtPath != null) {
             Glide.with(getActivity())
@@ -360,13 +367,26 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
                             return false;
                         }
                     })
+                    .transition(BitmapTransitionOptions.withCrossFade())
                     .into(albumArtIv);
+
+            Glide.with(getActivity())
+                    .load(albumArtPath)
+                    .apply(options)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(smallAlbumArtIv);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 albumArtIv.setImageDrawable(getActivity()
                         .getDrawable(R.drawable.default_album_art_note_big));
+                smallAlbumArtIv.setImageDrawable(getActivity()
+                        .getDrawable(R.drawable.default_album_art_note_big));
             } else {
                 albumArtIv.setImageDrawable(
+                        getActivity()
+                                .getResources()
+                                .getDrawable(R.drawable.default_album_art_note_big));
+                smallAlbumArtIv.setImageDrawable(
                         getActivity()
                                 .getResources()
                                 .getDrawable(R.drawable.default_album_art_note_big));
@@ -574,13 +594,15 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     }
 
     @Override
-    public void updateQueueIndex(int index) {
+    public boolean updateQueueIndex(int index) {
         if (mQueueAdapter != null) {
             mCurrentQueueIndex = index;
             mQueueAdapter.updateQueueIndex(index);
             mQueueLayoutManager.scrollToPositionWithOffset(index, 0);
+            return true;
         } else {
             mCurrentQueueIndex = index;
+            return false;
         }
     }
 

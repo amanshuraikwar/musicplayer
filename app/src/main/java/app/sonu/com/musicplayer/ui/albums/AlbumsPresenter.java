@@ -2,6 +2,7 @@ package app.sonu.com.musicplayer.ui.albums;
 
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
+import android.util.Log;
 
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class AlbumsPresenter extends BasePresenter<AlbumsMvpView>
 
     @Override
     public void onAlbumClicked(MediaBrowserCompat.MediaItem item) {
+        Log.d(TAG, "onAlbumClicked:currentAlbum=" + item);
         mAlbumClickSubject.onNext(item);
     }
 

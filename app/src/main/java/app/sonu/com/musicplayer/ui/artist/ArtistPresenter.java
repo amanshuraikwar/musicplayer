@@ -105,6 +105,16 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
     }
 
     @Override
+    public void onDragDismissed() {
+        mMvpView.closeFragment();
+    }
+
+    @Override
+    public void onBackIbClick() {
+        mMvpView.closeFragment();
+    }
+
+    @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
         mMediaBrowserManager.subscribeMediaBrowser();

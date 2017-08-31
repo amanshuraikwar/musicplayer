@@ -7,8 +7,11 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,9 @@ import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -42,6 +48,8 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     private MediaBrowserManager mMediaBrowserManager;
     private Context mContext;
 
+    private Disposable albumClickDisposable, artistClickDisposable, selectedItemDisposable;
+
     public MainPresenter(DataManager dataManager,
                          PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject,
                          PublishSubject<MediaBrowserCompat.MediaItem> albumClickSubject,
@@ -57,78 +65,12 @@ public class MainPresenter extends BasePresenter<MainMvpView>
 
     @Override
     public void onDetach() {
-        //nothing
+
     }
 
     @Override
     public void onStart() {
-        mSelectedItemPublishSubject.subscribe(new Observer<MediaBrowserCompat.MediaItem>() {
-            @Override
-            public void onSubscribe(Disposable d) {
 
-            }
-
-            @Override
-            public void onNext(MediaBrowserCompat.MediaItem value) {
-                if (mMvpView.isSlidingUpPaneHidden()) {
-                    mMvpView.setSlidingUpPaneCollapsed();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
-        mAlbumClickSubject.subscribe(new Observer<MediaBrowserCompat.MediaItem>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(MediaBrowserCompat.MediaItem value) {
-                mMvpView.startAlbumFragment(value);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-
-        mArtistClickSubject.subscribe(new Observer<MediaBrowserCompat.MediaItem>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(MediaBrowserCompat.MediaItem value) {
-                mMvpView.startArtistFragment(value);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
     }
 
     @Override
@@ -139,12 +81,38 @@ public class MainPresenter extends BasePresenter<MainMvpView>
 
         mContext = activity;
 
+
+
         //check if media browser is already connected or not
         if (mMediaBrowserManager.isMediaBrowserConnected()) {
 //            mMvpView.displaySearchResults(mMediaBrowserManager.getItemList());
         } else {
             mMediaBrowserManager.connectMediaBrowser();
         }
+
+        selectedItemDisposable = mSelectedItemPublishSubject.subscribe(new Consumer<MediaBrowserCompat.MediaItem>() {
+            @Override
+            public void accept(MediaBrowserCompat.MediaItem item) throws Exception {
+                if (mMvpView.isSlidingUpPaneHidden()) {
+                    mMvpView.setSlidingUpPaneCollapsed();
+                }
+            }
+        });
+
+        albumClickDisposable = mAlbumClickSubject.subscribe(new Consumer<MediaBrowserCompat.MediaItem>() {
+            @Override
+            public void accept(MediaBrowserCompat.MediaItem item) throws Exception {
+                Log.d(TAG, "albumClickSubject:onNext:called "+MainPresenter.this);
+                mMvpView.startAlbumFragment(item);
+            }
+        });
+
+        artistClickDisposable = mArtistClickSubject.subscribe(new Consumer<MediaBrowserCompat.MediaItem>() {
+            @Override
+            public void accept(MediaBrowserCompat.MediaItem item) throws Exception {
+                mMvpView.startArtistFragment(item);
+            }
+        });
     }
 
     @Override
@@ -156,6 +124,9 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     public void onDestroy() {
         Log.d(TAG, "onDestroy:called");
         mMediaBrowserManager.disconnectMediaBrowser();
+        albumClickDisposable.dispose();
+        artistClickDisposable.dispose();
+        selectedItemDisposable.dispose();
     }
 
     @Override
@@ -211,7 +182,17 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-//        mMediaBrowserManager.subscribeMediaBrowser();
+        PlaybackStateCompat playbackState =
+                mMediaBrowserManager.getMediaController().getPlaybackState();
+
+        if (playbackState != null) {
+            if (playbackState.getState() == PlaybackStateCompat.STATE_PAUSED
+                    || playbackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+                if (mMvpView.isSlidingUpPaneHidden()) {
+                    mMvpView.setSlidingUpPaneCollapsed();
+                }
+            }
+        }
     }
 
     @Override
@@ -229,7 +210,7 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     @Override
     public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
         Log.d(TAG, "onMediaBrowserChildrenLoaded:called");
-//        mMvpView.displayList(items);
+        // do nothing
     }
 
     @Override

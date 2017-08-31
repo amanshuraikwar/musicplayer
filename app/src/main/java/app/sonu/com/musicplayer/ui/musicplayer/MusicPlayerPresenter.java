@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,9 +37,11 @@ import app.sonu.com.musicplayer.mediaplayer.MediaPlayerService;
 import app.sonu.com.musicplayer.mediaplayer.MediaPlayerServiceNew;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
+import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
 import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -49,14 +52,13 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
         implements MusicPlayerMvpPresenter, MediaBrowserManager.MediaBrowserCallback{
 
     private static final String TAG = MusicPlayerPresenter.class.getSimpleName();
-    private PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject;
-    private PublishSubject<MediaBrowserCompat.MediaItem> playSongSubject;
-    private PublishSubject<Float> musicPlayerSlideSubject;
     private MediaBrowserManager mMediaBrowserManager;
-    private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
     private PublishSubject<Integer> mQueueIndexUpdatedSubject;
+    private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
 
     private Context mContext;
+
+    private Disposable mQueueIndexUpdatedDisposable;
 
     //todo temp
     private PlaybackStateCompat mLastPlaybackState;
@@ -66,43 +68,20 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     Log.d(TAG, "onMetadataChanged:called");
-                    mMvpView.displaySong(
-                            metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE),
-                            metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE),
-                            getFormattedDuration(
-                                    metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)),
-                            metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
-                    mMvpView.updateDuration(
-                            metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+                    displayMetadata(metadata);
                 }
 
                 @Override
                 public void onPlaybackStateChanged(PlaybackStateCompat state) {
                     Log.d(TAG, "onPlaybackStateChanged:state="+state);
                     mLastPlaybackState = state;
-                    if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                        mMvpView.showPauseIcon();
-                        mMvpView.scheduleSeekbarUpdate();
-                    } else if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-                        mMvpView.showPlayIcon();
-                        mMvpView.stopSeekbarUpdate();
-
-                        //to set the seekbar to correct position if somehow paused at
-                        //a different position than shown on the ui
-                        updateProgress();
-                    } else if (state.getState() == PlaybackStateCompat.STATE_NONE
-                            || state.getState() == PlaybackStateCompat.STATE_ERROR
-                            || state.getState() == PlaybackStateCompat.STATE_STOPPED){
-                        mMvpView.showPlayIcon();
-                        mMvpView.stopSeekbarUpdate();
-                        mMvpView.resetSeekbar();
-                    }
+                    updatePlaybackState();
                 }
 
                 @Override
                 public void onQueueChanged(List<MediaSessionCompat.QueueItem> queue) {
                     Log.d(TAG, "onQueueChanged:called");
-                    mMvpView.displayQueue(queue);
+                    updateQueue(queue);
                 }
 
                 @Override
@@ -114,45 +93,98 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                 @Override
                 public void onShuffleModeChanged(boolean enabled) {
                     Log.d(TAG, "onShuffleModeChanged:called");
-                    if (enabled) {
-                        mMvpView.setShuffleModeEnabled();
-                    } else {
-                        mMvpView.setShuffleModeDisabled();
-                    }
+                    updateShuffleMode(enabled);
+                    Log.w(TAG,"sssss="+mMediaBrowserManager.getMediaController().isShuffleModeEnabled()+"");
                 }
 
                 @Override
                 public void onRepeatModeChanged(int repeatMode) {
                     Log.d(TAG, "onRepeatModeChanged:called");
-                    switch (repeatMode) {
-                        case PlaybackStateCompat.REPEAT_MODE_NONE:
-                            mMvpView.setRepeatModeNone();
-                            break;
-                        case PlaybackStateCompat.REPEAT_MODE_ALL:
-                            mMvpView.setRepeatModeAll();
-                            break;
-                        case PlaybackStateCompat.REPEAT_MODE_ONE:
-                            mMvpView.setRepeatModeOne();
-                    }
+                    updateRepeatMode(repeatMode);
+                }
+
+                @Override
+                public void onSessionEvent(String event, Bundle extras) {
+                    super.onSessionEvent(event, extras);
                 }
             };
 
+    private void displayMetadata(MediaMetadataCompat metadata) {
+        if (metadata == null) {
+            return;
+        }
+        mMvpView.displaySong(
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE),
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE),
+                getFormattedDuration(
+                        metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)),
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
+        mMvpView.updateDuration(
+                metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+    }
+
+    private void updatePlaybackState() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            mMvpView.showPauseIcon();
+            mMvpView.scheduleSeekbarUpdate();
+        } else if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
+            mMvpView.showPlayIcon();
+            mMvpView.stopSeekbarUpdate();
+
+            //to set the seekbar to correct position if somehow paused at
+            //a different position than shown on the ui
+            updateProgress();
+        } else if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_NONE
+                || mLastPlaybackState.getState() == PlaybackStateCompat.STATE_ERROR
+                || mLastPlaybackState.getState() == PlaybackStateCompat.STATE_STOPPED){
+            mMvpView.showPlayIcon();
+            mMvpView.stopSeekbarUpdate();
+            mMvpView.resetSeekbar();
+        }
+    }
+
+    private void updateShuffleMode(boolean enabled) {
+        if (enabled) {
+            mMvpView.setShuffleModeEnabled();
+        } else {
+            mMvpView.setShuffleModeDisabled();
+        }
+    }
+
+    private void updateRepeatMode(int repeatMode) {
+        switch (repeatMode) {
+            case PlaybackStateCompat.REPEAT_MODE_NONE:
+                mMvpView.setRepeatModeNone();
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ALL:
+                mMvpView.setRepeatModeAll();
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ONE:
+                mMvpView.setRepeatModeOne();
+        }
+    }
+
+    private void updateQueue(List<MediaSessionCompat.QueueItem> queue) {
+        if (queue == null) {
+            return;
+        }
+
+        mMvpView.displayQueue(queue);
+    }
+
     public MusicPlayerPresenter(DataManager dataManager,
-                                PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject,
-                                PublishSubject<MediaBrowserCompat.MediaItem> playSongSubject,
-                                PublishSubject<Float> musicPlayerSlideSubject,
                                 MediaBrowserManager browserManager,
-                                PublishSubject<Integer> musicPlayerPanelPublishSubject,
-                                PublishSubject<Integer> queueIndexUpdatedSubject) {
+                                PublishSubject<Integer> queueIndexUpdatedSubject,
+                                PublishSubject<Integer> musicPlayerPanelPublishSubject) {
         super(dataManager);
-        this.selectedSongSubject = selectedSongSubject;
-        this.playSongSubject = playSongSubject;
-        this.musicPlayerSlideSubject = musicPlayerSlideSubject;
         mMediaBrowserManager = browserManager;
         mMediaBrowserManager.setCallback(this);
         mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
-        mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
         mQueueIndexUpdatedSubject = queueIndexUpdatedSubject;
+        mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
     }
 
     private String getFormattedDuration(@NonNull long duration) {
@@ -167,105 +199,26 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onDetach() {
-
+        mQueueIndexUpdatedDisposable.dispose();
     }
 
     @Override
     public void onStart() {
-//        selectedSongSubject.subscribe(new Observer<MediaBrowserCompat.MediaItem>() {
-//            @Override
-//            public void onSubscribe(Disposable d) {
-//
-//            }
-//
-//            @Override
-//            public void onNext(MediaBrowserCompat.MediaItem value) {
-//                Log.d(TAG, "selectedSongSubject:onNext:called");
-//                mMvpView.displaySong(value);
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//        });
-//
-//        playSongSubject.subscribe(new Observer<MediaBrowserCompat.MediaItem>() {
-//            @Override
-//            public void onSubscribe(Disposable d) {
-//
-//            }
-//
-//            @Override
-//            public void onNext(MediaBrowserCompat.MediaItem value) {
-//                mMvpView.showPauseIcon();
-////                playAudio();
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//        });
-
-//        musicPlayerSlideSubject.subscribe(new Observer<Float>() {
-//            @Override
-//            public void onSubscribe(Disposable d) {
-//
-//            }
-//
-//            @Override
-//            public void onNext(Float value) {
-//                mMvpView.setMiniBarOpacity(1-value);
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//        });
-        mQueueIndexUpdatedSubject.subscribe(new Observer<Integer>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(Integer value) {
-                mMvpView.updateQueueIndex(value);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
     }
 
     @Override
     public void onCreate(FragmentActivity activity) {
         this.mContext = activity;
         mMediaBrowserManager.initMediaBrowser(activity);
+
+        mQueueIndexUpdatedDisposable = mQueueIndexUpdatedSubject.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                if (!mMvpView.updateQueueIndex(integer)) {
+                    updateQueue(mMediaBrowserManager.getMediaController().getQueue());
+                }
+            }
+        });
     }
 
     @Override
@@ -336,6 +289,10 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onShuffleButtonClick() {
+
+        Log.w(TAG, "shuffle mode got on click="
+                +mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
+
         if (mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
             mMediaBrowserManager
                     .getMediaController()
@@ -385,7 +342,7 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
     //media browser implementations
     @Override
     public void onMediaBrowserConnected() {
-//        mMediaBrowserManager.subscribeMediaBrowser();
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override
@@ -400,7 +357,17 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
+        mLastPlaybackState = mMediaBrowserManager.getMediaController().getPlaybackState();
+        updatePlaybackState();
+        displayMetadata(mMediaBrowserManager.getMediaController().getMetadata());
+        updateQueue(mMediaBrowserManager.getMediaController().getQueue());
+        updateShuffleMode(mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
+        updateRepeatMode(mMediaBrowserManager.getMediaController().getRepeatMode());
 
+        Bundle b = mMediaBrowserManager.getMediaController().getPlaybackState().getExtras();
+        if (b != null) {
+            mMvpView.updateQueueIndex(b.getInt(Playback.PLAYBACK_STATE_EXTRA_CURRENT_QUEUE_INDEX));
+        }
     }
 
     @Override

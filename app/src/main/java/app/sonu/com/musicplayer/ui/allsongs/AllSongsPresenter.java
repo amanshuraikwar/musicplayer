@@ -89,8 +89,12 @@ public class AllSongsPresenter extends
     @Override
     public void onRefresh() {
         Log.d(TAG, "onRefresh:called");
-        //todo implement
         mMvpView.stopLoading();
+        if (mMediaBrowserManager.isMediaBrowserConnected()) {
+            mMvpView.displayList(mMediaBrowserManager.getItemList());
+        } else {
+            mMediaBrowserManager.connectMediaBrowser();
+        }
     }
 
     // media browser callback
@@ -126,6 +130,6 @@ public class AllSongsPresenter extends
 
     @Override
     public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
-        //
+        // do nothing
     }
 }

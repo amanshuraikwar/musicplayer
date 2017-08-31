@@ -15,4 +15,6 @@ public interface ArtistMvpPresenter extends BaseMvpPresenter<ArtistMvpView> {
     void onCreateView();
     void onDestroy();
     void onSongClicked(MediaBrowserCompat.MediaItem item);
+    void onDragDismissed();
+    void onBackIbClick();
 }

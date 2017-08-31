@@ -18,6 +18,8 @@ import app.sonu.com.musicplayer.mediaplayernew.util.QueueHelper;
 
 /**
  * Created by sonu on 27/7/17.
+ * this class manages the playing queue
+ * @author amanshu
  */
 
 public class QueueManager {
@@ -39,6 +41,7 @@ public class QueueManager {
         mCurrentIndex = 0;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public MediaSessionCompat.QueueItem getCurrentMusic() {
         Log.d(TAG, "getCurrentMusic:called");
         if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
@@ -49,8 +52,13 @@ public class QueueManager {
         return mPlayingQueue.get(mCurrentIndex);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String getCurrentMusicMediaId() {
         return getCurrentMusic() == null ? null : getCurrentMusic().getDescription().getMediaId();
+    }
+
+    public int getmCurrentQueueIndex() {
+        return mCurrentIndex;
     }
 
     private boolean setCurrentQueueIndex(int index) {
@@ -86,6 +94,7 @@ public class QueueManager {
         mMetadataUpdateListener.onQueueUpdated(title, newQueue);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void setQueueFromMediaId(String mediaId) {
         Log.d(TAG, "setQueueFromMediaId:called");
         if (isQueueReusable(mediaId)) {
@@ -100,6 +109,7 @@ public class QueueManager {
         updateMetadata();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void setQueueFromMediaId(String mediaId, boolean forceNewQueue) {
         Log.d(TAG, "setQueueFromMediaId:called");
         if (isQueueReusable(mediaId) && !forceNewQueue) {
@@ -114,6 +124,7 @@ public class QueueManager {
         updateMetadata();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void shuffleMusic(String mediaId) {
         if (mPlayingQueue != null) {
             ArrayList<MediaSessionCompat.QueueItem> newQueue = new ArrayList<>();
@@ -131,13 +142,25 @@ public class QueueManager {
 
     private void updateMetadata() {
         Log.d(TAG, "updateMetadata:called");
+
         MediaSessionCompat.QueueItem currentMusic = getCurrentMusic();
         if (currentMusic == null) {
             mMetadataUpdateListener.onMetadataRetrieveError();
             return;
         }
-        final String musicId = MediaIdHelper.extractMusicIdFromMediaId(
-                currentMusic.getDescription().getMediaId());
+
+        String mediaId = currentMusic.getDescription().getMediaId();
+        if (mediaId == null) {
+            Log.w(TAG, "updateMetadata:mediaid is null");
+            return;
+        }
+
+        String musicId = MediaIdHelper.extractMusicIdFromMediaId(mediaId);
+        if (musicId == null) {
+            Log.w(TAG, "updateMetadata:musicid is null");
+            return;
+        }
+
         MediaMetadataCompat metadata = mMusicProvider.getMusic(musicId);
         if (metadata == null) {
             throw new IllegalArgumentException("Invalid musicId " + musicId);
@@ -147,6 +170,7 @@ public class QueueManager {
         mMetadataUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean skipQueuePosition(int amount) {
         Log.d(TAG, "skipQueuePosition:called");
         int index = mCurrentIndex + amount;
@@ -180,18 +204,26 @@ public class QueueManager {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isSameBrowsingCategory(@NonNull String mediaId) {
         String[] newBrowseHierarchy = MediaIdHelper.getHierarchy(mediaId);
         MediaSessionCompat.QueueItem current = getCurrentMusic();
         if (current == null) {
             return false;
         }
-        String[] currentBrowseHierarchy = MediaIdHelper.getHierarchy(
-                current.getDescription().getMediaId());
+
+        String curMediaId = current.getDescription().getMediaId();
+        if (curMediaId == null) {
+            Log.w(TAG, "updateMetadata:mediaid is null");
+            return false;
+        }
+
+        String[] currentBrowseHierarchy = MediaIdHelper.getHierarchy(curMediaId);
 
         return Arrays.equals(newBrowseHierarchy, currentBrowseHierarchy);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isLastItemPlaying() {
         return mCurrentIndex == (mPlayingQueue.size() - 1);
     }

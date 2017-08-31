@@ -7,6 +7,7 @@ import app.sonu.com.musicplayer.base.ui.BaseActivity;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
+import app.sonu.com.musicplayer.ui.about.AboutActivity;
 import app.sonu.com.musicplayer.ui.album.AlbumFragment;
 import app.sonu.com.musicplayer.ui.albums.AlbumsFragment;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsFragment;
@@ -28,22 +29,33 @@ import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -57,6 +69,9 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         implements MainMvpView, SlidingUpPaneCallback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private AlbumFragment mAlbumFragment;
+    private ArtistFragment mArtistFragment;
 
     @BindView(R.id.drawerLayout)
     DrawerLayout drawerLayout;
@@ -73,31 +88,26 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     @BindView(R.id.miniBarRl)
     View miniBarRl;
 
-    @BindView(R.id.searchView)
-    MaterialSearchView searchView;
-
     @BindView(R.id.upperFragmentFl)
     FrameLayout upperFragmentFl;
 
     @BindView(R.id.searchResultsRv)
     RecyclerView searchResultsRv;
 
+    @BindView(R.id.searchBackIb)
+    ImageButton searchBackIb;
+
+    @BindView(R.id.searchClearIb)
+    ImageButton searchClearIb;
+
+    @BindView(R.id.searchQueryEt)
+    EditText searchQueryEt;
+
     @BindView(R.id.searchViewParentLl)
     View searchViewParentLl;
 
-    private Fragment currentFragment;
-
-    private SearchResultOnClickListener mSearchResultOnClickListener = new SearchResultOnClickListener() {
-        @Override
-        public void onSearchResultClick(MediaBrowserCompat.MediaItem item) {
-            mPresenter.onSearchResultClick(item);
-        }
-
-        @Override
-        public void OnClick() {
-
-        }
-    };
+    @BindView(R.id.navigationView)
+    NavigationView navigationView;
 
     private SongSearchResultOnClickListener mSongSearchResultOnClickListener = new SongSearchResultOnClickListener() {
         @Override
@@ -173,46 +183,72 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         //making tabs work with viewpager
         tabLayout.setupWithViewPager(mediaListVp);
 
-        //todo remove after designing drawer
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
         if (searchResultsRv.getLayoutManager() == null) {
             searchResultsRv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         }
 
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+        searchQueryEt.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                //Do some magic
-                return false;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                //Do some magic
-                mPresenter.onSearchQueryTextChange(newText);
-                return false;
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (s.toString().equals("")) {
+                    searchClearIb.setVisibility(View.GONE);
+                } else {
+                    searchClearIb.setVisibility(View.VISIBLE);
+                }
+
+                mPresenter.onSearchQueryTextChange(s.toString());
             }
         });
 
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+        searchBackIb.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
+            public void onClick(View v) {
+                searchQueryEt.setText("");
+                searchViewParentLl.setVisibility(View.GONE);
 
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-                displaySearchResults(new ArrayList<MediaBrowserCompat.MediaItem>());
-                searchViewParentLl.setVisibility(GONE);
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
             }
         });
 
         searchViewParentLl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchView.closeSearch();
+                searchQueryEt.setText("");
+                searchViewParentLl.setVisibility(View.GONE);
+
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
+            }
+        });
+
+        searchClearIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchQueryEt.setText("");
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menuItemAbout:
+                        startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                        return true;
+                }
+                return false;
             }
         });
     }
@@ -271,13 +307,14 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         switch (id) {
 
             case android.R.id.home:
-                //todo uncomment after designing drawer
-                //drawerLayout.openDrawer(GravityCompat.START);
+                drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.search:
                 Log.d(TAG, "onOptionsItemSelected:called for search");
                 searchViewParentLl.setVisibility(View.VISIBLE);
-                searchView.showSearch(false);
+                searchQueryEt.requestFocus();
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(searchQueryEt, 0);
                 return true;
 
         }
@@ -317,31 +354,50 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
     @Override
     public void startAlbumFragment(MediaBrowserCompat.MediaItem item) {
+        Log.d(TAG, "startAlbumFragment:called");
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        AlbumFragment fragment = new AlbumFragment();
+        if (mAlbumFragment == null) {
+            mAlbumFragment = new AlbumFragment();
+        }
+
         Bundle args = new Bundle();
         args.putParcelable("mediaItem", item);
-        fragment.setArguments(args);
-        fragmentTransaction.add(R.id.upperFragmentFl, fragment);
-        fragmentTransaction.commit();
+        mAlbumFragment.setArguments(args);
 
-        currentFragment = fragment;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(AlbumFragment.BACK_STACK_TAG, 0);
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.upperFragmentFl, mAlbumFragment);
+        fragmentTransaction.addToBackStack(AlbumFragment.BACK_STACK_TAG);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState:called");
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void startArtistFragment(MediaBrowserCompat.MediaItem item) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        ArtistFragment fragment = new ArtistFragment();
+        if (mArtistFragment == null) {
+            mArtistFragment = new ArtistFragment();
+        }
+
         Bundle args = new Bundle();
         args.putParcelable("mediaItem", item);
-        fragment.setArguments(args);
-        fragmentTransaction.add(R.id.upperFragmentFl, fragment);
-        fragmentTransaction.commit();
+        mArtistFragment.setArguments(args);
 
-        currentFragment = fragment;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(ArtistFragment.BACK_STACK_TAG, 0);
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.upperFragmentFl, mArtistFragment);
+        fragmentTransaction.addToBackStack(ArtistFragment.BACK_STACK_TAG);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -359,7 +415,7 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
     @Override
     public void hideSearchView() {
-        searchView.closeSearch();
+        searchViewParentLl.setVisibility(View.GONE);
     }
 
     /**
@@ -435,16 +491,16 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
     @Override
     public void onBackPressed() {
-        if (searchView.isSearchOpen()) {
-            searchView.closeSearch();
-        } else if (currentFragment == null) {
-            super.onBackPressed();
+        Log.d(TAG, "onBackPressed:called");
+        if (searchViewParentLl.getVisibility()==View.VISIBLE) {
+            searchViewParentLl.setVisibility(View.GONE);
         } else {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().remove(currentFragment).commit();
-            currentFragment = null;
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                getSupportFragmentManager().popBackStack();
+            } else {
+                super.onBackPressed();
+            }
         }
-
     }
 }
 

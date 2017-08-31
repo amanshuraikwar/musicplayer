@@ -1,16 +1,22 @@
 [] design ui of app with colors of album art
-[] model localplayback class again
-[] resolve the bug with fragments
-[] resolve the bug with notificaiton
-[] resolve the bug with no activity playback
-[] separate fragment for queue
-[] improve performance of search
-[] make search ui separate
-[] separate fragment for search ui
-[] use bottom sheets instead of slidinguppanel
+
+[later] album art not showing on lock screen
+[later] make search ui separate
+[later] improve performance of search
+
+[done] resolve the bug with fragments
+[done] design search ui
+[done] after dismissing the activity, when restarted and the music was playing repeat mode and shuffle mode are not shown correctly
+[done] update queue index using queue id of elements when activity is restarted after dismissed and music was playing
+[done] model localplayback class again
+[done] resolve the bug with notificaiton
+[done] resolve the bug with no activity playback
 [done] make search in albums and artists too
 [done] implement efficient queue control
 
+[not going to do] use bottom sheets instead of slidinguppanel
+[not going to do] separate fragment for queue
+[not going to do] separate fragment for search ui
 
 [want to play only 5 songs]
 []select those five songs to make a queue of only those 5 songs

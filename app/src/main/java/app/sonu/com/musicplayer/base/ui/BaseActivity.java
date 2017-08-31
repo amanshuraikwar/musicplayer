@@ -1,7 +1,10 @@
 package app.sonu.com.musicplayer.base.ui;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -14,6 +17,12 @@ public abstract class BaseActivity<MvpPresenter extends BaseMvpPresenter> extend
 
     @Inject
     protected MvpPresenter mPresenter;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d("toto", "onCreate:called");
+    }
 
     @Override
     public void onStart() {
@@ -30,6 +39,13 @@ public abstract class BaseActivity<MvpPresenter extends BaseMvpPresenter> extend
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("toto", "onDestroy:called");
         mPresenter.onDetach();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("toto", "onStop:called");
     }
 }

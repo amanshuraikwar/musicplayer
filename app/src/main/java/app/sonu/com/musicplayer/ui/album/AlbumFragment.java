@@ -61,6 +61,8 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
 
     private static final String TAG = AlbumFragment.class.getSimpleName();
 
+    public static final String BACK_STACK_TAG = "__albumfragment__";
+
     private SongOnClickListener songOnClickListener = new SongOnClickListener() {
         @Override
         public void onSongClick(MediaBrowserCompat.MediaItem item) {
@@ -134,14 +136,23 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
 
         elasticDragDismissFrameLayout.addListener(new ElasticDragDismissListener() {
             @Override
-            public void onDrag(float elasticOffset, float elasticOffsetPixels, float rawOffset, float rawOffsetPixels) {
+            public void onDrag(float elasticOffset,
+                               float elasticOffsetPixels,
+                               float rawOffset,
+                               float rawOffsetPixels) {
 
             }
 
             @Override
             public void onDragDismissed() {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().remove(AlbumFragment.this).commit();
+                mPresenter.onDragDismissed();
+            }
+        });
+
+        backIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.onBackIbClick();
             }
         });
 
@@ -180,6 +191,12 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
         super.onDestroy();
         Log.d(TAG, "onDestroy:called");
         mPresenter.onDestroy();
+    }
+
+    @Override
+    public void closeFragment() {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.popBackStack();
     }
 
     @Override
@@ -260,7 +277,7 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
         topBarRl.setBackgroundColor(ColorUtil.makeColorTransparent(backgroundColor));
         backIb.setColorFilter(titleColor, PorterDuff.Mode.SRC_IN);
         albumMetadataRl.setBackgroundColor(backgroundColor);
-        elasticDragDismissFrameLayout.setBackgroundColor(bodyColor);
+//        elasticDragDismissFrameLayout.setBackgroundColor(bodyColor);
 
         titleTv.setTextColor(titleColor);
         subtitleTv.setTextColor(bodyColor);

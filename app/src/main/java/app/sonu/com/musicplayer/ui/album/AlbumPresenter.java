@@ -103,6 +103,16 @@ public class AlbumPresenter extends BasePresenter<AlbumMvpView>
         mSelectedItemPublishSubject.onNext(item);
     }
 
+    @Override
+    public void onDragDismissed() {
+        mMvpView.closeFragment();
+    }
+
+    @Override
+    public void onBackIbClick() {
+        mMvpView.closeFragment();
+    }
+
     // media browser callback
     @Override
     public void onMediaBrowserConnected() {

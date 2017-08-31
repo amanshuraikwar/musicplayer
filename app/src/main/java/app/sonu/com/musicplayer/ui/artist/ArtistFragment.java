@@ -57,6 +57,7 @@ import butterknife.ButterKnife;
 
 public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements ArtistMvpView{
     private static final String TAG = ArtistFragment.class.getSimpleName();
+    public static final String BACK_STACK_TAG = "__artistfragment__";
 
     private SongOnClickListener songOnClickListener = new SongOnClickListener() {
         @Override
@@ -131,8 +132,14 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
 
             @Override
             public void onDragDismissed() {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().remove(ArtistFragment.this).commit();
+                mPresenter.onDragDismissed();
+            }
+        });
+
+        backIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.onBackIbClick();
             }
         });
 
@@ -169,6 +176,12 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
         super.onDestroy();
         Log.d(TAG, "onDestroy:called");
         mPresenter.onDestroy();
+    }
+
+    @Override
+    public void closeFragment() {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.popBackStack();
     }
 
     @Override
@@ -249,7 +262,6 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
         topBarRl.setBackgroundColor(ColorUtil.makeColorTransparent(backgroundColor));
         backIb.setColorFilter(titleColor, PorterDuff.Mode.SRC_IN);
         artistMetadataRl.setBackgroundColor(backgroundColor);
-        elasticDragDismissFrameLayout.setBackgroundColor(bodyColor);
 
         titleTv.setTextColor(titleColor);
         subtitleTv.setTextColor(bodyColor);

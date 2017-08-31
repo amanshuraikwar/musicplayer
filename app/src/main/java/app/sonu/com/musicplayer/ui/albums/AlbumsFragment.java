@@ -39,7 +39,7 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
     private AlbumOnClickListener albumOnClickListener = new AlbumOnClickListener() {
         @Override
         public void onAlbumClick(MediaBrowserCompat.MediaItem item) {
-            Log.d(TAG, "onAlbumClick:currentAlbum=" + item);
+            Log.d(TAG, "onAlbumClick:currentAlbum=" + item+" "+this);
             mPresenter.onAlbumClicked(item);
         }
 

@@ -15,4 +15,9 @@ public interface MiniPlayerMvpView extends BaseMvpView {
     void scheduleSeekbarUpdate();
     void stopSeekbarUpdate();
     void resetSeekbar();
+    void setShuffleModeEnabled();
+    void setShuffleModeDisabled();
+    void setRepeatModeNone();
+    void setRepeatModeAll();
+    void setRepeatModeOne();
 }

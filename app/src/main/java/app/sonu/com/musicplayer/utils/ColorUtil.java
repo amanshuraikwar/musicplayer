@@ -35,6 +35,13 @@ public class ColorUtil {
         Palette.from(bitmap).generate(paletteAsyncListener);
     }
 
+    public static Palette generatePalette(Bitmap bitmap) {
+        if (bitmap == null){
+            return null;
+        }
+        return Palette.from(bitmap).generate();
+    }
+
     public static int getBackgroundColor(Palette.Swatch swatch) {
         if (swatch == null) {
             return BACKGROUND_COLOR_FALLBACK;
@@ -90,6 +97,6 @@ public class ColorUtil {
     }
 
     public static int makeColorTransparent(int color){
-        return Color.argb(125, Color.red(color) , Color.green(color), Color.blue(color));
+        return Color.argb(150, Color.red(color) , Color.green(color), Color.blue(color));
     }
 }

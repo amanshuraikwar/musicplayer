@@ -34,9 +34,12 @@ public class MediaBrowserManager {
     private MediaControllerCallback mMediaControllerCallback;
     private FragmentActivity mActivity;
 
+    private String mParentName;
 
-    public MediaBrowserManager(String rootHint) {
+
+    public MediaBrowserManager(String rootHint, String parentName) {
         mRootHint = rootHint;
+        mParentName = parentName;
     }
 
     public MediaBrowserManager(String rootHint, MediaBrowserCallback callback) {
@@ -161,33 +164,49 @@ public class MediaBrowserManager {
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
+
                 @Override
                 public void onConnected() {
-                    mMediaBrowserCallback.onMediaBrowserConnected();
-
                     // Get the token for the MediaSession
                     MediaSessionCompat.Token token = mMediaBrowser.getSessionToken();
 
-                    // Create a MediaControllerCompat
-                    MediaControllerCompat mediaController;
-                    try {
-                        mediaController = new MediaControllerCompat(mActivity, // Context
-                                token);
+                    if (MediaControllerCompat.getMediaController(mActivity) == null) {
+                        Log.i(TAG, "onConnected:creating new media controller parent="+mParentName);
+                        // Create a MediaControllerCompat
+                        MediaControllerCompat mediaController;
+                        try {
+                            mediaController = new MediaControllerCompat(mActivity, // Context
+                                    token);
 
-                        if (mMediaControllerCallback != null) {
-                            Log.d(TAG, "onConnected:mediaControllerCallback:registering");
-                            mediaController.registerCallback(mMediaControllerCallback);
-                        } else {
-                            Log.w(TAG, "onConnected:mediaControllerCallback is null, not registering");
+                            if (mMediaControllerCallback != null) {
+                                Log.d(TAG, "onConnected:mediaControllerCallback:registering parent="
+                                        +mParentName);
+                                mediaController.registerCallback(mMediaControllerCallback);
+                            } else {
+                                Log.w(TAG, "onConnected:mediaControllerCallback is null, not registering parent="+mParentName);
+                            }
+
+                            // Save the controller
+                            MediaControllerCompat
+                                    .setMediaController(mActivity, mediaController);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "onConnected:exception during getting media controller", e);
                         }
-
-                        // Save the controller
-                        MediaControllerCompat
-                                .setMediaController(mActivity, mediaController);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "onConnected:exception during getting media controller", e);
+                    } else {
+                        if (mMediaControllerCallback != null) {
+                            Log.d(TAG, "onConnected:mediaControllerCallback:registering parent="+mParentName);
+                            MediaControllerCompat
+                                    .getMediaController(mActivity)
+                                    .registerCallback(mMediaControllerCallback);
+                        } else {
+                            Log.w(TAG, "onConnected:mediaControllerCallback is null, not registering parent="+mParentName);
+                        }
                     }
+
+                    Log.i(TAG, "mediaBrowserConnected parent="+mParentName);
+
+                    mMediaBrowserCallback.onMediaBrowserConnected();
                 }
 
                 @Override
@@ -209,6 +228,9 @@ public class MediaBrowserManager {
                 @Override
                 public void onChildrenLoaded(@NonNull String parentId,
                                              @NonNull List<MediaBrowserCompat.MediaItem> children) {
+
+                    Log.w(TAG, "shuffle ="+getMediaController().isShuffleModeEnabled()+" parent="+mParentName);
+
                     try {
                         Log.d(TAG, "onChildrenLoaded:called");
                         Log.i(TAG, "onChildrenLoaded:no of items="+children.size());
@@ -224,6 +246,7 @@ public class MediaBrowserManager {
                 public void onError(@NonNull String id) {
                     Log.e(TAG, "onError:subscription error id="+id);
                     mMediaBrowserCallback.onMediaBrowserSubscriptionError(id);
+
                 }
             };
 

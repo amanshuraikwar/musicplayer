@@ -2,9 +2,11 @@ package app.sonu.com.musicplayer.mediaplayernew;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -43,7 +45,7 @@ public class MusicService extends MediaBrowserServiceCompat
 
     // The action of the incoming Intent indicating that it contains a command
     // to be executed (see {@link #onStartCommand})
-    public static final String ACTION_CMD = "com.example.android.uamp.ACTION_CMD";
+    public static final String ACTION_CMD = "app.sonu.com.musicplayer.ACTION_CMD";
     // The key in the extras of the incoming Intent indicating the command that
     // should be executed (see {@link #onStartCommand})
     public static final String CMD_NAME = "CMD_NAME";
@@ -52,7 +54,6 @@ public class MusicService extends MediaBrowserServiceCompat
     public static final String CMD_PAUSE = "CMD_PAUSE";
 
     private MediaSessionCompat mMediaSession;
-    private PlaybackStateCompat.Builder mStateBuilder;
 
     private MusicProvider mMusicProvider;
     private PlaybackManager mPlaybackManager;
@@ -86,13 +87,6 @@ public class MusicService extends MediaBrowserServiceCompat
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                         MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
         );
-
-        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
-        mStateBuilder = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY |
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
-        mMediaSession.setPlaybackState(mStateBuilder.build());
 
         QueueManager queueManager = new QueueManager(mMusicProvider,
                 new QueueManager.MetadataUpdateListener() {
@@ -134,6 +128,13 @@ public class MusicService extends MediaBrowserServiceCompat
         // Set the session's token so that client activities can communicate with it.
         setSessionToken(mMediaSession.getSessionToken());
 
+        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
+        PlaybackStateCompat.Builder mStateBuilder = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY |
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+
         try {
             mMediaNotificationManager = new MediaNotificationManager(this);
         } catch (RemoteException e) {
@@ -158,10 +159,19 @@ public class MusicService extends MediaBrowserServiceCompat
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        if (!mPlaybackManager.isPlaying()) {
+            // stop the service if the ui unbinds and the player is not playing
+            stopSelf();
+        }
+        return super.onUnbind(intent);
+    }
+
+    @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy:called");
         // Service is being killed, so make sure we release our resources
-        mPlaybackManager.handleStopRequest(null);
+        mPlaybackManager.handleStopRequest();
         mMediaSession.release();
         mMediaNotificationManager.stopNotification();
     }
@@ -210,16 +220,6 @@ public class MusicService extends MediaBrowserServiceCompat
         }
     }
 
-    /**
-     *
-     * @param clientPackageName
-     * @param clientUid
-     * @return
-     */
-    private boolean allowBrowsing(String clientPackageName ,int clientUid) {
-        return clientPackageName.contains("android.sonu.com.musicplayer");
-    }
-
     @Override
     public void onLoadChildren(@NonNull final String parentMediaId,
                                @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
@@ -249,6 +249,10 @@ public class MusicService extends MediaBrowserServiceCompat
         result.sendResult(mMusicProvider.getSongsBySearchQuery(query));
     }
 
+    private boolean allowBrowsing(String clientPackageName ,int clientUid) {
+        return clientPackageName.contains("android.sonu.com.musicplayer");
+    }
+
     //playback service callback
     @Override
     public void onPlaybackStart() {
@@ -264,6 +268,7 @@ public class MusicService extends MediaBrowserServiceCompat
     @Override
     public void onNotificationRequired() {
         Log.d(TAG, "onNotificationRequired:called");
+        // start notification of not already
         mMediaNotificationManager.startNotification();
     }
 
@@ -271,13 +276,15 @@ public class MusicService extends MediaBrowserServiceCompat
     public void onPlaybackStop() {
         Log.d(TAG, "onPlaybackStop:called");
         mMediaSession.setActive(false);
-        stopForeground(true);
+        // stop foreground so that the notification can be dismissed
+        stopForeground(false);
     }
 
     @Override
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         Log.d(TAG, "onPlaybackStateUpdated:state="+newState);
         mMediaSession.setPlaybackState(newState);
+
     }
 
     @Override

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="app.sonu.com.musicplayer">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name="app.sonu.com.musicplayer.MyApplication"
@@ -21,6 +23,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="app.sonu.com.musicplayer.ui.about.AboutActivity">
+        </activity>
+
         <service android:name=".mediaplayer.MediaPlayerService" />
 
         <service
@@ -29,11 +34,18 @@
             android:description="@string/music_playing_service_description"/>
 
         <service android:name=".mediaplayernew.MusicService"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

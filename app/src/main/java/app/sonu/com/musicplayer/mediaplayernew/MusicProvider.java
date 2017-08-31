@@ -3,6 +3,7 @@ package app.sonu.com.musicplayer.mediaplayernew;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -21,6 +22,7 @@ import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
 
 /**
  * responsible for providing music for a specified music source
+ * @author amanshu
  */
 public class MusicProvider {
     private static final String TAG = MusicProvider.class.getSimpleName();
@@ -35,8 +37,11 @@ public class MusicProvider {
     private final ConcurrentMap<String, MediaMetadataCompat> mArtistListByKey;
     private final ConcurrentMap<String, MediaMetadataCompat> mAlbumListByKey;
     private final ConcurrentMap<String, MediaMetadataCompat> mMusicListById;
+
+    // for storing art for artists
     private final ConcurrentHashMap<String, String> mArtistArtByKey;
 
+    // for getting all songs in sorted order quickly
     private ArrayList<MediaMetadataCompat> allSongs;
     private ArrayList<MediaMetadataCompat> allAlbums;
     private ArrayList<MediaMetadataCompat> allArtists;
@@ -61,8 +66,12 @@ public class MusicProvider {
     //defining volatile to make it thread safe but not blocking
     private volatile State mCurrentState = State.NON_INITIALIZED;
 
+    /**
+     * constructor
+     * @param musicProviderSource music provider is nothing without a musicsource
+     */
     @SuppressWarnings("WeakerAccess")
-    public MusicProvider(MusicProviderSource musicProviderSource) {
+    public MusicProvider(@NonNull MusicProviderSource musicProviderSource) {
         this.mSource = musicProviderSource;
 
         this.mMusicListById = new ConcurrentHashMap<>();
@@ -154,10 +163,7 @@ public class MusicProvider {
                             item.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
 
                     if (albumArtUri != null) {
-//                        Log.d(TAG, "album art uri is not null for song");
                         if (!mArtistArtByKey.containsKey(artistKey)) {
-//                            Log.d(TAG, "album artist art by key does not contain key");
-//                            Log.i(TAG, "putting "+artistKey+" "+albumArtUri);
                             mArtistArtByKey.put(artistKey, albumArtUri);
                         }
                     }
@@ -169,6 +175,7 @@ public class MusicProvider {
                     mMusicListByArtistKey.get(artistKey).add(item);
                 }
 
+                // forming artist cache
                 while (artistsIterator.hasNext()) {
                     MediaMetadataCompat item = artistsIterator.next();
                     mArtistListByKey.put(
@@ -220,6 +227,11 @@ public class MusicProvider {
                 .build();
     }
 
+    /**
+     * setting art for artists, from artistartbykey list
+     * @param item original mediaitem
+     * @return mediaitem with album art
+     */
     private MediaMetadataCompat setAlbumArtForArtist(MediaMetadataCompat item) {
         // we create a new object as MediaMetadataCompat is immutable
         return new MediaMetadataCompat
@@ -235,7 +247,7 @@ public class MusicProvider {
 
 
     /**
-     * tells is the provider is initialized or not
+     * tells if the provider is initialized or not
      * @return true if initialized else false
      */
     @SuppressWarnings("WeakerAccess")
@@ -249,7 +261,7 @@ public class MusicProvider {
      * @return list of children
      */
     @SuppressWarnings("WeakerAccess")
-    public List<MediaBrowserCompat.MediaItem> getChildren(String mediaId) {
+    public List<MediaBrowserCompat.MediaItem> getChildren(@NonNull String mediaId) {
         Log.d(TAG, "getChildren:called mediaId="+mediaId);
 
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
@@ -258,7 +270,7 @@ public class MusicProvider {
             return mediaItems;
         }
 
-        if (MediaIdHelper.MEDIA_ID_ALL_SONGS.equals(mediaId)) {
+        if (MediaIdHelper.MEDIA_ID_ALL_SONGS.equals(mediaId)) {// all songs list
             for (MediaMetadataCompat metadata : getSongs()) {
                 mediaItems.add(
                         createMediaItem(
@@ -267,22 +279,22 @@ public class MusicProvider {
                                 null)
                 );
             }
-        } else if (MediaIdHelper.MEDIA_ID_ALBUMS.equals(mediaId)) {
+        } else if (MediaIdHelper.MEDIA_ID_ALBUMS.equals(mediaId)) { // all albums list
             for (MediaMetadataCompat album : getAlbums()) {
                 mediaItems.add(createBrowsableMediaItemForAlbum(album));
             }
-        } else if (MediaIdHelper.MEDIA_ID_ARTISTS.equals(mediaId)) {
+        } else if (MediaIdHelper.MEDIA_ID_ARTISTS.equals(mediaId)) { // all artists list
             for (MediaMetadataCompat artist : getArtists()) {
                 mediaItems.add(createBrowsableMediaItemForArtist(artist));
             }
-        } else if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_ALBUMS)) {
+        } else if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_ALBUMS)) { // songs of an album
             String album = MediaIdHelper.getHierarchy(mediaId)[1];
             for (MediaMetadataCompat metadata : getMusicsByAlbumKey(album)) {
                 mediaItems.add(createMediaItem(metadata,
                         MediaIdHelper.MEDIA_ID_ALBUMS,
                         MusicProviderSource.CUSTOM_METADATA_KEY_ALBUM_KEY));
             }
-        } else if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_ARTISTS)) {
+        } else if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_ARTISTS)) { // songs of an artist
             String artist = MediaIdHelper.getHierarchy(mediaId)[1];
             for (MediaMetadataCompat metadata : getMusicsByArtistKey(artist)) {
                 mediaItems.add(createMediaItem(metadata,
@@ -295,6 +307,10 @@ public class MusicProvider {
         return mediaItems;
     }
 
+    /**
+     * get all albums in sorted order
+     * @return iterable of albums
+     */
     public Iterable<MediaMetadataCompat> getAlbums() {
         Log.d(TAG, "getAlbums:called");
         if (mCurrentState != State.INITIALIZED) {
@@ -304,6 +320,10 @@ public class MusicProvider {
         return allAlbums;
     }
 
+    /**
+     * get all songs in sorted order
+     * @return iterable of songs
+     */
     public Iterable<MediaMetadataCompat> getSongs() {
         Log.d(TAG, "getSongs:called");
         if (mCurrentState != State.INITIALIZED) {
@@ -313,6 +333,10 @@ public class MusicProvider {
         return allSongs;
     }
 
+    /**
+     * get all artists in sorted order
+     * @return iterable of artists
+     */
     public Iterable<MediaMetadataCompat> getArtists() {
         Log.d(TAG, "getArtists:called");
         if (mCurrentState != State.INITIALIZED) {
@@ -323,7 +347,12 @@ public class MusicProvider {
         return allArtists;
     }
 
-    public Iterable<MediaMetadataCompat> getMusicsByAlbumKey(String albumKey) {
+    /**
+     * get all songs of an album
+     * @param albumKey key of the album whose songs are required
+     * @return iterable of songs of required album
+     */
+    public Iterable<MediaMetadataCompat> getMusicsByAlbumKey(@NonNull String albumKey) {
         Log.d(TAG, "getMusicsByAlbumKey:called");
         if (mCurrentState != State.INITIALIZED || !mMusicListByAlbumKey.containsKey(albumKey)) {
             return Collections.emptyList();
@@ -331,7 +360,12 @@ public class MusicProvider {
         return mMusicListByAlbumKey.get(albumKey);
     }
 
-    public Iterable<MediaMetadataCompat> getMusicsByArtistKey(String artistKey) {
+    /**
+     * get all songs of an artist
+     * @param artistKey key of the artist whose songs are required
+     * @return iterable of songs of required artist
+     */
+    public Iterable<MediaMetadataCompat> getMusicsByArtistKey(@NonNull String artistKey) {
         Log.d(TAG, "getMusicsByArtistKey:called");
         if (mCurrentState != State.INITIALIZED || !mMusicListByArtistKey.containsKey(artistKey)) {
             return Collections.emptyList();
@@ -339,6 +373,11 @@ public class MusicProvider {
         return mMusicListByArtistKey.get(artistKey);
     }
 
+    /**
+     * to create a browsable media item for an album
+     * @param metadata metadata from which mediaitem is to be created
+     * @return built mediaitem
+     */
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForAlbum(
             MediaMetadataCompat metadata) {
 
@@ -377,6 +416,11 @@ public class MusicProvider {
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
 
+    /**
+     * to create browsable media item for an artist
+     * @param metadata metadata from which mediaitem is to be created
+     * @return built mediaitem
+     */
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForArtist(
             MediaMetadataCompat metadata) {
 
@@ -406,14 +450,17 @@ public class MusicProvider {
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
 
+    /**
+     * to create a playable mediaitem
+     * @param metadata metadata from which mediaitem will be created
+     * @param byMediaId root media id if which media item is to be created
+     * @param byMetadataKey metadata key for creating a hierarchy aware mediaid
+     * @return built mediaitem
+     */
     private MediaBrowserCompat.MediaItem createMediaItem(
             MediaMetadataCompat metadata,
             String byMediaId,
             String byMetadataKey) {
-        // Since mediaMetadata fields are immutable, we need to create a copy, so we
-        // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
-        // when we get a onPlayFromMusicID call, so we can create the proper queue based
-        // on where the music was selected from (by artist, by genre, random, etc)
 
         Bundle extras = new Bundle();
 
@@ -470,13 +517,15 @@ public class MusicProvider {
 
     }
 
+    /**
+     * create a mediaitem for search results
+     * @param metadata metadata from which media item will be created
+     * @param byMediaId root media id for creating hierarchy aware mediaid
+     * @return built mediaitem
+     */
     private MediaBrowserCompat.MediaItem createSearchMediaItem(
             MediaMetadataCompat metadata,
             String byMediaId) {
-        // Since mediaMetadata fields are immutable, we need to create a copy, so we
-        // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
-        // when we get a onPlayFromMusicID call, so we can create the proper queue based
-        // on where the music was selected from (by artist, by genre, random, etc)
 
         if (byMediaId.equals(MediaIdHelper.MEDIA_ID_ALL_SONGS)) {
             Bundle extras = new Bundle();
@@ -526,6 +575,11 @@ public class MusicProvider {
         return null;
     }
 
+    /**
+     * create artist browsable mediaitem for search results
+     * @param metadata metadata from which mediaitem will be created
+     * @return build mediaitem
+     */
     private MediaBrowserCompat.MediaItem createSearchBrowsableMediaItemForArtist(
             MediaMetadataCompat metadata) {
 
@@ -547,12 +601,25 @@ public class MusicProvider {
                 .setSubtitle(metadata.getString(
                         MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
 
+        if (metadata.getString(
+                MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != null) {
+            builder.setIconUri(
+                    Uri.parse(
+                            metadata.getString(
+                                    MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)));
+        }
+
         MediaDescriptionCompat descriptionCompat = builder.build();
 
         return new MediaBrowserCompat.MediaItem(descriptionCompat,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
 
+    /**
+     * create album browsable mediaitem for search results
+     * @param metadata metadata from which mediaitem will be created
+     * @return built mediaitem
+     */
     private MediaBrowserCompat.MediaItem createSearchBrowsableMediaItemForAlbum(
             MediaMetadataCompat metadata) {
 
@@ -574,17 +641,36 @@ public class MusicProvider {
                 .setSubtitle(metadata.getString(
                         MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
 
+        if (metadata.getString(
+                MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) != null) {
+            builder.setIconUri(
+                    Uri.parse(
+                            metadata.getString(
+                                    MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)));
+        }
+
         MediaDescriptionCompat descriptionCompat = builder.build();
 
         return new MediaBrowserCompat.MediaItem(descriptionCompat,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
 
-    public MediaMetadataCompat getMusic(String musicId) {
+    /**
+     * for getting music by mediaid
+     * @param musicId music id for which metadata will be returned
+     * @return metadata of required musicid
+     */
+    public MediaMetadataCompat getMusic(@NonNull String musicId) {
         return mMusicListById.containsKey(musicId) ? mMusicListById.get(musicId) : null;
     }
 
-    public List<MediaBrowserCompat.MediaItem> getSongsBySearchQuery(String query) {
+    /**
+     * getting songs, albums and artists for given search string
+     * @param query search string
+     * @return list of matching items
+     */
+    @SuppressWarnings("WeakerAccess")
+    public List<MediaBrowserCompat.MediaItem> getSongsBySearchQuery(@NonNull String query) {
         ArrayList<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
         for (MediaMetadataCompat metadata : getSongs()) {
             if (metadata
@@ -633,6 +719,10 @@ public class MusicProvider {
         return mediaItems;
     }
 
+    /**
+     * callback to tell client that catalog is build when async retrieval is done
+     */
+    @SuppressWarnings("WeakerAccess")
     public interface Callback {
         void onMusicCatalogReady(boolean success);
     }

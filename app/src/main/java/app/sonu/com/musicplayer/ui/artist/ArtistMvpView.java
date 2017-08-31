@@ -11,6 +11,7 @@ import app.sonu.com.musicplayer.base.ui.BaseMvpView;
  */
 
 public interface ArtistMvpView extends BaseMvpView {
+    void closeFragment();
     void displayList(List<MediaBrowserCompat.MediaItem> itemList);
     void displayArtistData(String title, String subtitle, String artPath);
     void displayToast(String message);

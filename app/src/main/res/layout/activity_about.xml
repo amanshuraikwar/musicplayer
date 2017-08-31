@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/elasticDragDismissLayout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:dragDismissDistance="174dp"
+    app:dragDismissScale="0.95"
+    android:background="@null">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layoutMode="opticalBounds"
+        android:layout_marginBottom="40dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#E1F5FE"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:src="@drawable/ic_album_light_grey_128dp"
+                    android:tint="#B3E5FC"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="bottom|start"
+                    android:text="@string/app_name"
+                    android:textSize="34sp"
+                    android:textStyle="bold"
+                    android:textColor="#263238"/>
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
+                android:text="About"
+                android:textSize="21sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Cassette is just a simple music player bringing you a beautiful UI and a well thought out UX."
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:textSize="15sp"
+                android:text="Amanshu Raikwar"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:textStyle="italic"
+                android:textSize="12sp"
+                android:linksClickable="true"
+                android:autoLink="web"
+                android:text="https://github.com/amanshuraikwar"/>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:paddingTop="8dp"
+        android:paddingStart="16dp"
+        android:paddingBottom="8dp"
+        android:paddingEnd="16dp"
+        android:gravity="center"
+        android:background="#E1F5FE"
+        android:layout_gravity="bottom">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Made with "
+            android:textSize="12sp"
+            android:layout_gravity="bottom"
+            android:textColor="#455A64"/>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_heart_outline_white_24dp"
+            android:tint="#263238"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" by an engineering undergrad."
+            android:textSize="12sp"
+            android:layout_gravity="bottom"
+            android:textColor="#455A64"/>
+    </LinearLayout>
+</com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

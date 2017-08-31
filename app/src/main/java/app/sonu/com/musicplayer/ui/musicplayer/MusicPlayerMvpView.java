@@ -33,5 +33,5 @@ public interface MusicPlayerMvpView extends BaseMvpView {
     void setRepeatModeOne();
     void displayQueue(List<MediaSessionCompat.QueueItem> queue);
     void resetSeekbar();
-    void updateQueueIndex(int index);
+    boolean updateQueueIndex(int index);
 }

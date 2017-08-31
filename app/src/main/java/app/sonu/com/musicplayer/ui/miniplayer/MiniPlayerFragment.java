@@ -95,6 +95,12 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         mPresenter.playPauseButtonOnClick();
     }
 
+    @BindView(R.id.shuffleNotifyIv)
+    ImageView shuffleNotifyIv;
+
+    @BindView(R.id.repeatNotifyIv)
+    ImageView repeatNotifyIv;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -246,5 +252,64 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     @Override
     public void resetSeekbar() {
         miniPlayerMpb.setProgress(0);
+    }
+
+    @Override
+    public void setShuffleModeEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            shuffleNotifyIv
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_shuffle_black_12dp));
+        } else {
+            shuffleNotifyIv.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_shuffle_black_12dp));
+        }
+    }
+
+    @Override
+    public void setShuffleModeDisabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            shuffleNotifyIv
+                    .setImageDrawable(null);
+        } else {
+            shuffleNotifyIv.setImageDrawable(null);
+        }
+    }
+
+    @Override
+    public void setRepeatModeNone() {
+        repeatNotifyIv.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setRepeatModeAll() {
+        repeatNotifyIv.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            repeatNotifyIv
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_repeat_black_12dp));
+        } else {
+            repeatNotifyIv.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_repeat_black_12dp));
+        }
+    }
+
+    @Override
+    public void setRepeatModeOne() {
+        repeatNotifyIv.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            repeatNotifyIv
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_repeat_one_black_12dp));
+        } else {
+            repeatNotifyIv.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_repeat_one_black_12dp));
+        }
     }
 }

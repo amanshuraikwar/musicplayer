@@ -1,16 +1,18 @@
 package app.sonu.com.musicplayer.mediaplayernew.playback;
 
-import android.media.session.MediaSession;
 import android.support.annotation.NonNull;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat.QueueItem;
 
 /**
  * Created by sonu on 27/7/17.
+ * interface representing playback of music
+ * a class must implement this interface if it wants to represent a playback
+ * @author amanshu
  */
 
 public interface Playback {
 
+    // playback states
     int CUSTOM_PLAYBACK_STATE_NONE = 0;
     int CUSTOM_PLAYBACK_STATE_IDLE = 1;
     int CUSTOM_PLAYBACK_STATE_STOPPED = 2;
@@ -18,6 +20,13 @@ public interface Playback {
     int CUSTOM_PLAYBACK_STATE_PAUSED = 4;
     int CUSTOM_PLAYBACK_STATE_PLAYING = 5;
 
+    long CUSTOM_ACTION_ADD_TO_PLAYLIST = 1 << 20;
+
+    String PLAYBACK_STATE_EXTRA_CURRENT_QUEUE_INDEX = "currentQueueIndex";
+
+    String states[] = {"none", "idle", "stopped", "preparing", "paused", "playing"};
+
+    // getter methods
     boolean isPlaying();
     boolean isStopped();
     boolean isPaused();
@@ -25,6 +34,7 @@ public interface Playback {
     boolean isPreparing();
     int getState();
     int getCurrentPosition();
+
 
     void start();
     boolean play(@NonNull QueueItem item);
@@ -35,6 +45,7 @@ public interface Playback {
 
     void setCallback(Callback callback);
 
+    // to tell playback manager about various stuff
     interface Callback {
         /**
          * On current music completed.

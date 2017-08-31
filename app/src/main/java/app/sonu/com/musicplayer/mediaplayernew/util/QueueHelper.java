@@ -12,27 +12,32 @@ import java.util.List;
 import app.sonu.com.musicplayer.mediaplayernew.MusicProvider;
 
 /**
- * Created by sonu on 7/8/17.
+ * Created by amanshu on 7/8/17.
+ * helper class for queue related tasks
+ * @author amanshu
  */
-
 public class QueueHelper {
 
     private static final String TAG = QueueHelper.class.getSimpleName();
 
+    /**
+     * tells is this queue index is playable or not
+     * @param index index to check
+     * @param queue list from which it is checked
+     * @return boolean for the decision
+     */
     public static boolean isIndexPlayable(int index, List<MediaSessionCompat.QueueItem> queue) {
-        if (queue == null) {
-            return false;
-        }
-
-        if ((index < 0) || (index >= queue.size())) {
-            return false;
-        }
-
-        return true;
+        return queue != null && !((index < 0) || (index >= queue.size()));
     }
 
+    /**
+     * for getting queue index for a mediaid
+     * @param mediaId mediaid of which index is required
+     * @param queue list from which index is searched
+     * @return index of the mediaid
+     */
     public static int getQueueIndexOf(@NonNull String mediaId,
-                                 List<MediaSessionCompat.QueueItem> queue) {
+                                 @NonNull List<MediaSessionCompat.QueueItem> queue) {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
             if (mediaId.equals(item.getDescription().getMediaId())) {
@@ -44,78 +49,90 @@ public class QueueHelper {
         return -1;
     }
 
-    public static List<MediaSessionCompat.QueueItem> getPlayingQueue(String mediaId,
-                                                                     MusicProvider musicProvider) {
+    /**
+     * for getting playing queue according to mediaid
+     * @param mediaId input mediaid
+     * @param musicProvider musicprovider which provides the music
+     * @return list from given mediaid
+     */
+    public static List<MediaSessionCompat.QueueItem> getPlayingQueue(@NonNull String mediaId,
+                                                                     @NonNull MusicProvider musicProvider) {
         Log.d(TAG, "getPlayingQueue:called");
         Log.i(TAG, "getPlayingQueue:id="+mediaId);
 
         List<MediaSessionCompat.QueueItem> playingQueue = new ArrayList<>();
         String[] hierarchy = MediaIdHelper.getHierarchy(mediaId);
-        //todo add support for albums and artists
-        if (hierarchy[0].equals(MediaIdHelper.MEDIA_ID_ALL_SONGS)) {
-            for (MediaMetadataCompat metadata : musicProvider.getSongs()) {
-                playingQueue.add(getQueueItem(metadata, MediaIdHelper.MEDIA_ID_ALL_SONGS));
-            }
-        } else if (hierarchy[0].equals(MediaIdHelper.MEDIA_ID_ALBUMS)) {
-            for (MediaMetadataCompat metadata : musicProvider.getMusicsByAlbumKey(hierarchy[1])) {
-                playingQueue.add(getQueueItem(metadata, hierarchy));
-            }
-        } else if (hierarchy[0].equals(MediaIdHelper.MEDIA_ID_ARTISTS)) {
-            for (MediaMetadataCompat metadata : musicProvider.getMusicsByArtistKey(hierarchy[1])) {
-                playingQueue.add(getQueueItem(metadata, hierarchy));
-            }
+        switch (hierarchy[0]) {
+            case MediaIdHelper.MEDIA_ID_ALL_SONGS:
+                for (MediaMetadataCompat metadata : musicProvider.getSongs()) {
+                    playingQueue.add(getQueueItem(metadata, MediaIdHelper.MEDIA_ID_ALL_SONGS));
+                }
+                break;
+            case MediaIdHelper.MEDIA_ID_ALBUMS:
+                for (MediaMetadataCompat metadata : musicProvider.getMusicsByAlbumKey(hierarchy[1])) {
+                    playingQueue.add(getQueueItem(metadata, hierarchy));
+                }
+                break;
+            case MediaIdHelper.MEDIA_ID_ARTISTS:
+                for (MediaMetadataCompat metadata : musicProvider.getMusicsByArtistKey(hierarchy[1])) {
+                    playingQueue.add(getQueueItem(metadata, hierarchy));
+                }
+                break;
         }
 
         return playingQueue;
     }
 
-    private static MediaSessionCompat.QueueItem getQueueItem(MediaMetadataCompat metadata,
-                                                            String rootId) {
-        String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
-                rootId);
-
-        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
-                .setMediaId(hierarchyAwareMediaId)
-                .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
-                .setSubtitle(metadata.getString(
-                        MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
-        MediaDescriptionCompat description = builder.build();
-
-        MediaSessionCompat.QueueItem queueItem =
-                new MediaSessionCompat.QueueItem(description, System.currentTimeMillis());
-
-        return queueItem;
-    }
-
-    private static MediaSessionCompat.QueueItem getQueueItem(MediaMetadataCompat metadata,
-                                                             String...rootId) {
-        String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
-                rootId);
-
-        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
-                .setMediaId(hierarchyAwareMediaId)
-                .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
-                .setSubtitle(metadata.getString(
-                        MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
-        MediaDescriptionCompat description = builder.build();
-
-        MediaSessionCompat.QueueItem queueItem =
-                new MediaSessionCompat.QueueItem(description, System.currentTimeMillis());
-
-        return queueItem;
-    }
-
-    public static MediaSessionCompat.QueueItem getQueueItem(String mediaId,
-                                                             MusicProvider musicProvider) {
+    /**
+     * for getting the queueitem from given mediaid
+     * @param mediaId input mediaid
+     * @param musicProvider musicprovider which provides the music
+     * @return list of songs
+     */
+    public static MediaSessionCompat.QueueItem getQueueItem(@NonNull String mediaId,
+                                                            @NonNull MusicProvider musicProvider) {
         String[] hierarchy = MediaIdHelper.getHierarchy(mediaId);
         String musicId = MediaIdHelper.extractMusicIdFromMediaId(mediaId);
-        MediaMetadataCompat metadata = musicProvider.getMusic(musicId);
-        if (metadata == null) {
-            return null;
-        } else {
-            return getQueueItem(metadata, hierarchy[0]);
+        if (musicId != null) {
+            MediaMetadataCompat metadata = musicProvider.getMusic(musicId);
+            if (metadata == null) {
+                return null;
+            } else {
+                return getQueueItem(metadata, hierarchy[0]);
+            }
         }
+        return null;
+    }
+
+    private static MediaSessionCompat.QueueItem getQueueItem(@NonNull MediaMetadataCompat metadata,
+                                                            @NonNull String rootId) {
+        String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
+                rootId);
+
+        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
+                .setMediaId(hierarchyAwareMediaId)
+                .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
+                .setSubtitle(metadata.getString(
+                        MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
+        MediaDescriptionCompat description = builder.build();
+
+        return new MediaSessionCompat.QueueItem(description, System.currentTimeMillis());
+    }
+
+    private static MediaSessionCompat.QueueItem getQueueItem(@NonNull MediaMetadataCompat metadata,
+                                                             @NonNull String...rootId) {
+        String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
+                rootId);
+
+        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
+                .setMediaId(hierarchyAwareMediaId)
+                .setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE))
+                .setSubtitle(metadata.getString(
+                        MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
+        MediaDescriptionCompat description = builder.build();
+
+        return new MediaSessionCompat.QueueItem(description, System.currentTimeMillis());
     }
 }
