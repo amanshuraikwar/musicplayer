@@ -11,7 +11,6 @@ import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
 public interface MiniPlayerMvpPresenter extends BaseMvpPresenter<MiniPlayerMvpView> {
     void onCreate(FragmentActivity activity);
     void onCreateView();
-    void onDestroy();
     void playPauseButtonOnClick();
     void updateProgress();
     void onNavUpClick();

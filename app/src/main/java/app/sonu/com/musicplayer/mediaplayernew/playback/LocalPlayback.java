@@ -10,13 +10,12 @@ import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import java.io.IOException;
 
 import app.sonu.com.musicplayer.mediaplayernew.MusicService;
-import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 import app.sonu.com.musicplayer.mediaplayernew.MusicProvider;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 
@@ -26,7 +25,6 @@ import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
  * @author amanshu
  */
 
-// todo model this class again and make a generic rule/state sheet to easily implement other playbacks
 public class LocalPlayback
         implements
         Playback,

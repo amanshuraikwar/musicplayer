@@ -20,7 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/default_album_art_album"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:transitionName="@string/album_transition_string"/>
     </app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout>
 
 

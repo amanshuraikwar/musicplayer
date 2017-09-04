@@ -2,15 +2,10 @@ package app.sonu.com.musicplayer.ui.miniplayer;
 
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -19,16 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,10 +31,9 @@ import java.util.concurrent.TimeUnit;
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
-import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
-import app.sonu.com.musicplayer.utils.ColorUtil;
+import app.sonu.com.musicplayer.util.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -83,6 +75,12 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     @BindView(R.id.miniPlayerNavUpIv)
     ImageView miniPlayerNavUpIv;
 
+    @BindView(R.id.shuffleNotifyIv)
+    ImageView shuffleNotifyIv;
+
+    @BindView(R.id.repeatNotifyIv)
+    ImageView repeatNotifyIv;
+
     @OnClick(R.id.miniPlayerNavUpIv)
     void onNavUpClicked() {
         Log.d(TAG, "navUp:clicked");
@@ -94,12 +92,6 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         Log.d(TAG, "playPauseIb onClick:called");
         mPresenter.playPauseButtonOnClick();
     }
-
-    @BindView(R.id.shuffleNotifyIv)
-    ImageView shuffleNotifyIv;
-
-    @BindView(R.id.repeatNotifyIv)
-    ImageView repeatNotifyIv;
 
     @Nullable
     @Override
@@ -126,13 +118,6 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         Log.d(TAG, "onCreate:is presenter null="+(mPresenter==null));
 
         mPresenter.onCreate(getActivity());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy:called");
-        mPresenter.onDestroy();
     }
 
     @Override
@@ -311,5 +296,10 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
                             .getResources()
                             .getDrawable(R.drawable.ic_repeat_one_black_12dp));
         }
+    }
+
+    @Override
+    public void displayToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 }

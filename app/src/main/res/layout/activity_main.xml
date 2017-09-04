@@ -32,17 +32,18 @@
                     android:layout_height="match_parent">
 
                     <android.support.design.widget.AppBarLayout
+                        android:id="@+id/appBarLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:theme="@style/ThemeOverlay.AppCompat.Light"
-                        android:background="#E1F5FE"
+                        android:background="@color/lightBlue50"
                         android:paddingTop="@dimen/status_bar_padding">
 
                         <android.support.v7.widget.Toolbar
                             android:id="@+id/my_toolbar"
                             android:layout_width="match_parent"
                             android:layout_height="?attr/actionBarSize"
-                            app:titleTextColor="#263238"/>
+                            app:titleTextColor="@color/black"/>
 
                         <android.support.design.widget.TabLayout
                             android:id="@+id/tabLayout"
@@ -50,9 +51,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/home_icon_size_padding"
                             app:tabMode="scrollable"
-                            app:tabTextColor="#455A64"
-                            app:tabSelectedTextColor="#263238"
-                            app:tabIndicatorColor="#263238"/>
+                            app:tabTextColor="@color/darkGrey"
+                            app:tabSelectedTextColor="@color/black"
+                            app:tabIndicatorColor="@color/black"/>
                     </android.support.design.widget.AppBarLayout>
 
                     <LinearLayout
@@ -156,7 +157,10 @@
                             android:paddingTop="14dp"
                             android:paddingBottom="14dp"
                             android:background="@null"
-                            android:textSize="14sp"/>
+                            android:textSize="14sp"
+                            android:lines="1"
+                            android:imeOptions="actionSearch"
+                            android:inputType="text"/>
 
                         <ImageButton
                             android:id="@+id/searchClearIb"
@@ -185,5 +189,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/menu_navigation_items"
-        app:headerLayout="@layout/layout_navigation_view_header"/>
+        app:headerLayout="@layout/layout_navigation_view_header"
+        android:requiresFadingEdge="vertical"/>
 </android.support.v4.widget.DrawerLayout>

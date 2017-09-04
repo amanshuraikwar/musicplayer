@@ -10,9 +10,8 @@ import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
  */
 
 public interface AlbumMvpPresenter extends BaseMvpPresenter<AlbumMvpView> {
-    void onCreate(FragmentActivity activity, MediaBrowserCompat.MediaItem item  );
+    void onCreate(FragmentActivity activity, MediaBrowserCompat.MediaItem item);
     void onCreateView();
-    void onDestroy();
     void onSongClicked(MediaBrowserCompat.MediaItem item);
     void onDragDismissed();
     void onBackIbClick();

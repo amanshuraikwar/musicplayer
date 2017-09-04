@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
 
@@ -14,7 +15,6 @@ import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
 public interface AlbumsMvpPresenter extends BaseMvpPresenter<AlbumsMvpView> {
     void onCreate(FragmentActivity activity);
     void onCreateView();
-    void onDestroy();
-    void onAlbumClicked(MediaBrowserCompat.MediaItem item);
+    void onAlbumClicked(MediaBrowserCompat.MediaItem item, View animatingView);
     void onRefresh();
 }

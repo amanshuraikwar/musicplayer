@@ -15,21 +15,32 @@
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground">
 
-    <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/iconIv"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/default_album_art_artist"
-        android:layout_centerVertical="true"
+    <android.support.v7.widget.CardView
+        android:id="@+id/iconCv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="0dp"
         android:layout_margin="16dp"
-        app:civ_border_width="0dp"/>
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="2dp">
+
+        <ImageView
+            android:id="@+id/iconIv"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"/>
+    </android.support.v7.widget.CardView>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/iconIv">
+        android:layout_toEndOf="@+id/iconCv">
 
         <TextView
             android:id="@+id/titleTv"
@@ -68,7 +79,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/iconIv"
+        android:layout_below="@+id/iconCv"
         android:layout_toEndOf="@id/iconCv"
         android:layout_marginStart="16dp"
         android:background="@color/whiteSmoke"

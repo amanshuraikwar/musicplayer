@@ -75,5 +75,6 @@
         android:layout_centerVertical="true"
         android:padding="16dp"
         android:clickable="true"
-        android:background="?selectableItemBackgroundBorderless"/>
+        android:background="?selectableItemBackgroundBorderless"
+        android:visibility="gone"/>
 </RelativeLayout>

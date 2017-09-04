@@ -2,6 +2,8 @@ package app.sonu.com.musicplayer.base.list;
 
 /**
  * Created by sonu on 20/3/17.
+ * represents items in a recycler view which can be visited/shown in the recyclerview
+ * generally this class is inherited to make a new visitable type item
  */
 
 public abstract class BaseVisitable

@@ -1,5 +1,6 @@
 package app.sonu.com.musicplayer.ui.allsongs;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -17,14 +18,16 @@ import java.util.List;
 
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
+import app.sonu.com.musicplayer.base.list.BaseListItemOnClickListener;
 import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
-import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.SongOnClickListener;
-import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.ShuffleAllSongsVisitable;
+import app.sonu.com.musicplayer.list.visitable.SongVisitable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -36,6 +39,13 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
 
     private static final String TAG = AllSongsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Songs";
+    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#E1F5FE");
+
+    @BindView(R.id.songsRv)
+    RecyclerView songsRv;
+
+    @BindView(R.id.parentSrl)
+    SwipeRefreshLayout parentSrl;
 
     private SongOnClickListener songOnClickListener = new SongOnClickListener() {
         @Override
@@ -49,11 +59,14 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
         }
     };
 
-    @BindView(R.id.songsRv)
-    RecyclerView songsRv;
+    private BaseListItemOnClickListener shuffleAllOnClickListener = new BaseListItemOnClickListener() {
+        @Override
+        public void OnClick() {
+            mPresenter.onShuffleAllClick();
+        }
+    };
 
-    @BindView(R.id.parentSrl)
-    SwipeRefreshLayout parentSrl;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,10 +93,10 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
         View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         ButterKnife.bind(this, view);
 
-        mPresenter.onCreateView();
 
         if (songsRv.getLayoutManager() == null) {
-            songsRv.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+            linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+            songsRv.setLayoutManager(linearLayoutManager);
         }
 
         parentSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -92,6 +105,8 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
                 mPresenter.onRefresh();
             }
         });
+
+        mPresenter.onCreateView();
 
         return view;
     }
@@ -109,13 +124,6 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy:called");
-        mPresenter.onDestroy();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume:called");
@@ -127,7 +135,6 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
         songsRv.setAdapter(
                 new MediaRecyclerViewAdapter(getVisitableList(itemList),
                         new MediaListTypeFactory()));
-        songsRv.invalidate();
     }
 
     /**
@@ -137,6 +144,10 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> songList) {
         List<BaseVisitable> visitableList = new ArrayList<>();
+        ShuffleAllSongsVisitable visitable = new ShuffleAllSongsVisitable();
+        visitable.setOnClickListener(shuffleAllOnClickListener);
+        visitableList.add(visitable);
+
         for (MediaBrowserCompat.MediaItem item : songList) {
             SongVisitable songVisitable = new SongVisitable(item);
             songVisitable.setOnClickListener(songOnClickListener);
@@ -159,5 +170,10 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     @Override
     public void displayToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void scrollListToTop() {
+        songsRv.smoothScrollToPosition(0);
     }
 }

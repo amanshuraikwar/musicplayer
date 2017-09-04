@@ -14,9 +14,8 @@ public interface MainMvpPresenter extends BaseMvpPresenter<MainMvpView> {
     void onSearchQueryTextChange(String searchText);
     void onCreate(FragmentActivity activity);
     void onCreateView();
-    void onDestroy();
-    void onSearchResultClick(MediaBrowserCompat.MediaItem item);
     void onSongSearchResultClick(MediaBrowserCompat.MediaItem item);
     void onAlbumSearchResultClick(MediaBrowserCompat.MediaItem item);
     void onArtistSearchResultClick(MediaBrowserCompat.MediaItem item);
+    void onTabClickOnSamePage(int position);
 }

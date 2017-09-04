@@ -10,9 +10,12 @@ import java.util.List;
 
 /**
  * Created by sonu on 30/6/17.
+ * recyclerview adapter which supports different type of viewholders efficiently
+ * using visitable design pattern
  */
 
-public class BaseRecyclerViewAdapter<TypeFactory extends BaseTypeFactory> extends RecyclerView.Adapter<BaseViewHolder> {
+public class BaseRecyclerViewAdapter<TypeFactory extends BaseTypeFactory>
+        extends RecyclerView.Adapter<BaseViewHolder> {
 
     private List<BaseVisitable> elements;
     private TypeFactory typeFactory;

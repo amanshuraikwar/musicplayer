@@ -8,7 +8,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import java.util.List;
 
 import app.sonu.com.musicplayer.base.ui.BaseMvpView;
-import app.sonu.com.musicplayer.data.db.model.Song;
+
 
 /**
  * Created by sonu on 4/7/17.
@@ -34,4 +34,5 @@ public interface MusicPlayerMvpView extends BaseMvpView {
     void displayQueue(List<MediaSessionCompat.QueueItem> queue);
     void resetSeekbar();
     boolean updateQueueIndex(int index);
+    void displayToast(String message);
 }

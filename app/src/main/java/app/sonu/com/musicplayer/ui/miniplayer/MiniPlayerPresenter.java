@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
@@ -26,11 +27,10 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
 
     private static final String TAG = MiniPlayerPresenter.class.getSimpleName();
 
-    private MediaBrowserManager mMediaBrowserManager;
     private Context mContext;
+    private MediaBrowserManager mMediaBrowserManager;
     private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
 
-    //todo temp
     private PlaybackStateCompat mLastPlaybackState;
 
     private final MediaBrowserManager.MediaControllerCallback mMediaControllerCallback =
@@ -58,6 +58,116 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
                     updateRepeatMode(repeatMode);
                 }
             };
+
+    public MiniPlayerPresenter(DataManager dataManager,
+                               MediaBrowserManager browserManager,
+                               PublishSubject<Integer> musicPlayerPanelPublishSubject) {
+        super(dataManager);
+        mMediaBrowserManager = browserManager;
+        mMediaBrowserManager.setCallback(this);
+        mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
+        mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
+    }
+
+    @Override
+    public void onDetach() {
+        Log.d(TAG, "onDetach:called");
+        mMediaBrowserManager.disconnectMediaBrowser();
+    }
+
+    @Override
+    public void onStart() {
+        // do nothing
+    }
+
+    @Override
+    public void onCreate(FragmentActivity activity) {
+        Log.d(TAG, "onCreate:called");
+        mContext = activity;
+        mMediaBrowserManager.initMediaBrowser(activity);
+    }
+
+    @Override
+    public void onCreateView() {
+        if (!mMediaBrowserManager.isMediaBrowserConnected()) {
+            mMediaBrowserManager.connectMediaBrowser();
+        }
+    }
+
+    @Override
+    public void playPauseButtonOnClick() {
+        int pbState = mMediaBrowserManager.getMediaController().getPlaybackState().getState();
+        Log.i(TAG, "playPauseButtonOnClick:pbState="+pbState+PlaybackStateCompat.STATE_PLAYING);
+        if (pbState == PlaybackStateCompat.STATE_PLAYING) {
+            mMediaBrowserManager.getMediaController().getTransportControls().pause();
+        } else {
+            mMediaBrowserManager.getMediaController().getTransportControls().play();
+        }
+    }
+
+    @Override
+    public void updateProgress() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        long currentPosition = mLastPlaybackState.getPosition();
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            // Calculate the elapsed time between the last position update and now and unless
+            // paused, we can assume (delta * speed) + current position is approximately the
+            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
+            // on MediaControllerCompat.
+            long timeDelta = SystemClock.elapsedRealtime() -
+                    mLastPlaybackState.getLastPositionUpdateTime();
+            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
+        }
+        mMvpView.setSeekBarPosition((int) currentPosition);
+    }
+
+    @Override
+    public void onNavUpClick() {
+        mMusicPlayerPanelPublishSubject.onNext(1);
+    }
+
+    //media browser manager implementations
+    @Override
+    public void onMediaBrowserConnected() {
+        Log.d(TAG, "onMediaBrowserConnected:called");
+        // do nothing
+    }
+
+    @Override
+    public void onMediaBrowserConnectionSuspended() {
+        Log.e(TAG, "onMediaBrowserConnectionSuspended:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
+    }
+
+    @Override
+    public void onMediaBrowserConnectionFailed() {
+        Log.e(TAG, "onMediaBrowserConnectionFailed:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
+    }
+
+    @Override
+    public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
+        Log.d(TAG, "onMediaBrowserChildrenLoaded:called");
+
+        mLastPlaybackState = mMediaBrowserManager.getMediaController().getPlaybackState();
+        updatePlaybackState();
+        displayMetadata(mMediaBrowserManager.getMediaController().getMetadata());
+        updateShuffleMode(mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
+        updateRepeatMode(mMediaBrowserManager.getMediaController().getRepeatMode());
+    }
+
+    @Override
+    public void onMediaBrowserSubscriptionError(String id) {
+        Log.e(TAG, "onMediaBrowserSubscriptionError:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
+    }
+
+    @Override
+    public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
+        // do nothing
+    }
 
     private void displayMetadata(MediaMetadataCompat metadata) {
         if (metadata == null) {
@@ -108,113 +218,5 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
             case PlaybackStateCompat.REPEAT_MODE_ONE:
                 mMvpView.setRepeatModeOne();
         }
-    }
-
-    public MiniPlayerPresenter(DataManager dataManager,
-                               MediaBrowserManager browserManager,
-                               PublishSubject<Integer> musicPlayerPanelPublishSubject) {
-        super(dataManager);
-        mMediaBrowserManager = browserManager;
-        mMediaBrowserManager.setCallback(this);
-        mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
-        mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
-    }
-
-    @Override
-    public void onDetach() {
-
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onCreate(FragmentActivity activity) {
-        this.mContext = activity;
-        mMediaBrowserManager.initMediaBrowser(activity);
-    }
-
-    @Override
-    public void onCreateView() {
-        if (!mMediaBrowserManager.isMediaBrowserConnected()) {
-            mMediaBrowserManager.connectMediaBrowser();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy:called");
-        mMediaBrowserManager.disconnectMediaBrowser();
-    }
-
-    @Override
-    public void playPauseButtonOnClick() {
-        int pbState = mMediaBrowserManager.getMediaController().getPlaybackState().getState();
-        Log.i(TAG, "playPauseButtonOnClick:pbState="+pbState+PlaybackStateCompat.STATE_PLAYING);
-        if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-            mMediaBrowserManager.getMediaController().getTransportControls().pause();
-        } else {
-            mMediaBrowserManager.getMediaController().getTransportControls().play();
-        }
-    }
-
-    @Override
-    public void updateProgress() {
-        if (mLastPlaybackState == null) {
-            return;
-        }
-        long currentPosition = mLastPlaybackState.getPosition();
-        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            // Calculate the elapsed time between the last position update and now and unless
-            // paused, we can assume (delta * speed) + current position is approximately the
-            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
-            // on MediaControllerCompat.
-            long timeDelta = SystemClock.elapsedRealtime() -
-                    mLastPlaybackState.getLastPositionUpdateTime();
-            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
-        }
-        mMvpView.setSeekBarPosition((int) currentPosition);
-    }
-
-    @Override
-    public void onNavUpClick() {
-        mMusicPlayerPanelPublishSubject.onNext(1);
-    }
-
-    //media browser manager implementations
-    @Override
-    public void onMediaBrowserConnected() {
-        mMediaBrowserManager.subscribeMediaBrowser();
-    }
-
-    @Override
-    public void onMediaBrowserConnectionSuspended() {
-
-    }
-
-    @Override
-    public void onMediaBrowserConnectionFailed() {
-
-    }
-
-    @Override
-    public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
-        mLastPlaybackState = mMediaBrowserManager.getMediaController().getPlaybackState();
-        updatePlaybackState();
-        displayMetadata(mMediaBrowserManager.getMediaController().getMetadata());
-        updateShuffleMode(mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
-        updateRepeatMode(mMediaBrowserManager.getMediaController().getRepeatMode());
-    }
-
-    @Override
-    public void onMediaBrowserSubscriptionError(String id) {
-
-    }
-
-    @Override
-    public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
-
     }
 }

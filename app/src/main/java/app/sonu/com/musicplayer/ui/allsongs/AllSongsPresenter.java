@@ -8,11 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.util.List;
+import java.util.Random;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -28,19 +31,26 @@ public class AllSongsPresenter extends
     private MediaBrowserManager mMediaBrowserManager;
     private Context mContext;
     private PublishSubject<MediaBrowserCompat.MediaItem> mSelectedItemPublishSubject;
+    private PublishSubject<Integer> mAllSongsScrollToTopSubject;
+
+    private Disposable mAllSongsScrollToTopDisposable;
 
     public AllSongsPresenter(DataManager dataManager,
                              MediaBrowserManager mediaBrowserManager,
-                             PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject) {
+                             PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject,
+                             PublishSubject<Integer> allSongsScrollToTopSubject) {
         super(dataManager);
-        this.mMediaBrowserManager = mediaBrowserManager;
+        mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
         mSelectedItemPublishSubject = selectedItemPublishSubject;
+        mAllSongsScrollToTopSubject = allSongsScrollToTopSubject;
     }
 
     @Override
     public void onDetach() {
-        //nothing
+        Log.d(TAG, "onDetach:called");
+        mMediaBrowserManager.disconnectMediaBrowser();
+        mAllSongsScrollToTopDisposable.dispose();
     }
 
     @Override
@@ -51,10 +61,17 @@ public class AllSongsPresenter extends
     @Override
     public void onCreate(FragmentActivity activity) {
         Log.d(TAG, "onCreate:called");
+        mContext = activity;
+
         //init media browser
         mMediaBrowserManager.initMediaBrowser(activity);
 
-        mContext = activity;
+        mAllSongsScrollToTopDisposable = mAllSongsScrollToTopSubject.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                mMvpView.scrollListToTop();
+            }
+        });
     }
 
     @Override
@@ -66,12 +83,6 @@ public class AllSongsPresenter extends
         } else {
             mMediaBrowserManager.connectMediaBrowser();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy:called");
-        mMediaBrowserManager.disconnectMediaBrowser();
     }
 
     @Override
@@ -97,11 +108,28 @@ public class AllSongsPresenter extends
         }
     }
 
+    @Override
+    public void onShuffleAllClick() {
+        List<MediaBrowserCompat.MediaItem> songsList = mMediaBrowserManager.getItemList();
+        int randomIndex = new Random().nextInt(songsList.size());
+        mMediaBrowserManager
+                .getMediaController()
+                .getTransportControls()
+                .playFromMediaId(songsList.get(randomIndex).getMediaId(), null);
+        mSelectedItemPublishSubject.onNext(songsList.get(randomIndex));
+        if (!mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
+            mMediaBrowserManager
+                    .getMediaController()
+                    .getTransportControls()
+                    .setShuffleModeEnabled(true);
+        }
+    }
+
     // media browser callback
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        mMediaBrowserManager.subscribeMediaBrowser();
+        // do nothing
     }
 
     @Override

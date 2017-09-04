@@ -2,18 +2,13 @@ package app.sonu.com.musicplayer.data.local;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaMetadataCompat;
-import android.webkit.MimeTypeMap;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.sonu.com.musicplayer.di.ApplicationContext;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
-import app.sonu.com.musicplayer.utils.FileUtil;
 
 /**
  * Created by sonu on 30/6/17.
@@ -25,22 +20,6 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
 
     public AppLocalStorageHelper(@ApplicationContext Context context) {
         this.applicationContext = context;
-    }
-
-    @Deprecated
-    @Override
-    public List<File> getFileList() {
-        File root = new File(Environment
-                .getExternalStorageDirectory()
-                .getAbsolutePath());
-        return listDir(root);
-    }
-
-    @Deprecated
-    @Override
-    public List<File> getFileList(String pathOfFolder) {
-        File directory = new File(pathOfFolder);
-        return listDir(directory);
     }
 
     @Override
@@ -85,18 +64,6 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
         return artistList;
     }
 
-    @Deprecated
-    private MediaMetadataCompat buildFromCursor(Cursor cursor) {
-        return new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, cursor.getString(0))
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, cursor.getString(1))
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, cursor.getString(2))
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, cursor.getString(3))
-                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.parseLong(cursor.getString(4)))
-                .putString(MusicProviderSource.CUSTOM_METADATA_KEY_TRACK_SOURCE, cursor.getString(5))
-                .build();
-    }
-
     private MediaMetadataCompat buildSongMetadata(Cursor cursor) {
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, cursor.getString(0))
@@ -135,10 +102,10 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
                 .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, cursor.getString(4))
                 .putString(MusicProviderSource.CUSTOM_METADATA_KEY_FIRST_YEAR, cursor.getString(5))
                 .putString(MusicProviderSource.CUSTOM_METADATA_KEY_LAST_YEAR, cursor.getString(6))
-                //.putLong(MediaMetadataCompat.METADATA_KEY_YEAR,
-                //        Integer.parseInt(cursor.getString(6)))
                 .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS,
                         Long.parseLong(cursor.getString(7)))
+                //.putLong(MediaMetadataCompat.METADATA_KEY_YEAR,
+                //        Integer.parseInt(cursor.getString(6)))
                 .build();
     }
 
@@ -163,7 +130,6 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
 
         String[] projection = {
                 MediaStore.Audio.Media._ID,
-                //MediaStore.Audio.Media._COUNT,
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.DATE_ADDED,
                 MediaStore.Audio.Media.DATE_MODIFIED,
@@ -176,11 +142,12 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
                 MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.ARTIST_ID,
                 MediaStore.Audio.Media.ARTIST_KEY,
-                //MediaStore.Audio.Media.BOOKMARK,
                 MediaStore.Audio.Media.COMPOSER,
                 MediaStore.Audio.Media.DURATION,
                 MediaStore.Audio.Media.TRACK,
                 MediaStore.Audio.Media.YEAR
+                //MediaStore.Audio.Media.BOOKMARK,
+                //MediaStore.Audio.Media._COUNT,
         };
 
         // the last parameter sorts the data alphanumerically
@@ -196,7 +163,6 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
 
         String[] projection = {
                 MediaStore.Audio.Albums._ID,
-                //MediaStore.Audio.Albums._COUNT,
                 MediaStore.Audio.Albums.ALBUM,
                 MediaStore.Audio.Albums.ALBUM_ART,
                 MediaStore.Audio.Albums.ALBUM_KEY,
@@ -204,6 +170,7 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
                 MediaStore.Audio.Albums.FIRST_YEAR,
                 MediaStore.Audio.Albums.LAST_YEAR,
                 MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+                //MediaStore.Audio.Albums._COUNT,
                 //MediaStore.Audio.Albums.NUMBER_OF_SONGS_FOR_ARTIST
         };
 
@@ -220,11 +187,11 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
 
         String[] projection = {
                 MediaStore.Audio.Artists._ID,
-                //MediaStore.Audio.Albums._COUNT,
                 MediaStore.Audio.Artists.ARTIST,
                 MediaStore.Audio.Artists.ARTIST_KEY,
                 MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
                 MediaStore.Audio.Artists.NUMBER_OF_TRACKS
+                //MediaStore.Audio.Albums._COUNT,
 
         };
 
@@ -235,26 +202,6 @@ public class AppLocalStorageHelper implements LocalStorageHelper {
                 null,
                 null,
                 null);
-    }
-
-    @Deprecated
-    List<File> listDir(File f){
-        File files[] = f.listFiles();
-        List<File> fileList = new ArrayList<>();
-        List<File> folderList = new ArrayList<>();
-
-        for (File file : files) {
-            if (file.isDirectory()) {
-                folderList.add(file);
-            } else if (
-                    !file.isHidden() &&
-                    FileUtil.fileIsMimeType(file, "audio/*", MimeTypeMap.getSingleton())
-                    ) {
-                fileList.add(file);
-            }
-        }
-        folderList.addAll(fileList);
-        return new ArrayList<>(folderList);
     }
 }
 

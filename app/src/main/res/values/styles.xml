@@ -7,12 +7,20 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:navigationBarColor">@color/grey</item>
         <item name="android:windowTranslucentStatus">true</item>
+
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="Widget.MaterialProgressBar.ProgressBar.Horizontal.NoPadding">
         <item name="android:minHeight">4dp</item>
         <item name="android:maxHeight">4dp</item>
+    </style>
+
+    <style name="AppThemeNoBackground" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/blackTransparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

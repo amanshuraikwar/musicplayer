@@ -13,12 +13,17 @@
     <color name="white">#FAFAFA</color>
     <color name="whiteSmoke">#eeeeee</color>
     <color name="lightGrey">#e0e0e0</color>
+    <color name="grey500">#9E9E9E</color>
     <color name="grey">#757575</color>
     <color name="charcoal">#484848</color>
     <color name="aqua">#6ad0a4</color>
     <color name="lightAqua">#8ee6c3</color>
-    <color name="darkGrey">#a6a6a6</color>
-    <color name="black">#0a0a0a</color>
+    <color name="darkGrey">#616161</color>
+    <color name="black">#212121</color>
     <color name="coal">#2f2f2f</color>
     <color name="blue">#2196f3</color>
+
+    <color name="lightBlue50">#E1F5FE</color>
+    <color name="cyan50">#E0F7FA</color>
+    <color name="teal50">#E0F2F1</color>
 </resources>

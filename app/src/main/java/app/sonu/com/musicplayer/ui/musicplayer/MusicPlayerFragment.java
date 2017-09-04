@@ -1,29 +1,19 @@
 package app.sonu.com.musicplayer.ui.musicplayer;
 
-import android.content.ComponentName;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -43,7 +33,6 @@ import com.bumptech.glide.request.target.Target;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,17 +43,14 @@ import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
-import app.sonu.com.musicplayer.data.db.model.Song;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
-import app.sonu.com.musicplayer.mediaplayernew.MusicService;
-import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.QueueItemOnClickListener;
-import app.sonu.com.musicplayer.ui.list.visitable.QueueItemVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.list.adapter.QueueRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.onclicklistener.QueueItemOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.QueueItemVisitable;
 import app.sonu.com.musicplayer.ui.main.SlidingUpPaneCallback;
-import app.sonu.com.musicplayer.utils.ColorUtil;
+import app.sonu.com.musicplayer.util.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -95,8 +81,8 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
 
     private QueueRecyclerViewAdapter mQueueAdapter;
 
-    int mCurrentQueueIndex;
-    LinearLayoutManager mQueueLayoutManager;
+    private int mCurrentQueueIndex;
+    private LinearLayoutManager mQueueLayoutManager;
 
     @BindView(R.id.musicPlayerParentLl)
     View musicPlayerParent;
@@ -161,7 +147,23 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     @BindView(R.id.musicPlayerLowerHalfLl)
     View musicPlayerLowerHalfLl;
 
+    @BindView(R.id.collapseIv)
+    ImageView collapseIv;
 
+    @BindView(R.id.heartIv)
+    ImageView heartIv;
+
+    @BindView(R.id.musicPlayerMainLl)
+    View musicPlayerMainLl;
+
+    @BindView(R.id.gotoAlbumIv)
+    ImageView gotoAlbumIv;
+
+    @BindView(R.id.gotoArtistIv)
+    ImageView gotoArtistIv;
+
+    @BindView(R.id.smallAlbumArtIv)
+    ImageView smallAlbumArtIv;
 
     @OnClick(R.id.playPauseIb)
     void onPlayPauseIbClick(){
@@ -198,24 +200,6 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     void onCollapseIvClick() {
         mPresenter.onCollapseIvClick();
     }
-
-    @BindView(R.id.collapseIv)
-    ImageView collapseIv;
-
-    @BindView(R.id.heartIv)
-    ImageView heartIv;
-
-    @BindView(R.id.musicPlayerMainLl)
-    View musicPlayerMainLl;
-
-    @BindView(R.id.gotoAlbumIv)
-    ImageView gotoAlbumIv;
-
-    @BindView(R.id.gotoArtistIv)
-    ImageView gotoArtistIv;
-
-    @BindView(R.id.smallAlbumArtIv)
-    ImageView smallAlbumArtIv;
 
     private QueueItemOnClickListener mQueueItemOnClickListener = new QueueItemOnClickListener() {
         @Override
@@ -256,13 +240,6 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         super.onStop();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy:called");
-        mPresenter.onDestroy();
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -271,8 +248,6 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         ButterKnife.bind(this, view);
 
         mPresenter.onCreateView();
-
-        ((SlidingUpPaneCallback) getActivity()).setDragView(musicPlayerUpperHalfRl);
 
         musicPlayerSupl.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -316,8 +291,6 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             mQueueLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
             playingQueueRv.setLayoutManager(mQueueLayoutManager);
         }
-
-//        musicPlayerSupl.setDragView(null);
 
         return view;
     }
@@ -397,6 +370,7 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         totalTimeTv.setText(songDuration);
 
         ((SlidingUpPaneCallback) getActivity()).setAntiDragViewNow(musicPlayerLowerHalfLl);
+        ((SlidingUpPaneCallback) getActivity()).setPaneLayout(musicPlayerSupl);
     }
 
     private void updateUiColor(Bitmap resource) {
@@ -437,9 +411,10 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         elapsedTimeTv.setTextColor(bodyColor);
         totalTimeTv.setTextColor(bodyColor);
 
-        //todo
-        songCurrentPositionSeekBar.setProgressTintList(ColorStateList.valueOf(bodyColor));
-        songCurrentPositionSeekBar.setThumbTintList(ColorStateList.valueOf(bodyColor));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            songCurrentPositionSeekBar.setProgressTintList(ColorStateList.valueOf(bodyColor));
+            songCurrentPositionSeekBar.setThumbTintList(ColorStateList.valueOf(bodyColor));
+        }
     }
 
     @Override
@@ -606,11 +581,11 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         }
     }
 
-    /**
-     * this method is defined in fragment because of attached onclicklistener
-     * @param queue
-     * @return
-     */
+    @Override
+    public void displayToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
     private List<BaseVisitable> getVisitableList(List<MediaSessionCompat.QueueItem> queue) {
         List<BaseVisitable> visitableList = new ArrayList<>();
         int index = 0;

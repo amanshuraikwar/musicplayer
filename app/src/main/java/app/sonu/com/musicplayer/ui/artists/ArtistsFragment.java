@@ -1,5 +1,6 @@
 package app.sonu.com.musicplayer.ui.artists;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +22,10 @@ import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.ArtistOnClickListener;
-import app.sonu.com.musicplayer.ui.list.visitable.ArtistVisitable;
-import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.onclicklistener.ArtistOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.ArtistVisitable;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -35,6 +37,13 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
 
     private static final String TAG = ArtistsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Artists";
+    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#E0F2F1");
+
+    @BindView(R.id.artistsRv)
+    RecyclerView artistsRv;
+
+    @BindView(R.id.parentSrl)
+    SwipeRefreshLayout parentSrl;
 
     private ArtistOnClickListener artistOnClickListener = new ArtistOnClickListener() {
         @Override
@@ -48,12 +57,6 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
 
         }
     };
-
-    @BindView(R.id.artistsRv)
-    RecyclerView artistsRv;
-
-    @BindView(R.id.parentSrl)
-    SwipeRefreshLayout parentSrl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,7 +98,9 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
                 mPresenter.onRefresh();
             }
         });
+
         mPresenter.onCreateView();
+
         return view;
     }
 
@@ -103,13 +108,6 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop:called");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy:called");
-        mPresenter.onDestroy();
     }
 
     @Override
@@ -124,7 +122,6 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
         artistsRv.setAdapter(
                 new MediaRecyclerViewAdapter(getVisitableList(itemList),
                         new MediaListTypeFactory()));
-        artistsRv.invalidate();
     }
 
     @Override
@@ -135,6 +132,16 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
     @Override
     public void stopLoading() {
         parentSrl.setRefreshing(false);
+    }
+
+    @Override
+    public void displayToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void scrollListToTop() {
+        artistsRv.smoothScrollToPosition(0);
     }
 
     /**

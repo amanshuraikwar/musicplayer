@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -25,13 +23,13 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.mediaplayernew.MusicService;
 import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
 import app.sonu.com.musicplayer.ui.main.MainActivity;
-import app.sonu.com.musicplayer.utils.ColorUtil;
+import app.sonu.com.musicplayer.util.ColorUtil;
 
 /**
  * Created by sonu on 20/8/17.
+ * this class handles notification of the music player
  */
 
-// todo study this class
 public class MediaNotificationManager extends BroadcastReceiver {
 
     private static final String TAG = MediaNotificationManager.class.getSimpleName();
@@ -273,10 +271,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
 
         // If add to playlist action is enabled
-        if ((mPlaybackState.getActions() & Playback.CUSTOM_ACTION_ADD_TO_PLAYLIST) != 0) {
-            notificationBuilder.addAction(R.drawable.ic_playlist_add_black_24dp,
-                    "next", mAddToPlaylistIntent);
-        }
+        // todo implement
+//        if ((mPlaybackState.getActions() & Playback.CUSTOM_ACTION_ADD_TO_PLAYLIST) != 0) {
+//            notificationBuilder.addAction(R.drawable.ic_playlist_add_black_24dp,
+//                    "next", mAddToPlaylistIntent);
+//        }
 
         MediaDescriptionCompat description = mMetadata.getDescription();
 

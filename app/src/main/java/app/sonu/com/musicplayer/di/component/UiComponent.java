@@ -8,7 +8,6 @@ import app.sonu.com.musicplayer.ui.albums.AlbumsFragment;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsFragment;
 import app.sonu.com.musicplayer.ui.artist.ArtistFragment;
 import app.sonu.com.musicplayer.ui.artists.ArtistsFragment;
-import app.sonu.com.musicplayer.ui.fileview.FileViewFragment;
 import app.sonu.com.musicplayer.ui.main.MainActivity;
 
 import app.sonu.com.musicplayer.ui.miniplayer.MiniPlayerFragment;
@@ -25,7 +24,6 @@ import dagger.Component;
 
 public interface UiComponent {
     void inject(MainActivity mainActivity);
-    void inject(FileViewFragment fileViewFragment);
     void inject(AllSongsFragment allSongsFragment);
     void inject(AlbumsFragment albumsFragment);
     void inject(ArtistsFragment artistsFragment);

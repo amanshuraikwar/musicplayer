@@ -30,7 +30,7 @@
                 android:id="@+id/albumArtIv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/charcoal"
+                android:background="@color/coal"
                 android:src="@drawable/ic_music_note_light_grey_24dp"
                 android:scaleType="center"/>
 
@@ -85,7 +85,8 @@
                         android:src="@drawable/ic_heart_outline_white_24dp"
                         android:background="?selectableItemBackgroundBorderless"
                         android:drawSelectorOnTop="true"
-                        android:clickable="true"/>
+                        android:clickable="true"
+                        android:visibility="gone"/>
 
                     <ImageView
                         android:id="@+id/moreOptionsIv"
@@ -97,7 +98,8 @@
                         android:src="@drawable/ic_more_vert_white_24dp"
                         android:background="?selectableItemBackgroundBorderless"
                         android:drawSelectorOnTop="true"
-                        android:clickable="true"/>
+                        android:clickable="true"
+                        android:visibility="gone"/>
                 </RelativeLayout>
             </LinearLayout>
 

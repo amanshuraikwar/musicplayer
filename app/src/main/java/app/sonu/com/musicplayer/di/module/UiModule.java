@@ -2,13 +2,15 @@ package app.sonu.com.musicplayer.di.module;
 
 import android.content.Context;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.util.Pair;
+import android.view.View;
 
 import javax.inject.Named;
 
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.di.ActivityContext;
 import app.sonu.com.musicplayer.di.PerActivity;
-import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 import app.sonu.com.musicplayer.ui.album.AlbumMvpPresenter;
 import app.sonu.com.musicplayer.ui.album.AlbumPresenter;
 import app.sonu.com.musicplayer.ui.albums.AlbumsMvpPresenter;
@@ -20,8 +22,6 @@ import app.sonu.com.musicplayer.ui.artist.ArtistPresenter;
 import app.sonu.com.musicplayer.ui.artists.ArtistsMvpPresenter;
 import app.sonu.com.musicplayer.ui.artists.ArtistsPresenter;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
-import app.sonu.com.musicplayer.ui.fileview.FileViewMvpPresenter;
-import app.sonu.com.musicplayer.ui.fileview.FileViewPresenter;
 import app.sonu.com.musicplayer.ui.main.MainMvpPresenter;
 import app.sonu.com.musicplayer.ui.main.MainPresenter;
 
@@ -64,26 +64,27 @@ public class UiModule {
                                    @Named(BusModule.PROVIDER_SELECTED_SONG)
                                    PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject,
                                    @Named(BusModule.PROVIDER_ALBUM_CLICK)
-                                   PublishSubject<MediaBrowserCompat.MediaItem> albumClickSubject,
+                                   PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> albumClickSubject,
                                    @Named(BusModule.PROVIDER_ARTIST_CLICK)
                                            PublishSubject<MediaBrowserCompat.MediaItem>
-                                           artistClickSubject) {
-        return new MainPresenter(dataManager, selectedSongSubject, albumClickSubject,
+                                           artistClickSubject,
+                                   @Named(BusModule.PROVIDER_ALL_SONGS_SCROLL_TO_TOP)
+                                           PublishSubject<Integer> allSongsScrollToTopSubject,
+                                   @Named(BusModule.PROVIDER_ALBUMS_SCROLL_TO_TOP)
+                                           PublishSubject<Integer> albumsScrollToTopSubject,
+                                   @Named(BusModule.PROVIDER_ARTISTS_SCROLL_TO_TOP)
+                                           PublishSubject<Integer> artistsScrollToTopSubject
+                                   ) {
+        return new MainPresenter(
+                dataManager,
+                selectedSongSubject,
+                albumClickSubject,
                 artistClickSubject,
+                allSongsScrollToTopSubject,
+                albumsScrollToTopSubject,
+                artistsScrollToTopSubject,
                 new MediaBrowserManager(MediaIdHelper.ALL_SONGS_ROOT_HINT,
                         MainPresenter.class.getSimpleName()));
-    }
-
-    @Provides
-    @PerActivity
-    FileViewMvpPresenter getFileViewMvpPresenter(FileViewPresenter fileViewPresenter) {
-        return fileViewPresenter;
-    }
-
-    @Provides
-    @PerActivity
-    FileViewPresenter getFileViewPresenter(DataManager dataManager) {
-        return new FileViewPresenter(dataManager);
     }
 
     @Provides
@@ -97,12 +98,15 @@ public class UiModule {
     AllSongsPresenter getAllSongsPresenter(DataManager dataManager,
                                            @Named(BusModule.PROVIDER_SELECTED_SONG)
                                                    PublishSubject<MediaBrowserCompat.MediaItem>
-                                                   selectedSongSubject) {
+                                                   selectedSongSubject,
+                                           @Named(BusModule.PROVIDER_ALL_SONGS_SCROLL_TO_TOP)
+                                                   PublishSubject<Integer> allSongsScrollToTopSubject) {
         return new AllSongsPresenter(dataManager,
                 new MediaBrowserManager(
                         MediaIdHelper.ALL_SONGS_ROOT_HINT,
                         AllSongsPresenter.class.getSimpleName()),
-                selectedSongSubject);
+                selectedSongSubject,
+                allSongsScrollToTopSubject);
     }
 
     @Provides
@@ -155,13 +159,16 @@ public class UiModule {
     @PerActivity
     AlbumsPresenter getAlbumsPresenter(DataManager dataManager,
                                        @Named(BusModule.PROVIDER_ALBUM_CLICK)
-                                       PublishSubject<MediaBrowserCompat.MediaItem>
-                                               albumClickSubject) {
+                                       PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>>
+                                               albumClickSubject,
+                                       @Named(BusModule.PROVIDER_ALBUMS_SCROLL_TO_TOP)
+                                               PublishSubject<Integer> albumsScrollToTopSubject) {
         return new AlbumsPresenter(
                 dataManager,
                 new MediaBrowserManager(
                         MediaIdHelper.ALBUMS_ROOT_HINT, AlbumsPresenter.class.getSimpleName()),
-                albumClickSubject);
+                albumClickSubject,
+                albumsScrollToTopSubject);
     }
 
     @Provides
@@ -175,11 +182,14 @@ public class UiModule {
     ArtistsPresenter getArtistsPresenter(DataManager dataManager,
                                          @Named(BusModule.PROVIDER_ARTIST_CLICK)
                                                  PublishSubject<MediaBrowserCompat.MediaItem>
-                                                 artistClickSubject) {
+                                                 artistClickSubject,
+                                         @Named(BusModule.PROVIDER_ARTISTS_SCROLL_TO_TOP)
+                                                 PublishSubject<Integer> artistsScrollToTopSubject) {
         return new ArtistsPresenter(dataManager,
                 new MediaBrowserManager(MediaIdHelper.ARTISTS_ROOT_HINT,
                         ArtistsPresenter.class.getSimpleName()),
-                artistClickSubject);
+                artistClickSubject,
+                artistsScrollToTopSubject);
     }
 
     @Provides

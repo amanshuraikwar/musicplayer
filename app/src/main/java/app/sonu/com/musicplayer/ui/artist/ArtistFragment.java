@@ -10,7 +10,6 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,15 +38,11 @@ import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
-import app.sonu.com.musicplayer.ui.album.AlbumFragment;
-import app.sonu.com.musicplayer.ui.artists.ArtistsMvpView;
-import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.SongOnClickListener;
-import app.sonu.com.musicplayer.ui.list.visitable.AlbumSongVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.ArtistSongVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
-import app.sonu.com.musicplayer.utils.ColorUtil;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.ArtistSongVisitable;
+import app.sonu.com.musicplayer.util.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -58,21 +53,6 @@ import butterknife.ButterKnife;
 public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements ArtistMvpView{
     private static final String TAG = ArtistFragment.class.getSimpleName();
     public static final String BACK_STACK_TAG = "__artistfragment__";
-
-    private SongOnClickListener songOnClickListener = new SongOnClickListener() {
-        @Override
-        public void onSongClick(MediaBrowserCompat.MediaItem item) {
-            mPresenter.onSongClicked(item);
-        }
-
-        @Override
-        public void OnClick() {
-
-        }
-    };
-
-//    @BindView(R.id.toolbar)
-//    Toolbar toolbar;
 
     @BindView(R.id.elasticDragDismissLayout)
     ElasticDragDismissFrameLayout elasticDragDismissFrameLayout;
@@ -98,6 +78,18 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
     @BindView(R.id.artistMetadataRl)
     View artistMetadataRl;
 
+    private SongOnClickListener songOnClickListener = new SongOnClickListener() {
+        @Override
+        public void onSongClick(MediaBrowserCompat.MediaItem item) {
+            mPresenter.onSongClicked(item);
+        }
+
+        @Override
+        public void OnClick() {
+
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -106,21 +98,10 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
         View view = inflater.inflate(R.layout.fragment_artist, container, false);
         ButterKnife.bind(this, view);
 
-        mPresenter.onCreateView();
 
         if (itemsRl.getLayoutManager() == null) {
             itemsRl.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         }
-
-//        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "navOnClick:called");
-//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                fragmentManager.beginTransaction().remove(ArtistFragment.this).commit();
-//            }
-//        });
 
         ViewCompat.setNestedScrollingEnabled(itemsRl, false);
 
@@ -142,6 +123,8 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
                 mPresenter.onBackIbClick();
             }
         });
+
+        mPresenter.onCreateView();
 
         return view;
     }
@@ -172,13 +155,6 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy:called");
-        mPresenter.onDestroy();
-    }
-
-    @Override
     public void closeFragment() {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.popBackStack();
@@ -189,7 +165,6 @@ public class ArtistFragment extends BaseFragment<ArtistMvpPresenter> implements 
         itemsRl.setAdapter(
                 new MediaRecyclerViewAdapter(getVisitableList(itemList),
                         new MediaListTypeFactory()));
-        itemsRl.invalidate();
     }
 
     @Override

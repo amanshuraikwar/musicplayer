@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 /**
  * Created by sonu on 29/6/17.
+ * base activity
  */
 
 public abstract class BaseActivity<MvpPresenter extends BaseMvpPresenter> extends AppCompatActivity
@@ -21,7 +22,6 @@ public abstract class BaseActivity<MvpPresenter extends BaseMvpPresenter> extend
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("toto", "onCreate:called");
     }
 
     @Override
@@ -39,13 +39,11 @@ public abstract class BaseActivity<MvpPresenter extends BaseMvpPresenter> extend
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("toto", "onDestroy:called");
         mPresenter.onDetach();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("toto", "onStop:called");
     }
 }

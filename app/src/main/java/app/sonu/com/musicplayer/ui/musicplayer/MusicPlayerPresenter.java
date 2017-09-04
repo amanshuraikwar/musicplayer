@@ -1,45 +1,24 @@
 package app.sonu.com.musicplayer.ui.musicplayer;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.data.db.model.Song;
-import app.sonu.com.musicplayer.mediaplayer.MediaPlayerCallbacks;
-import app.sonu.com.musicplayer.mediaplayer.MediaPlayerService;
-import app.sonu.com.musicplayer.mediaplayer.MediaPlayerServiceNew;
+
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
-import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
-import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
-import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -57,10 +36,7 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
     private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
 
     private Context mContext;
-
     private Disposable mQueueIndexUpdatedDisposable;
-
-    //todo temp
     private PlaybackStateCompat mLastPlaybackState;
 
     private final MediaBrowserManager.MediaControllerCallback mMediaControllerCallback =
@@ -94,7 +70,6 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                 public void onShuffleModeChanged(boolean enabled) {
                     Log.d(TAG, "onShuffleModeChanged:called");
                     updateShuffleMode(enabled);
-                    Log.w(TAG,"sssss="+mMediaBrowserManager.getMediaController().isShuffleModeEnabled()+"");
                 }
 
                 @Override
@@ -109,72 +84,6 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
                 }
             };
 
-    private void displayMetadata(MediaMetadataCompat metadata) {
-        if (metadata == null) {
-            return;
-        }
-        mMvpView.displaySong(
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE),
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE),
-                getFormattedDuration(
-                        metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)),
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
-        mMvpView.updateDuration(
-                metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
-    }
-
-    private void updatePlaybackState() {
-        if (mLastPlaybackState == null) {
-            return;
-        }
-        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            mMvpView.showPauseIcon();
-            mMvpView.scheduleSeekbarUpdate();
-        } else if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            mMvpView.showPlayIcon();
-            mMvpView.stopSeekbarUpdate();
-
-            //to set the seekbar to correct position if somehow paused at
-            //a different position than shown on the ui
-            updateProgress();
-        } else if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_NONE
-                || mLastPlaybackState.getState() == PlaybackStateCompat.STATE_ERROR
-                || mLastPlaybackState.getState() == PlaybackStateCompat.STATE_STOPPED){
-            mMvpView.showPlayIcon();
-            mMvpView.stopSeekbarUpdate();
-            mMvpView.resetSeekbar();
-        }
-    }
-
-    private void updateShuffleMode(boolean enabled) {
-        if (enabled) {
-            mMvpView.setShuffleModeEnabled();
-        } else {
-            mMvpView.setShuffleModeDisabled();
-        }
-    }
-
-    private void updateRepeatMode(int repeatMode) {
-        switch (repeatMode) {
-            case PlaybackStateCompat.REPEAT_MODE_NONE:
-                mMvpView.setRepeatModeNone();
-                break;
-            case PlaybackStateCompat.REPEAT_MODE_ALL:
-                mMvpView.setRepeatModeAll();
-                break;
-            case PlaybackStateCompat.REPEAT_MODE_ONE:
-                mMvpView.setRepeatModeOne();
-        }
-    }
-
-    private void updateQueue(List<MediaSessionCompat.QueueItem> queue) {
-        if (queue == null) {
-            return;
-        }
-
-        mMvpView.displayQueue(queue);
-    }
-
     public MusicPlayerPresenter(DataManager dataManager,
                                 MediaBrowserManager browserManager,
                                 PublishSubject<Integer> queueIndexUpdatedSubject,
@@ -187,28 +96,24 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
         mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
     }
 
-    private String getFormattedDuration(@NonNull long duration) {
-        String formattedDuration = "";
-
-        formattedDuration += duration/60000;
-        formattedDuration += ":";
-        formattedDuration += String.format("%02d", (duration/1000)%60);
-
-        return formattedDuration;
-    }
-
     @Override
     public void onDetach() {
+        Log.d(TAG, "onDetach:called");
         mQueueIndexUpdatedDisposable.dispose();
+        mMediaBrowserManager.disconnectMediaBrowser();
     }
 
     @Override
     public void onStart() {
+        // do nothing
     }
 
     @Override
     public void onCreate(FragmentActivity activity) {
-        this.mContext = activity;
+        Log.d(TAG, "onCreate:called");
+
+        mContext = activity;
+
         mMediaBrowserManager.initMediaBrowser(activity);
 
         mQueueIndexUpdatedDisposable = mQueueIndexUpdatedSubject.subscribe(new Consumer<Integer>() {
@@ -223,14 +128,10 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onCreateView() {
+        Log.d(TAG, "onCreateView:called");
         if (!mMediaBrowserManager.isMediaBrowserConnected()) {
             mMediaBrowserManager.connectMediaBrowser();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        mMediaBrowserManager.disconnectMediaBrowser();
     }
 
     @Override
@@ -342,21 +243,26 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
     //media browser implementations
     @Override
     public void onMediaBrowserConnected() {
-        mMediaBrowserManager.subscribeMediaBrowser();
+        Log.d(TAG, "onMediaBrowserConnected:called");
+        // do nothing
     }
 
     @Override
     public void onMediaBrowserConnectionSuspended() {
-
+        Log.e(TAG, "onMediaBrowserConnectionSuspended:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
 
     @Override
     public void onMediaBrowserConnectionFailed() {
-
+        Log.e(TAG, "onMediaBrowserConnectionFailed:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
 
     @Override
     public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
+        Log.d(TAG, "onMediaBrowserChildrenLoaded:called");
+
         mLastPlaybackState = mMediaBrowserManager.getMediaController().getPlaybackState();
         updatePlaybackState();
         displayMetadata(mMediaBrowserManager.getMediaController().getMetadata());
@@ -372,11 +278,88 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onMediaBrowserSubscriptionError(String id) {
-
+        Log.e(TAG, "onMediaBrowserSubscriptionError:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
 
     @Override
     public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
+        // do nothing
+    }
 
+    private void displayMetadata(MediaMetadataCompat metadata) {
+        if (metadata == null) {
+            return;
+        }
+        mMvpView.displaySong(
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE),
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE),
+                getFormattedDuration(
+                        metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)),
+                metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
+        mMvpView.updateDuration(
+                metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+    }
+
+    private void updatePlaybackState() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            mMvpView.showPauseIcon();
+            mMvpView.scheduleSeekbarUpdate();
+        } else if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
+            mMvpView.showPlayIcon();
+            mMvpView.stopSeekbarUpdate();
+
+            //to set the seekbar to correct position if somehow paused at
+            //a different position than shown on the ui
+            updateProgress();
+        } else if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_NONE
+                || mLastPlaybackState.getState() == PlaybackStateCompat.STATE_ERROR
+                || mLastPlaybackState.getState() == PlaybackStateCompat.STATE_STOPPED){
+            mMvpView.showPlayIcon();
+            mMvpView.stopSeekbarUpdate();
+            mMvpView.resetSeekbar();
+        }
+    }
+
+    private void updateShuffleMode(boolean enabled) {
+        if (enabled) {
+            mMvpView.setShuffleModeEnabled();
+        } else {
+            mMvpView.setShuffleModeDisabled();
+        }
+    }
+
+    private void updateRepeatMode(int repeatMode) {
+        switch (repeatMode) {
+            case PlaybackStateCompat.REPEAT_MODE_NONE:
+                mMvpView.setRepeatModeNone();
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ALL:
+                mMvpView.setRepeatModeAll();
+                break;
+            case PlaybackStateCompat.REPEAT_MODE_ONE:
+                mMvpView.setRepeatModeOne();
+        }
+    }
+
+    private void updateQueue(List<MediaSessionCompat.QueueItem> queue) {
+        if (queue == null) {
+            return;
+        }
+
+        mMvpView.displayQueue(queue);
+    }
+
+    private String getFormattedDuration(@NonNull long duration) {
+        String formattedDuration = "";
+
+        formattedDuration += duration/60000;
+        formattedDuration += ":";
+        formattedDuration += String.format("%02d", (duration/1000)%60);
+
+        return formattedDuration;
     }
 }

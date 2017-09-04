@@ -20,6 +20,7 @@ import app.sonu.com.musicplayer.mediaplayernew.MusicService;
 
 /**
  * Created by sonu on 2/8/17.
+ * this class is responsible for providing mediabrowser and mediacontroller to ui
  */
 
 public class MediaBrowserManager {
@@ -35,7 +36,6 @@ public class MediaBrowserManager {
     private FragmentActivity mActivity;
 
     private String mParentName;
-
 
     public MediaBrowserManager(String rootHint, String parentName) {
         mRootHint = rootHint;
@@ -76,35 +76,13 @@ public class MediaBrowserManager {
         // check if a list is needed
         if (mRootHint != null) {
             bundle = new Bundle();
-            bundle.putString(mActivity.getResources().getString(R.string.root_hint_key),
-                    mRootHint);
-
+            bundle.putString(mActivity.getResources().getString(R.string.root_hint_key), mRootHint);
         }
 
         mMediaBrowser = new MediaBrowserCompat(mActivity,
                 new ComponentName(mActivity, MusicService.class),
                 mConnectionCallbacks,
                 bundle);
-    }
-
-    public void subscribeMediaBrowser() {
-        Log.d(TAG, "subscribeMediaBrowser:called");
-        if (mMediaId == null) {
-            Log.i(TAG, "subscribeMediaBrowser:getting root");
-            mMediaId = mMediaBrowser.getRoot();
-        }
-
-        if (mMediaId == null) {
-            Log.i(TAG, "subscribeMediaBrowser:mediaId still null");
-            return;
-        }
-
-        if (isMediaBrowserConnected()) {
-            mMediaBrowser.subscribe(mMediaId, mSubscriptionCallback);
-        } else {
-            Log.w(TAG, "subscribeMediaBrowser:media browser not connected");
-        }
-
     }
 
     public void connectMediaBrowser(){
@@ -162,6 +140,25 @@ public class MediaBrowserManager {
         });
     }
 
+    private void subscribeMediaBrowser() {
+        Log.d(TAG, "subscribeMediaBrowser:called");
+        if (mMediaId == null) {
+            Log.i(TAG, "subscribeMediaBrowser:getting root");
+            mMediaId = mMediaBrowser.getRoot();
+        }
+
+        if (mMediaId == null) {
+            Log.i(TAG, "subscribeMediaBrowser:mediaId still null");
+            return;
+        }
+
+        if (isMediaBrowserConnected()) {
+            mMediaBrowser.subscribe(mMediaId, mSubscriptionCallback);
+        } else {
+            Log.w(TAG, "subscribeMediaBrowser:media browser not connected");
+        }
+    }
+
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
 
@@ -207,6 +204,7 @@ public class MediaBrowserManager {
                     Log.i(TAG, "mediaBrowserConnected parent="+mParentName);
 
                     mMediaBrowserCallback.onMediaBrowserConnected();
+                    subscribeMediaBrowser();
                 }
 
                 @Override

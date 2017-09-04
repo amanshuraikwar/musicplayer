@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
-import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 
 /**
  * responsible for providing music for a specified music source

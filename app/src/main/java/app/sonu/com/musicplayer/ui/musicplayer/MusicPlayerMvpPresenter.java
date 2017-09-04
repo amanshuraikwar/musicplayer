@@ -17,7 +17,6 @@ public interface MusicPlayerMvpPresenter extends BaseMvpPresenter<MusicPlayerMvp
     void skipPreviousButtonOnClick();
     void onCreate(FragmentActivity activity);
     void onCreateView();
-    void onDestroy();
     void updateProgress();
     void onSeekbarStopTrackingTouch(int progress);
     void onCollapseIvClick();

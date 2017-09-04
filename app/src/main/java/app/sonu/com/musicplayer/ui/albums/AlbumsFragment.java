@@ -1,5 +1,6 @@
 package app.sonu.com.musicplayer.ui.albums;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,27 +22,30 @@ import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.AlbumOnClickListener;
-import app.sonu.com.musicplayer.ui.list.visitable.AlbumVisitable;
-import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.onclicklistener.AlbumOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.AlbumVisitable;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-/**
- * Created by sonu on 30/7/17.
- */
 
 public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements AlbumsMvpView {
 
     private static final String TAG = AlbumsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Albums";
+    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#E0F7FA");
+
+    @BindView(R.id.albumsRv)
+    RecyclerView albumsRv;
+
+    @BindView(R.id.parentSrl)
+    SwipeRefreshLayout parentSrl;
 
     private AlbumOnClickListener albumOnClickListener = new AlbumOnClickListener() {
         @Override
-        public void onAlbumClick(MediaBrowserCompat.MediaItem item) {
+        public void onAlbumClick(MediaBrowserCompat.MediaItem item, View animatingView) {
             Log.d(TAG, "onAlbumClick:currentAlbum=" + item+" "+this);
-            mPresenter.onAlbumClicked(item);
+            mPresenter.onAlbumClicked(item, animatingView);
         }
 
         @Override
@@ -48,12 +53,6 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
 
         }
     };
-
-    @BindView(R.id.albumsRv)
-    RecyclerView albumsRv;
-
-    @BindView(R.id.parentSrl)
-    SwipeRefreshLayout parentSrl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,9 +89,6 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
 
         mPresenter.onCreateView();
 
-//        albumsRv.addItemDecoration(new DividerItemDecoration(getActivity(),
-//                DividerItemDecoration.VERTICAL));
-
         return view;
     }
 
@@ -109,13 +105,6 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy:called");
-        mPresenter.onDestroy();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume:called");
@@ -127,7 +116,6 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
         albumsRv.setAdapter(
                 new MediaRecyclerViewAdapter(getVisitableList(itemList),
                         new MediaListTypeFactory()));
-        albumsRv.invalidate();
     }
 
     @Override
@@ -140,10 +128,20 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
         parentSrl.setRefreshing(false);
     }
 
+    @Override
+    public void displayToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void scrollListToTop() {
+        albumsRv.smoothScrollToPosition(0);
+    }
+
     /**
-     * this method is defined in fragment because of attached onclicklistener
-     * @param albumList
-     * @return
+     * converts mediaitem list to visitable list
+     * @param albumList input list
+     * @return output visitable list
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> albumList) {
         List<BaseVisitable> visitableList = new ArrayList<>();

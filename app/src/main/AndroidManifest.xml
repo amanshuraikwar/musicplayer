@@ -23,7 +23,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="app.sonu.com.musicplayer.ui.about.AboutActivity">
+        <activity
+            android:name="app.sonu.com.musicplayer.ui.about.AboutActivity"
+            android:theme="@style/AppThemeNoBackground">
         </activity>
 
         <service android:name=".mediaplayer.MediaPlayerService" />

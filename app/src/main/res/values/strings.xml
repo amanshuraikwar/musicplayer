@@ -14,4 +14,6 @@
     <string name="searchMenuItemTitle">Search</string>
 
     <string name="unexpected_error_message">Unexpected error occurred</string>
+
+    <string name="album_transition_string">album_transition</string>
 </resources>

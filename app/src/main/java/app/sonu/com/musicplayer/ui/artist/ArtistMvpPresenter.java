@@ -13,7 +13,6 @@ import app.sonu.com.musicplayer.ui.artists.ArtistsMvpView;
 public interface ArtistMvpPresenter extends BaseMvpPresenter<ArtistMvpView> {
     void onCreate(FragmentActivity activity, MediaBrowserCompat.MediaItem item  );
     void onCreateView();
-    void onDestroy();
     void onSongClicked(MediaBrowserCompat.MediaItem item);
     void onDragDismissed();
     void onBackIbClick();

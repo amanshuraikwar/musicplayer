@@ -6,6 +6,7 @@ import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseActivity;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
+import app.sonu.com.musicplayer.list.adapter.MediaBrowserPagerAdapter;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 import app.sonu.com.musicplayer.ui.about.AboutActivity;
 import app.sonu.com.musicplayer.ui.album.AlbumFragment;
@@ -13,29 +14,28 @@ import app.sonu.com.musicplayer.ui.albums.AlbumsFragment;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsFragment;
 import app.sonu.com.musicplayer.ui.artist.ArtistFragment;
 import app.sonu.com.musicplayer.ui.artists.ArtistsFragment;
-import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.AlbumSearchResultOnClickListener;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.ArtistSearchResultOnClickListener;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.SearchResultOnClickListener;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.SongOnClickListener;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.SongSearchResultOnClickListener;
-import app.sonu.com.musicplayer.ui.list.visitable.AlbumSearchResultVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.ArtistSearchResultVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.SearchItemTypeTitleVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.SearchResultVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.SongSearchResultVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.onclicklistener.AlbumSearchResultOnClickListener;
+import app.sonu.com.musicplayer.list.onclicklistener.ArtistSearchResultOnClickListener;
+import app.sonu.com.musicplayer.list.onclicklistener.SongSearchResultOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.AlbumSearchResultVisitable;
+import app.sonu.com.musicplayer.list.visitable.ArtistSearchResultVisitable;
+import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
+import app.sonu.com.musicplayer.list.visitable.SongSearchResultVisitable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaBrowserCompat;
@@ -47,6 +47,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.transition.Fade;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,9 +57,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -69,9 +70,6 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         implements MainMvpView, SlidingUpPaneCallback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    private AlbumFragment mAlbumFragment;
-    private ArtistFragment mArtistFragment;
 
     @BindView(R.id.drawerLayout)
     DrawerLayout drawerLayout;
@@ -109,9 +107,19 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     @BindView(R.id.navigationView)
     NavigationView navigationView;
 
-    private SongSearchResultOnClickListener mSongSearchResultOnClickListener = new SongSearchResultOnClickListener() {
+    @BindView(R.id.appBarLayout)
+    AppBarLayout appBarLayout;
+
+    private AlbumFragment mAlbumFragment;
+    private ArtistFragment mArtistFragment;
+
+    private int lastAppBarBackgroundColor;
+
+    private SongSearchResultOnClickListener mSongSearchResultOnClickListener =
+            new SongSearchResultOnClickListener() {
         @Override
         public void onSearchResultClick(MediaBrowserCompat.MediaItem item) {
+
             mPresenter.onSongSearchResultClick(item);
         }
 
@@ -121,9 +129,17 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         }
     };
 
-    private AlbumSearchResultOnClickListener mAlbumSearchResultOnClickListener = new AlbumSearchResultOnClickListener() {
+    private AlbumSearchResultOnClickListener mAlbumSearchResultOnClickListener =
+            new AlbumSearchResultOnClickListener() {
         @Override
         public void onSearchResultClick(MediaBrowserCompat.MediaItem item) {
+
+            searchQueryEt.setText("");
+            searchViewParentLl.setVisibility(View.GONE);
+
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
+
             mPresenter.onAlbumSearchResultClick(item);
         }
 
@@ -133,9 +149,17 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         }
     };
 
-    private ArtistSearchResultOnClickListener mArtistSearchResultOnClickListener = new ArtistSearchResultOnClickListener() {
+    private ArtistSearchResultOnClickListener mArtistSearchResultOnClickListener =
+            new ArtistSearchResultOnClickListener() {
         @Override
         public void onSearchResultClick(MediaBrowserCompat.MediaItem item) {
+
+            searchQueryEt.setText("");
+            searchViewParentLl.setVisibility(View.GONE);
+
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
+
             mPresenter.onArtistSearchResultClick(item);
         }
 
@@ -161,8 +185,6 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
         ButterKnife.bind(this);
 
-        mPresenter.onCreate(this);
-
         //setting toolbar as actionbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -183,6 +205,57 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         //making tabs work with viewpager
         tabLayout.setupWithViewPager(mediaListVp);
 
+        lastAppBarBackgroundColor = AllSongsFragment.APP_BAR_BACKGROUND_COLOR;
+
+        mediaListVp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                int newColor = AllSongsFragment.APP_BAR_BACKGROUND_COLOR;
+                switch (position) {
+                    case 0:
+                        newColor = AllSongsFragment.APP_BAR_BACKGROUND_COLOR;
+                        break;
+                    case 1:
+                        newColor = AlbumsFragment.APP_BAR_BACKGROUND_COLOR;
+                        break;
+                    case 2:
+                        newColor = ArtistsFragment.APP_BAR_BACKGROUND_COLOR;
+                        break;
+                }
+                animateToolbarColors(lastAppBarBackgroundColor, newColor);
+                lastAppBarBackgroundColor = newColor;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                Log.d(TAG, "onTabReselected:"+mediaListVp.getCurrentItem()+" "+tab.getPosition());
+                mPresenter.onTabClickOnSamePage(tab.getPosition());
+            }
+        });
+
+        // setting up search ui
         if (searchResultsRv.getLayoutManager() == null) {
             searchResultsRv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         }
@@ -200,7 +273,6 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
             @Override
             public void afterTextChanged(Editable s) {
-
                 if (s.toString().equals("")) {
                     searchClearIb.setVisibility(View.GONE);
                 } else {
@@ -214,22 +286,14 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         searchBackIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchQueryEt.setText("");
-                searchViewParentLl.setVisibility(View.GONE);
-
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
+                closeSearch();
             }
         });
 
         searchViewParentLl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchQueryEt.setText("");
-                searchViewParentLl.setVisibility(View.GONE);
-
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
+                closeSearch();
             }
         });
 
@@ -240,17 +304,21 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
             }
         });
 
+        // setting up navigationview ui
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menuItemAbout:
                         startActivity(new Intent(MainActivity.this, AboutActivity.class));
-                        return true;
+                        drawerLayout.closeDrawers();
+                        return false;
                 }
                 return false;
             }
         });
+
+        mPresenter.onCreate(this);
     }
 
     @Override
@@ -263,7 +331,6 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
             public void onPanelSlide(View panel, float slideOffset) {
                 //limiting method calls
                 if ((slideOffset <= 0.1) || (slideOffset >= 0.9)) {
-//                    Log.i(TAG, "onPanelSlide:called slideOffset="+slideOffset);
                     mPresenter.onSlidingUpPanelSlide(slideOffset);
                 }
             }
@@ -272,28 +339,14 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
             public void onPanelStateChanged(View panel,
                                             SlidingUpPanelLayout.PanelState previousState,
                                             SlidingUpPanelLayout.PanelState newState) {
-                //todo figure out better way
-                //to handle unexpected behavior with nested sliding up pane layout
-                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-//                    slidingUpPanelLayout.setDragView(miniBarRl);
-                } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-//                    slidingUpPanelLayout.setDragView(dragView);
-                }
+                // do nothing
             }
         });
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPresenter.onDestroy();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_activity_options_menu, menu);
-//        MenuItem item = menu.findItem(R.id.search);
-//        searchView.setMenuItem(item);
         return true;
     }
 
@@ -311,10 +364,7 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
                 return true;
             case R.id.search:
                 Log.d(TAG, "onOptionsItemSelected:called for search");
-                searchViewParentLl.setVisibility(View.VISIBLE);
-                searchQueryEt.requestFocus();
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(searchQueryEt, 0);
+                showSearch();
                 return true;
 
         }
@@ -353,7 +403,7 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     }
 
     @Override
-    public void startAlbumFragment(MediaBrowserCompat.MediaItem item) {
+    public void startAlbumFragment(MediaBrowserCompat.MediaItem item, View animatingView) {
         Log.d(TAG, "startAlbumFragment:called");
 
         if (mAlbumFragment == null) {
@@ -368,6 +418,11 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         fragmentManager.popBackStack(AlbumFragment.BACK_STACK_TAG, 0);
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fade enterFade = new Fade();
+        enterFade.setStartDelay(0);
+        enterFade.setDuration(300);
+        mAlbumFragment.setEnterTransition(enterFade);
 
         fragmentTransaction.replace(R.id.upperFragmentFl, mAlbumFragment);
         fragmentTransaction.addToBackStack(AlbumFragment.BACK_STACK_TAG);
@@ -395,6 +450,11 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+        Fade enterFade = new Fade();
+        enterFade.setStartDelay(0);
+        enterFade.setDuration(300);
+        mArtistFragment.setEnterTransition(enterFade);
+
         fragmentTransaction.replace(R.id.upperFragmentFl, mArtistFragment);
         fragmentTransaction.addToBackStack(ArtistFragment.BACK_STACK_TAG);
         fragmentTransaction.commit();
@@ -410,7 +470,7 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
     @Override
     public void displayToast(String message) {
-        //todo
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -419,9 +479,9 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     }
 
     /**
-     * this method is defined in fragment because of attached onclicklistener
-     * @param itemList
-     * @return
+     * to get visitable list from mediaitem list
+     * @param itemList input mediaitem list
+     * @return converted visitable list
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> itemList) {
         List<BaseVisitable> visitableList = new ArrayList<>();
@@ -470,19 +530,9 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         return visitableList;
     }
 
+    //------------
     //todo figure out better way
-    private View dragView;
-    private View antiDragView;
-    @Override
-    public void setDragView(View view) {
-        dragView = view;
-    }
-
-    @Override
-    public void setDragViewNow(View view) {
-        dragView = view;
-        slidingUpPanelLayout.setDragView(dragView);
-    }
+    private SlidingUpPanelLayout musicPlayerSupl;
 
     @Override
     public void setAntiDragViewNow(View view) {
@@ -490,17 +540,72 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     }
 
     @Override
+    public void setPaneLayout(SlidingUpPanelLayout slidingUpPanelLayout) {
+        musicPlayerSupl = slidingUpPanelLayout;
+    }
+    //------------
+
+    @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed:called");
+        boolean furtherFlag = false;
+
         if (searchViewParentLl.getVisibility()==View.VISIBLE) {
             searchViewParentLl.setVisibility(View.GONE);
-        } else {
-            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                getSupportFragmentManager().popBackStack();
+        } else if (musicPlayerSupl != null) {
+            if (musicPlayerSupl.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                musicPlayerSupl.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             } else {
-                super.onBackPressed();
+                furtherFlag = true;
+            }
+        } else {
+            furtherFlag = true;
+        }
+
+        if (furtherFlag) {
+            if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            } else {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    super.onBackPressed();
+                }
             }
         }
+    }
+
+    private void animateToolbarColors(int from, int to) {
+
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), from, to);
+        colorAnimation.setDuration(400); // milliseconds
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                appBarLayout.setBackgroundColor((int) animator.getAnimatedValue());
+            }
+
+        });
+        colorAnimation.start();
+    }
+
+
+    private void closeSearch() {
+        searchQueryEt.setText("");
+        searchViewParentLl.setVisibility(View.GONE);
+
+        // hide soft keyboard
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
+    }
+
+    private void showSearch() {
+        searchViewParentLl.setVisibility(View.VISIBLE);
+
+        searchQueryEt.requestFocus();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchQueryEt, 0);
     }
 }
 

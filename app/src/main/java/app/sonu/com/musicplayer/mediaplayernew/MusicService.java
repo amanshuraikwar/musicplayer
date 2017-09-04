@@ -2,11 +2,9 @@ package app.sonu.com.musicplayer.mediaplayernew;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -31,7 +29,7 @@ import app.sonu.com.musicplayer.mediaplayernew.manager.PlaybackManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.QueueManager;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.LocalMusicSource;
 import app.sonu.com.musicplayer.mediaplayernew.playback.LocalPlayback;
-import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 import io.reactivex.subjects.PublishSubject;
 
 /**

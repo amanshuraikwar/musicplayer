@@ -33,45 +33,45 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
                            MediaBrowserManager mediaBrowserManager,
                            PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject) {
         super(dataManager);
-        this.mMediaBrowserManager = mediaBrowserManager;
+        mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
         mSelectedItemPublishSubject = selectedItemPublishSubject;
     }
 
     @Override
     public void onDetach() {
-
+        Log.d(TAG, "onDetach:called");
+        mMediaBrowserManager.disconnectMediaBrowser();
     }
 
     @Override
     public void onStart() {
-        if (mMediaItem.getDescription().getIconUri() != null) {
-            mMvpView.displayArtistData(
-                    mMediaItem.getDescription().getTitle().toString(),
-                    mMediaItem.getDescription().getSubtitle().toString(),
-                    mMediaItem.getDescription().getIconUri().getEncodedPath());
-        } else {
-            mMvpView.displayArtistData(
-                    mMediaItem.getDescription().getTitle().toString(),
-                    mMediaItem.getDescription().getSubtitle().toString(),
-                    null);
-        }
+        Log.d(TAG, "onStart:called");
+        String iconPath =  mMediaItem.getDescription().getIconUri() != null
+                ? mMediaItem.getDescription().getIconUri().getEncodedPath()
+                : null;
+
+        mMvpView.displayArtistData(
+                mMediaItem.getDescription().getTitle().toString(),
+                mMediaItem.getDescription().getSubtitle().toString(),
+                iconPath);
     }
 
     @Override
     public void onCreate(FragmentActivity activity, MediaBrowserCompat.MediaItem item) {
         Log.d(TAG, "onCreate:called");
         Log.i(TAG, "onCreate:mediaId="+item.getDescription().getMediaId());
-        mMediaBrowserManager.setMediaId(item.getDescription().getMediaId());
 
         mMediaItem = item;
+        mContext = activity;
 
         Log.i(TAG, "onCreate:is mvpview null="+(mMvpView==null));
 
         //init media browser
+        // mediaid should be set before calling initmediabrowser
+        mMediaBrowserManager.setMediaId(item.getDescription().getMediaId());
         mMediaBrowserManager.initMediaBrowser(activity);
 
-        mContext = activity;
     }
 
     @Override
@@ -84,12 +84,6 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
         } else {
             mMediaBrowserManager.connectMediaBrowser();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy:called");
-        mMediaBrowserManager.disconnectMediaBrowser();
     }
 
     @Override
@@ -117,7 +111,7 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        mMediaBrowserManager.subscribeMediaBrowser();
+        // do nothing
     }
 
     @Override
@@ -147,6 +141,6 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
 
     @Override
     public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
-
+        // do nothing
     }
 }

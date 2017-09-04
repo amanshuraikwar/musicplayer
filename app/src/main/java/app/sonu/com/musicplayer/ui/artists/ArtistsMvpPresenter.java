@@ -14,7 +14,6 @@ import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
 public interface ArtistsMvpPresenter extends BaseMvpPresenter<ArtistsMvpView> {
     void onCreate(FragmentActivity activity);
     void onCreateView();
-    void onDestroy();
     void onArtistClicked(MediaBrowserCompat.MediaItem item);
     void onRefresh();
 }

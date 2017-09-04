@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
 import app.sonu.com.musicplayer.base.ui.BaseMvpView;
-import app.sonu.com.musicplayer.data.db.model.Song;
 
 /**
  * Created by sonu on 2/7/17.
@@ -16,7 +15,7 @@ import app.sonu.com.musicplayer.data.db.model.Song;
 public interface AllSongsMvpPresenter extends BaseMvpPresenter<AllSongsMvpView> {
     void onCreate(FragmentActivity activity);
     void onCreateView();
-    void onDestroy();
     void onSongClicked(MediaBrowserCompat.MediaItem item);
     void onRefresh();
+    void onShuffleAllClick();
 }

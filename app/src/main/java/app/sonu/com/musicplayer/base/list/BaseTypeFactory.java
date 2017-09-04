@@ -4,17 +4,9 @@ import android.view.View;
 
 /**
  * Created by sonu on 20/3/17.
- */
-
-/**
- * How to Use -
- * [1] inherit from this class and implement
- *     [a] type method returning a unique id for your different Visitables
- *     [b] createViewHolder returning appropriate ViewHolder according to the id above
+ * typefactory for recyclerview which creates viewholder instances according to R.layout._id
  */
 
 public abstract class BaseTypeFactory {
-//    int type(CommentVisitable commentVisitable);
-
     public abstract BaseViewHolder createViewHolder(View parent, int type);
 }

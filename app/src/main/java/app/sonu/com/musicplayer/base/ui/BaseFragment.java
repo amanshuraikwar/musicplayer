@@ -3,11 +3,13 @@ package app.sonu.com.musicplayer.base.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import javax.inject.Inject;
 
 /**
  * Created by sonu on 29/6/17.
+ * base fragment
  */
 
 public abstract class BaseFragment<Presenter extends BaseMvpPresenter> extends Fragment

@@ -8,7 +8,9 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.util.Pair;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import org.reactivestreams.Subscription;
@@ -21,9 +23,9 @@ import javax.inject.Named;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.data.db.model.Song;
+
+
 import app.sonu.com.musicplayer.di.module.BusModule;
-import app.sonu.com.musicplayer.mediaplayer.MediaPlayerService;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -43,8 +45,12 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     private static final String TAG = MainPresenter.class.getSimpleName();
 
     private PublishSubject<MediaBrowserCompat.MediaItem> mSelectedItemPublishSubject;
-    private PublishSubject<MediaBrowserCompat.MediaItem> mAlbumClickSubject;
+    private PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> mAlbumClickSubject;
     private PublishSubject<MediaBrowserCompat.MediaItem> mArtistClickSubject;
+    private PublishSubject<Integer> mAllSongsScrollToTopSubject;
+    private PublishSubject<Integer> mAlbumsScrollToTopSubject;
+    private PublishSubject<Integer> mArtistsScrollToTopSubject;
+
     private MediaBrowserManager mMediaBrowserManager;
     private Context mContext;
 
@@ -52,41 +58,47 @@ public class MainPresenter extends BasePresenter<MainMvpView>
 
     public MainPresenter(DataManager dataManager,
                          PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject,
-                         PublishSubject<MediaBrowserCompat.MediaItem> albumClickSubject,
+                         PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> albumClickSubject,
                          PublishSubject<MediaBrowserCompat.MediaItem> artistClickSubject,
+                         PublishSubject<Integer> allSongsScrollToTopSubject,
+                         PublishSubject<Integer> albumsScrollToTopSubject,
+                         PublishSubject<Integer> artistsScrollToTopSubject,
                          MediaBrowserManager mediaBrowserManager) {
         super(dataManager);
         mSelectedItemPublishSubject = selectedItemPublishSubject;
         mAlbumClickSubject = albumClickSubject;
         mArtistClickSubject = artistClickSubject;
-        this.mMediaBrowserManager = mediaBrowserManager;
+        mAllSongsScrollToTopSubject = allSongsScrollToTopSubject;
+        mAlbumsScrollToTopSubject = albumsScrollToTopSubject;
+        mArtistsScrollToTopSubject = artistsScrollToTopSubject;
+        mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
     }
 
     @Override
     public void onDetach() {
-
+        Log.d(TAG, "onDetach:called");
+        mMediaBrowserManager.disconnectMediaBrowser();
+        albumClickDisposable.dispose();
+        artistClickDisposable.dispose();
+        selectedItemDisposable.dispose();
     }
 
     @Override
     public void onStart() {
-
+        // do nothing
     }
 
     @Override
     public void onCreate(FragmentActivity activity) {
         Log.d(TAG, "onCreate:called");
+        mContext = activity;
+
         //init media browser
         mMediaBrowserManager.initMediaBrowser(activity);
 
-        mContext = activity;
-
-
-
         //check if media browser is already connected or not
-        if (mMediaBrowserManager.isMediaBrowserConnected()) {
-//            mMvpView.displaySearchResults(mMediaBrowserManager.getItemList());
-        } else {
+        if (!mMediaBrowserManager.isMediaBrowserConnected()) {
             mMediaBrowserManager.connectMediaBrowser();
         }
 
@@ -99,11 +111,10 @@ public class MainPresenter extends BasePresenter<MainMvpView>
             }
         });
 
-        albumClickDisposable = mAlbumClickSubject.subscribe(new Consumer<MediaBrowserCompat.MediaItem>() {
+        albumClickDisposable = mAlbumClickSubject.subscribe(new Consumer<Pair<MediaBrowserCompat.MediaItem, View>>() {
             @Override
-            public void accept(MediaBrowserCompat.MediaItem item) throws Exception {
-                Log.d(TAG, "albumClickSubject:onNext:called "+MainPresenter.this);
-                mMvpView.startAlbumFragment(item);
+            public void accept(Pair<MediaBrowserCompat.MediaItem, View> mediaItemViewPair) throws Exception {
+                mMvpView.startAlbumFragment(mediaItemViewPair.first, mediaItemViewPair.second);
             }
         });
 
@@ -121,24 +132,6 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     }
 
     @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy:called");
-        mMediaBrowserManager.disconnectMediaBrowser();
-        albumClickDisposable.dispose();
-        artistClickDisposable.dispose();
-        selectedItemDisposable.dispose();
-    }
-
-    @Override
-    public void onSearchResultClick(MediaBrowserCompat.MediaItem item) {
-        mMediaBrowserManager
-                .getMediaController()
-                .getTransportControls()
-                .playFromMediaId(item.getMediaId(), null);
-        mSelectedItemPublishSubject.onNext(item);
-    }
-
-    @Override
     public void onSongSearchResultClick(MediaBrowserCompat.MediaItem item) {
         mMediaBrowserManager
                 .getMediaController()
@@ -149,7 +142,7 @@ public class MainPresenter extends BasePresenter<MainMvpView>
 
     @Override
     public void onAlbumSearchResultClick(MediaBrowserCompat.MediaItem item) {
-        mAlbumClickSubject.onNext(item);
+        mAlbumClickSubject.onNext(new Pair<MediaBrowserCompat.MediaItem, View>(item, null));
         mMvpView.hideSearchView();
     }
 
@@ -160,8 +153,23 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     }
 
     @Override
+    public void onTabClickOnSamePage(int position) {
+        Log.d(TAG, "onTabClickOnSamePage:clicked");
+        switch (position) {
+            case 0:
+                mAllSongsScrollToTopSubject.onNext(0);
+                break;
+            case 1:
+                mAlbumsScrollToTopSubject.onNext(0);
+                break;
+            case 2:
+                mArtistsScrollToTopSubject.onNext(0);
+                break;
+        }
+    }
+
+    @Override
     public void onSlidingUpPanelSlide(float slideOffset) {
-//        Log.i(TAG, "onSlidingUpPanelSlide:called slideOffset="+slideOffset);
         if (slideOffset >= 0.9) {
             mMvpView.hideMiniPlayer();
         } else if (slideOffset <= 0.1) {
@@ -182,17 +190,7 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        PlaybackStateCompat playbackState =
-                mMediaBrowserManager.getMediaController().getPlaybackState();
-
-        if (playbackState != null) {
-            if (playbackState.getState() == PlaybackStateCompat.STATE_PAUSED
-                    || playbackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                if (mMvpView.isSlidingUpPaneHidden()) {
-                    mMvpView.setSlidingUpPaneCollapsed();
-                }
-            }
-        }
+        // do nothing
     }
 
     @Override
@@ -210,7 +208,18 @@ public class MainPresenter extends BasePresenter<MainMvpView>
     @Override
     public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
         Log.d(TAG, "onMediaBrowserChildrenLoaded:called");
-        // do nothing
+
+        PlaybackStateCompat playbackState =
+                mMediaBrowserManager.getMediaController().getPlaybackState();
+
+        if (playbackState != null) {
+            if (playbackState.getState() == PlaybackStateCompat.STATE_PAUSED
+                    || playbackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+                if (mMvpView.isSlidingUpPaneHidden()) {
+                    mMvpView.setSlidingUpPaneCollapsed();
+                }
+            }
+        }
     }
 
     @Override
@@ -221,6 +230,7 @@ public class MainPresenter extends BasePresenter<MainMvpView>
 
     @Override
     public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
+        Log.e(TAG, "onSearchResult:called");
         mMvpView.displaySearchResults(items);
     }
 }

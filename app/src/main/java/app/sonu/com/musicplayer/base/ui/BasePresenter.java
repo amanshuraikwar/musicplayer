@@ -4,6 +4,7 @@ import app.sonu.com.musicplayer.data.DataManager;
 
 /**
  * Created by sonu on 29/6/17.
+ * base presenter
  */
 
 public abstract class BasePresenter<MvpView extends BaseMvpView> implements BaseMvpPresenter<MvpView>{

@@ -1,20 +1,15 @@
 package app.sonu.com.musicplayer.ui.album;
 
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,13 +38,11 @@ import app.sonu.com.musicplayer.base.list.BaseVisitable;
 import app.sonu.com.musicplayer.base.ui.BaseFragment;
 import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
 import app.sonu.com.musicplayer.di.module.UiModule;
-import app.sonu.com.musicplayer.ui.albums.AlbumsFragment;
-import app.sonu.com.musicplayer.ui.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.ui.list.MediaRecyclerViewAdapter;
-import app.sonu.com.musicplayer.ui.list.onclicklistener.SongOnClickListener;
-import app.sonu.com.musicplayer.ui.list.visitable.AlbumSongVisitable;
-import app.sonu.com.musicplayer.ui.list.visitable.SongVisitable;
-import app.sonu.com.musicplayer.utils.ColorUtil;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
+import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.AlbumSongVisitable;
+import app.sonu.com.musicplayer.util.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -62,21 +55,6 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
     private static final String TAG = AlbumFragment.class.getSimpleName();
 
     public static final String BACK_STACK_TAG = "__albumfragment__";
-
-    private SongOnClickListener songOnClickListener = new SongOnClickListener() {
-        @Override
-        public void onSongClick(MediaBrowserCompat.MediaItem item) {
-            mPresenter.onSongClicked(item);
-        }
-
-        @Override
-        public void OnClick() {
-
-        }
-    };
-
-//    @BindView(R.id.toolbar)
-//    Toolbar toolbar;
 
     @BindView(R.id.elasticDragDismissLayout)
     ElasticDragDismissFrameLayout elasticDragDismissFrameLayout;
@@ -99,38 +77,35 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
     @BindView(R.id.backIb)
     ImageButton backIb;
 
-//    @BindView(R.id.collapsingToolbarLayout)
-//    CollapsingToolbarLayout collapsingToolbarLayout;
-
-//    @BindView(R.id.parentCl)
-//    View parentCl;
-
     @BindView(R.id.albumMetadataRl)
     View albumMetadataRl;
+
+    private SongOnClickListener songOnClickListener = new SongOnClickListener() {
+        @Override
+        public void onSongClick(MediaBrowserCompat.MediaItem item) {
+            mPresenter.onSongClicked(item);
+        }
+
+        @Override
+        public void OnClick() {
+
+        }
+    };
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView:called");
+
         View view = inflater.inflate(R.layout.fragment_album, container, false);
         ButterKnife.bind(this, view);
 
-        mPresenter.onCreateView();
 
         if (itemsRl.getLayoutManager() == null) {
             itemsRl.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         }
-
-//        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "navOnClick:called");
-//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                fragmentManager.beginTransaction().remove(AlbumFragment.this).commit();
-//            }
-//        });
 
         ViewCompat.setNestedScrollingEnabled(itemsRl, false);
 
@@ -156,8 +131,9 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
             }
         });
 
-        return view;
+        mPresenter.onCreateView();
 
+        return view;
     }
 
     @Override
@@ -183,14 +159,8 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume:called");
-        Log.d(TAG, "onResume:is presenter's view null="+(mPresenter.getMvpView()==null));
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy:called");
-        mPresenter.onDestroy();
+        Log.d(TAG, "onResume:is presenter's view null="+(mPresenter.getMvpView()==null));
     }
 
     @Override
@@ -236,6 +206,8 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
                             updateUiColor(resource);
                             return false;
                         }
+
+
                     })
                     .load(artPath)
                     .apply(options)
@@ -255,7 +227,6 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
     }
 
     private void updateUiColor(Bitmap resource) {
-
         if (resource == null) {
             setUiColorWithSwatch(null);
         } else {
@@ -277,7 +248,6 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
         topBarRl.setBackgroundColor(ColorUtil.makeColorTransparent(backgroundColor));
         backIb.setColorFilter(titleColor, PorterDuff.Mode.SRC_IN);
         albumMetadataRl.setBackgroundColor(backgroundColor);
-//        elasticDragDismissFrameLayout.setBackgroundColor(bodyColor);
 
         titleTv.setTextColor(titleColor);
         subtitleTv.setTextColor(bodyColor);
@@ -289,9 +259,9 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
     }
 
     /**
-     * this method is defined in fragment because of attached onclicklistener
-     * @param songList
-     * @return
+     * converts mediaitem list to visitable list
+     * @param songList input list
+     * @return visitable list
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> songList) {
         List<BaseVisitable> visitableList = new ArrayList<>();

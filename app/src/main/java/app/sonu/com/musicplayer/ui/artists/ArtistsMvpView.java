@@ -14,4 +14,6 @@ public interface ArtistsMvpView extends BaseMvpView {
     void displayList(List<MediaBrowserCompat.MediaItem> itemList);
     void startLoading();
     void stopLoading();
+    void displayToast(String message);
+    void scrollListToTop();
 }

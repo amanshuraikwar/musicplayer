@@ -1,10 +1,8 @@
 package app.sonu.com.musicplayer.mediaplayernew.manager;
 
 import android.support.annotation.NonNull;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -12,9 +10,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import app.sonu.com.musicplayer.mediaplayernew.util.MediaIdHelper;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 import app.sonu.com.musicplayer.mediaplayernew.MusicProvider;
-import app.sonu.com.musicplayer.mediaplayernew.util.QueueHelper;
+import app.sonu.com.musicplayer.util.QueueHelper;
 
 /**
  * Created by sonu on 27/7/17.

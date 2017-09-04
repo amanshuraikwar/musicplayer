@@ -20,4 +20,5 @@ public interface MiniPlayerMvpView extends BaseMvpView {
     void setRepeatModeNone();
     void setRepeatModeAll();
     void setRepeatModeOne();
+    void displayToast(String message);
 }
