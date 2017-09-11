@@ -1,28 +1,37 @@
+[priority] refactor v0.1 -> reactive programming
+
+[] ask for permissions
 [] create playlists
+[] add contextual option menu in mediabrowseritems
+	[] play next
+	[] add to playlist
+[] add options menu in musicplayer album art
+	[] add to playlist
+
 [] add a viewpager in song album art
+[] double tap to add to favorites
 [] fast scroll in allsongs, albums, artists list
 [] create empty list illustrations
 [] solve bug with pixelated default song art
 [] slove bug with playlist metadata not updated as songs are updated because metada is coming from previous screen
 [] add images to playlists
-[] add functionality to shuffle all buttons on detail screens
 
-[] use objectanimation with animated vector drawable to change from songs albums and artists
+[] album art not showing on lock screen
+[] make search ui separate
+[] improve performance of search
 
-
-[later] album art not showing on lock screen
-[later] make search ui separate
-[later] improve performance of search
+[**] release on playstore
 
 [want to play only 5 songs]
 [] select those five songs to make a queue of only those 5 songs
 [] select only one song to make a queue of only that song
 [] now add any songs
-
 [] can save current playing queue as a playlist
-
 [] selection can also be saved as a playlist
 
+[] use objectanimation with animated vector drawable to change from songs albums and artists
+
+[done] add functionality to shuffle all buttons on detail screens
 [done] play songs from playlists
 [done] finalise design of detail fragments
 [done] resolve the bug with fragments
