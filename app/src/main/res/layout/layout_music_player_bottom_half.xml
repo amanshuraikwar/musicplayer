@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/musicPlayerLowerHalfLl"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -21,28 +21,38 @@
             android:layout_marginBottom="@dimen/status_bar_padding"
             android:paddingStart="0dp"
             android:paddingEnd="16dp"
-            android:paddingTop="16dp"
             android:paddingBottom="16dp"
             android:clickable="true"
             android:animateLayoutChanges="true">
 
-            <ImageView
-                android:id="@+id/smallAlbumArtIv"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/smallAlbumArtCv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignTop="@+id/songInfoLl"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="2dp">
+
+                <ImageView
+                    android:id="@+id/smallAlbumArtIv"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+            </android.support.v7.widget.CardView>
+
 
             <LinearLayout
                 android:id="@+id/songInfoLl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_toEndOf="@+id/smallAlbumArtIv"
+                android:layout_toEndOf="@+id/smallAlbumArtCv"
                 android:layout_toStartOf="@+id/moreOptionsIv"
                 android:layout_centerVertical="true"
+                android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:animateLayoutChanges="true">
 
@@ -120,7 +130,7 @@
             android:id="@+id/controlButtonsRl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/veryWhite"
             android:clickable="true">
 
             <ImageButton
@@ -148,7 +158,7 @@
                 android:id="@+id/playPauseIb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_play_arrow_accent_48dp"
+                android:src="@drawable/ic_play_arrow_black_48dp"
                 android:padding="16dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
@@ -190,7 +200,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:background="@color/white">
+            android:background="@color/veryWhite">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -219,6 +229,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/musicPlayerMainLl"
-        android:background="@color/white"
+        android:background="@color/veryWhite"
         android:requiresFadingEdge="vertical"/>
 </RelativeLayout>

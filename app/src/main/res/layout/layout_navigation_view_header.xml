@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#E1F5FE"/>
+        android:background="@color/veryWhite"/>
 
     <ImageView
         android:layout_width="128dp"
@@ -16,7 +16,7 @@
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_album_light_grey_128dp"
         android:cropToPadding="true"
-        android:tint="#B3E5FC"/>
+        android:tint="@color/lightGrey"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,6 +26,6 @@
         android:text="@string/app_name"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#263238"/>
+        android:textColor="@color/black"/>
 
 </FrameLayout>

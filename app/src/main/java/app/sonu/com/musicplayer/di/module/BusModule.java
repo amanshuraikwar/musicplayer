@@ -21,10 +21,13 @@ public class BusModule {
     public static final String PROVIDER_MUSIC_PLAYER_PANEL = "PROVIDER_MUSIC_PLAYER_PANEL";
     public static final String PROVIDER_ALBUM_CLICK = "PROVIDER_ALBUM_CLICK";
     public static final String PROVIDER_ARTIST_CLICK = "PROVIDER_ARTIST_CLICK";
+    public static final String PROVIDER_PLAYLIST_CLICK = "PROVIDER_PLAYLIST_CLICK";
     public static final String PROVIDER_QUEUE_INDEX_UPDATED = "PROVIDER_QUEUE_INDEX_UPDATED";
     public static final String PROVIDER_ALL_SONGS_SCROLL_TO_TOP = "PROVIDER_ALL_SONGS_SCROLL_TO_TOP";
     public static final String PROVIDER_ALBUMS_SCROLL_TO_TOP = "PROVIDER_ALBUMS_SCROLL_TO_TOP";
     public static final String PROVIDER_ARTISTS_SCROLL_TO_TOP = "PROVIDER_ARTISTS_SCROLL_TO_TOP";
+    public static final String PROVIDER_PLAYLISTS_SCROLL_TO_TOP = "PROVIDER_PLAYLISTS_SCROLL_TO_TOP";
+    public static final String PROVIDER_PLAYLISTS_CHANGED = "PROVIDER_PLAYLISTS_CHANGED";
 
     @Provides
     @Singleton
@@ -56,8 +59,15 @@ public class BusModule {
 
     @Provides
     @Singleton
+    @Named(PROVIDER_PLAYLIST_CLICK)
+    PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> getPlaylistClickProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Singleton
     @Named(PROVIDER_QUEUE_INDEX_UPDATED)
-    PublishSubject<Integer> getQueuIndexUpdatedProvider() {
+    PublishSubject<Integer> getQueueIndexUpdatedProvider() {
         return PublishSubject.create();
     }
 
@@ -79,6 +89,20 @@ public class BusModule {
     @Singleton
     @Named(PROVIDER_ARTISTS_SCROLL_TO_TOP)
     PublishSubject<Integer> getArtistsScrollToTopProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Singleton
+    @Named(PROVIDER_PLAYLISTS_SCROLL_TO_TOP)
+    PublishSubject<Integer> getPlaylistsScrollToTopProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Singleton
+    @Named(PROVIDER_PLAYLISTS_CHANGED)
+    PublishSubject<String> getPlaylistsChangedProvider() {
         return PublishSubject.create();
     }
 }

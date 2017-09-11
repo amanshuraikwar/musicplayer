@@ -35,10 +35,10 @@ public class AboutActivity extends AppCompatActivity{
     View colorView;
 
     int colors[] = {
-            AllSongsFragment.APP_BAR_BACKGROUND_COLOR,
-            AlbumsFragment.APP_BAR_BACKGROUND_COLOR,
-            ArtistsFragment.APP_BAR_BACKGROUND_COLOR,
-            Color.parseColor("#E8EAF6")};
+            Color.parseColor("#ffffff"),
+            Color.parseColor("#eeeeee"),
+            Color.parseColor("#eeeeee"),
+            Color.parseColor("#ECEFF1")};
 
     ValueAnimator colorAnimation = ValueAnimator
             .ofObject(new ArgbEvaluator(),

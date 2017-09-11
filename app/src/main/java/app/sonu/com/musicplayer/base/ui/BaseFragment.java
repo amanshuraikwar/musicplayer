@@ -12,11 +12,11 @@ import javax.inject.Inject;
  * base fragment
  */
 
-public abstract class BaseFragment<Presenter extends BaseMvpPresenter> extends Fragment
+public abstract class BaseFragment<MvpPresenter extends BaseMvpPresenter> extends Fragment
         implements BaseMvpView {
 
     @Inject
-    protected Presenter mPresenter;
+    protected MvpPresenter mPresenter;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

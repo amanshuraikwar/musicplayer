@@ -20,6 +20,7 @@ public interface MainMvpView extends BaseMvpView {
     void showMiniPlayer();
     void startAlbumFragment(MediaBrowserCompat.MediaItem item, View animatingView);
     void startArtistFragment(MediaBrowserCompat.MediaItem item);
+    void startPlaylistFragment(MediaBrowserCompat.MediaItem item, View animatingView);
     void displaySearchResults(List<MediaBrowserCompat.MediaItem> itemList);
     void displayToast(String message);
     void hideSearchView();

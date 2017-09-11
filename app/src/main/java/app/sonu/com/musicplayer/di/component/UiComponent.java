@@ -12,6 +12,8 @@ import app.sonu.com.musicplayer.ui.main.MainActivity;
 
 import app.sonu.com.musicplayer.ui.miniplayer.MiniPlayerFragment;
 import app.sonu.com.musicplayer.ui.musicplayer.MusicPlayerFragment;
+import app.sonu.com.musicplayer.ui.playlist.PlaylistFragment;
+import app.sonu.com.musicplayer.ui.playlists.PlaylistsFragment;
 import dagger.Component;
 
 /**
@@ -27,10 +29,12 @@ public interface UiComponent {
     void inject(AllSongsFragment allSongsFragment);
     void inject(AlbumsFragment albumsFragment);
     void inject(ArtistsFragment artistsFragment);
+    void inject(PlaylistsFragment playlistsFragment);
     void inject(MusicPlayerFragment musicPlayerFragment);
     void inject(MiniPlayerFragment miniPlayerFragment);
     void inject(AlbumFragment albumFragment);
     void inject(ArtistFragment artistFragment);
+    void inject(PlaylistFragment playlistFragment);
     void inject(MusicService musicService);
 }
 

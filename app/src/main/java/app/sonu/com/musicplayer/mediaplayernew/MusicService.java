@@ -3,6 +3,7 @@ package app.sonu.com.musicplayer.mediaplayernew;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -26,9 +27,12 @@ import app.sonu.com.musicplayer.di.module.BusModule;
 import app.sonu.com.musicplayer.di.module.UiModule;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaNotificationManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.PlaybackManager;
+import app.sonu.com.musicplayer.mediaplayernew.manager.PlaylistsManager;
 import app.sonu.com.musicplayer.mediaplayernew.manager.QueueManager;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.LocalMusicSource;
+import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
 import app.sonu.com.musicplayer.mediaplayernew.playback.LocalPlayback;
+import app.sonu.com.musicplayer.mediaplayernew.playlistssource.LocalPlaylistsSource;
 import app.sonu.com.musicplayer.util.MediaIdHelper;
 import io.reactivex.subjects.PublishSubject;
 
@@ -37,7 +41,7 @@ import io.reactivex.subjects.PublishSubject;
  */
 
 public class MusicService extends MediaBrowserServiceCompat
-        implements PlaybackManager.PlaybackServiceCallback{
+        implements PlaybackManager.PlaybackServiceCallback, PlaylistsManager.PlaylistsCallback {
 
     private static final String TAG = MusicService.class.getSimpleName();
 
@@ -51,10 +55,18 @@ public class MusicService extends MediaBrowserServiceCompat
     // indicates that the music playback should be paused (see {@link #onStartCommand})
     public static final String CMD_PAUSE = "CMD_PAUSE";
 
+    public static final String CMD_FAVOURITES = "CMD_FAV";
+
+    public static final String KEY_MEDIA_ID = "MEDIA_ID";
+    public static final String KEY_FAV_STATUS = "FAV_STATUS";
+
+    public static final String SESSION_FAVORITE_EVENT = "SESSION_FAVORITE_EVENT";
+
     private MediaSessionCompat mMediaSession;
 
     private MusicProvider mMusicProvider;
     private PlaybackManager mPlaybackManager;
+    private PlaylistsManager mPlaylistsManager;
 
     private MediaNotificationManager mMediaNotificationManager;
 
@@ -64,6 +76,10 @@ public class MusicService extends MediaBrowserServiceCompat
     @Inject
     @Named(BusModule.PROVIDER_QUEUE_INDEX_UPDATED)
     PublishSubject<Integer> mQueueIndexUpdatedSubject;
+
+    @Inject
+    @Named(BusModule.PROVIDER_PLAYLISTS_CHANGED)
+    PublishSubject<String> mPlaylistsChangedSubject;
 
     @Override
     public void onCreate() {
@@ -77,7 +93,13 @@ public class MusicService extends MediaBrowserServiceCompat
                 .build()
                 .inject(this);
 
-        mMusicProvider = new MusicProvider(new LocalMusicSource(mDataManager));
+        MusicProviderSource musicProviderSource = new LocalMusicSource(mDataManager);
+
+        mMusicProvider = new MusicProviderImpl(musicProviderSource);
+
+        mPlaylistsManager =
+                new PlaylistsManager(new LocalPlaylistsSource(mDataManager), mMusicProvider, this);
+        mPlaylistsManager.retrievePlaylists();
 
         mMediaSession = new MediaSessionCompat(this, TAG);
 
@@ -115,13 +137,15 @@ public class MusicService extends MediaBrowserServiceCompat
                         Log.d(TAG, "onCurrentQueueIndexUpdated:called");
                         mQueueIndexUpdatedSubject.onNext(currentIndex);
                     }
-                });
+                }
+                ,mPlaylistsManager);
 
         LocalPlayback playback = new LocalPlayback(this, mMusicProvider);
 
-        mPlaybackManager = new PlaybackManager(this, mMusicProvider, queueManager, playback);
+        mPlaybackManager = new PlaybackManager(this, mMusicProvider, queueManager, playback,
+                mPlaylistsManager);
 
-        mMediaSession.setCallback(mPlaybackManager.getMediaSessionCallback());
+        mMediaSession.setCallback(new MediaSessionCallback());
 
         // Set the session's token so that client activities can communicate with it.
         setSessionToken(mMediaSession.getSessionToken());
@@ -200,6 +224,8 @@ public class MusicService extends MediaBrowserServiceCompat
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_ALBUMS, null);
                         case MediaIdHelper.ARTISTS_ROOT_HINT:
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_ARTISTS, null);
+                        case MediaIdHelper.PLAYLISTS_ROOT_HINT:
+                            return new BrowserRoot(MediaIdHelper.MEDIA_ID_PLAYLISTS, null);
                         default:
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_EMPTY_ROOT, null);
                     }
@@ -224,6 +250,20 @@ public class MusicService extends MediaBrowserServiceCompat
         Log.d(TAG, "onLoadChildren: parentMediaId="+parentMediaId);
         if (MediaIdHelper.MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
             result.sendResult(new ArrayList<MediaBrowserCompat.MediaItem>());
+        } else if (parentMediaId.startsWith(MediaIdHelper.MEDIA_ID_PLAYLISTS)) {
+            if (mPlaylistsManager.isInitialized()) {
+                // if music library is ready, return immediately
+                result.sendResult(mPlaylistsManager.getChildren(parentMediaId));
+            } else {
+                // otherwise, only return results when the music library is retrieved
+                result.detach();
+                mPlaylistsManager.retrievePlaylistsAsync(new PlaylistsManager.Callback() {
+                    @Override
+                    public void onPlaylistCatalogReady(boolean success) {
+                        result.sendResult(mPlaylistsManager.getChildren(parentMediaId));
+                    }
+                });
+            }
         } else if (mMusicProvider.isInitialized()) {
             // if music library is ready, return immediately
             result.sendResult(mMusicProvider.getChildren(parentMediaId));
@@ -239,12 +279,14 @@ public class MusicService extends MediaBrowserServiceCompat
         }
     }
 
+
+
     @Override
     public void onSearch(@NonNull String query,
                          Bundle extras,
                          @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         Log.d(TAG, "onLoadChildren:called");
-        result.sendResult(mMusicProvider.getSongsBySearchQuery(query));
+        result.sendResult(mMusicProvider.getItemsBySearchQuery(query));
     }
 
     private boolean allowBrowsing(String clientPackageName ,int clientUid) {
@@ -299,5 +341,87 @@ public class MusicService extends MediaBrowserServiceCompat
     public void onRepeatModeChanged(int mode) {
         Log.d(TAG, "onRepeatModeChanged:mode="+mode);
         mMediaSession.setRepeatMode(mode);
+    }
+
+    //playlists callback
+    @Override
+    public void onFavoriteStatusChange(String mediaId, boolean status) {
+        mPlaybackManager.updatePlaybackState(null);
+//        Bundle b = new Bundle();
+//        b.putString(KEY_MEDIA_ID, mediaId);
+//        b.putBoolean(KEY_FAV_STATUS, status);
+//        mMediaSession.sendSessionEvent(SESSION_FAVORITE_EVENT, b);
+    }
+
+    @Override
+    public void onPlaylistsChanged(String playlistId) {
+        mPlaylistsChangedSubject.onNext(playlistId);
+    }
+
+    private class MediaSessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onPlay() {
+            mPlaybackManager.getMediaSessionCallback().onPlay();
+        }
+
+        @Override
+        public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            mPlaybackManager.getMediaSessionCallback().onPlayFromMediaId(mediaId, extras);
+        }
+
+        @Override
+        public void onSkipToQueueItem(long id) {
+            mPlaybackManager.getMediaSessionCallback().onSkipToQueueItem(id);
+        }
+
+        @Override
+        public void onPause() {
+            mPlaybackManager.getMediaSessionCallback().onPause();
+        }
+
+        @Override
+        public void onSkipToNext() {
+            mPlaybackManager.getMediaSessionCallback().onSkipToNext();
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            mPlaybackManager.getMediaSessionCallback().onSkipToPrevious();
+        }
+
+        @Override
+        public void onStop() {
+            mPlaybackManager.getMediaSessionCallback().onStop();
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            mPlaybackManager.getMediaSessionCallback().onSeekTo(pos);
+        }
+
+        @Override
+        public void onSetRepeatMode(int repeatMode) {
+            mPlaybackManager.getMediaSessionCallback().onSetRepeatMode(repeatMode);
+        }
+
+        //todo deprecated in 26.0.0-beta-2
+        @Override
+        public void onSetShuffleModeEnabled(boolean enabled) {
+            mPlaybackManager.getMediaSessionCallback().onSetShuffleModeEnabled(enabled);
+        }
+
+        @Override
+        public void onCommand(String command, Bundle extras, ResultReceiver cb) {
+            switch (command) {
+                case CMD_FAVOURITES:
+                    String mediaId = extras.getString(KEY_MEDIA_ID);
+                    if (mPlaylistsManager.isSongInFavourites(mediaId)) {
+                        mPlaylistsManager.removeFromFavorites(mediaId);
+                    } else {
+                        mPlaylistsManager.addToFavorites(mediaId);
+                    }
+                    break;
+            }
+        }
     }
 }

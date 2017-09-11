@@ -64,7 +64,7 @@ public class ArtistSearchResultViewHolder extends BaseViewHolder<ArtistSearchRes
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop().placeholder(R.drawable.default_album_art_artist).circleCrop();
+        options.centerCrop().placeholder(R.drawable.default_artist_art).circleCrop();
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
             Glide.with(context)
@@ -75,12 +75,12 @@ public class ArtistSearchResultViewHolder extends BaseViewHolder<ArtistSearchRes
         } else {
             Glide.with(context).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_album_art_artist));
+                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_artist_art));
             } else {
                 iconIv.setImageDrawable(
                         context
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_artist));
+                                .getDrawable(R.drawable.default_artist_art));
             }
         }
 

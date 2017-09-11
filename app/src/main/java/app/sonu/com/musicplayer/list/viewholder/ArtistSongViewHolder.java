@@ -73,12 +73,12 @@ public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, So
         } else {
             Glide.with(context).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_album_art_note));
+                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_song_art));
             } else {
                 iconIv.setImageDrawable(
                         context
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_note));
+                                .getDrawable(R.drawable.default_song_art));
             }
         }
 

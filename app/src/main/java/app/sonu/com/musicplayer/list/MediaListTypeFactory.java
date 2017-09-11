@@ -5,6 +5,8 @@ import android.view.View;
 import app.sonu.com.musicplayer.base.list.BaseTypeFactory;
 import app.sonu.com.musicplayer.base.list.BaseViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.ArtistViewHolder;
+import app.sonu.com.musicplayer.list.viewholder.DetailTitleViewHolder;
+import app.sonu.com.musicplayer.list.viewholder.PlaylistViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.QueueItemViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.AlbumSearchResultViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.AlbumSongViewHolder;
@@ -22,6 +24,8 @@ import app.sonu.com.musicplayer.list.visitable.AlbumVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSearchResultVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSongVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistVisitable;
+import app.sonu.com.musicplayer.list.visitable.DetailTitleVisitable;
+import app.sonu.com.musicplayer.list.visitable.PlaylistVisitable;
 import app.sonu.com.musicplayer.list.visitable.QueueItemVisitable;
 import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
 import app.sonu.com.musicplayer.list.visitable.SearchResultVisitable;
@@ -71,6 +75,12 @@ public class MediaListTypeFactory extends BaseTypeFactory {
     public int type(ShuffleAllSongsVisitable shuffleAllSongsVisitable) {
         return ShuffleAllSongsViewHolder.LAYOUT;
     }
+    public int type(PlaylistVisitable playlistVisitable) {
+        return PlaylistViewHolder.LAYOUT;
+    }
+    public int type(DetailTitleVisitable detailTitleVisitable) {
+        return DetailTitleViewHolder.LAYOUT;
+    }
 
     @Override
     public BaseViewHolder createViewHolder(View parent, int type) {
@@ -112,6 +122,12 @@ public class MediaListTypeFactory extends BaseTypeFactory {
                 break;
             case ShuffleAllSongsViewHolder.LAYOUT:
                 viewHolder = new ShuffleAllSongsViewHolder(parent);
+                break;
+            case PlaylistViewHolder.LAYOUT:
+                viewHolder = new PlaylistViewHolder(parent);
+                break;
+            case DetailTitleViewHolder.LAYOUT:
+                viewHolder = new DetailTitleViewHolder(parent);
                 break;
         }
 

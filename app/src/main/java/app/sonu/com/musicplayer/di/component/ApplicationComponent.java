@@ -38,6 +38,9 @@ public interface ApplicationComponent {
     @Named(BusModule.PROVIDER_ALBUM_CLICK)
     PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> getAlbumClickProvider();
 
+    @Named(BusModule.PROVIDER_PLAYLIST_CLICK)
+    PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> getPlaylistClickProvider();
+
     @Named(BusModule.PROVIDER_ARTIST_CLICK)
     PublishSubject<MediaBrowserCompat.MediaItem> getArtistClickProvider();
 
@@ -50,6 +53,12 @@ public interface ApplicationComponent {
     @Named(BusModule.PROVIDER_ALBUMS_SCROLL_TO_TOP)
     PublishSubject<Integer> getAlbumsScrollToTopProvider();
 
+    @Named(BusModule.PROVIDER_PLAYLISTS_SCROLL_TO_TOP)
+    PublishSubject<Integer> getPlaylistsScrollToTopProvider();
+
     @Named(BusModule.PROVIDER_ARTISTS_SCROLL_TO_TOP)
     PublishSubject<Integer> getArtistsScrollToTopProvider();
+
+    @Named(BusModule.PROVIDER_PLAYLISTS_CHANGED)
+    PublishSubject<String> getProviderPlaylistsChangedProvider();
 }

@@ -6,6 +6,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.util.Log;
 
 import java.util.List;
+import java.util.Random;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BasePresenter;
@@ -28,6 +29,7 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
     private Context mContext;
     private PublishSubject<MediaBrowserCompat.MediaItem> mSelectedItemPublishSubject;
     private MediaBrowserCompat.MediaItem mMediaItem;
+    private String mIconPath;
 
     public ArtistPresenter(DataManager dataManager,
                            MediaBrowserManager mediaBrowserManager,
@@ -47,14 +49,10 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
     @Override
     public void onStart() {
         Log.d(TAG, "onStart:called");
-        String iconPath =  mMediaItem.getDescription().getIconUri() != null
+
+        mIconPath =  mMediaItem.getDescription().getIconUri() != null
                 ? mMediaItem.getDescription().getIconUri().getEncodedPath()
                 : null;
-
-        mMvpView.displayArtistData(
-                mMediaItem.getDescription().getTitle().toString(),
-                mMediaItem.getDescription().getSubtitle().toString(),
-                iconPath);
     }
 
     @Override
@@ -80,7 +78,7 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
 
         //check if media browser is already connected or not
         if (mMediaBrowserManager.isMediaBrowserConnected()) {
-            mMvpView.displayList(mMediaBrowserManager.getItemList());
+            mMvpView.displayListData(mMediaItem, mIconPath, mMediaBrowserManager.getItemList());
         } else {
             mMediaBrowserManager.connectMediaBrowser();
         }
@@ -109,6 +107,23 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
     }
 
     @Override
+    public void onShuffleAllClick() {
+        List<MediaBrowserCompat.MediaItem> songsList = mMediaBrowserManager.getItemList();
+        int randomIndex = new Random().nextInt(songsList.size());
+        mMediaBrowserManager
+                .getMediaController()
+                .getTransportControls()
+                .playFromMediaId(songsList.get(randomIndex).getMediaId(), null);
+        mSelectedItemPublishSubject.onNext(songsList.get(randomIndex));
+        if (!mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
+            mMediaBrowserManager
+                    .getMediaController()
+                    .getTransportControls()
+                    .setShuffleModeEnabled(true);
+        }
+    }
+
+    @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
         // do nothing
@@ -130,7 +145,8 @@ public class ArtistPresenter extends BasePresenter<ArtistMvpView>
     public void onMediaBrowserChildrenLoaded(List<MediaBrowserCompat.MediaItem> items) {
         Log.d(TAG, "onMediaBrowserChildrenLoaded:called");
         Log.i(TAG, "onMediaBrowserChildrenLoaded:is mvpview null="+(mMvpView==null));
-        mMvpView.displayList(items);
+
+        mMvpView.displayListData(mMediaItem, mIconPath, items);
     }
 
     @Override

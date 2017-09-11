@@ -37,7 +37,7 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
 
     private static final String TAG = ArtistsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Artists";
-    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#E0F2F1");
+    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#ffffff");
 
     @BindView(R.id.artistsRv)
     RecyclerView artistsRv;

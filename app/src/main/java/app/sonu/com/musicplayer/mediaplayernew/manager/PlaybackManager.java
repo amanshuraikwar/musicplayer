@@ -9,6 +9,8 @@ import android.util.Log;
 
 import app.sonu.com.musicplayer.mediaplayernew.MusicProvider;
 import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
+import app.sonu.com.musicplayer.mediaplayernew.playlistssource.PlaylistsSource;
+import app.sonu.com.musicplayer.util.QueueHelper;
 
 /**
  * Created by sonu on 28/7/17.
@@ -25,19 +27,22 @@ public class PlaybackManager implements Playback.Callback {
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
+    private PlaylistsManager mPlaylistsManager;
 
     private int mShuffleMode, mRepeatMode;
 
     public PlaybackManager(PlaybackServiceCallback serviceCallback,
                            MusicProvider musicProvider,
                            QueueManager queueManager,
-                           Playback playback) {
+                           Playback playback,
+                           PlaylistsManager playlistsManager) {
         mMusicProvider = musicProvider;
         mServiceCallback = serviceCallback;
         mQueueManager = queueManager;
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
+        mPlaylistsManager = playlistsManager;
 
         mShuffleMode = 0;
         mRepeatMode = PlaybackStateCompat.REPEAT_MODE_NONE;
@@ -121,14 +126,23 @@ public class PlaybackManager implements Playback.Callback {
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
 
         Bundle b = new Bundle();
-        b.putInt(Playback.PLAYBACK_STATE_EXTRA_CURRENT_QUEUE_INDEX, mQueueManager.getmCurrentQueueIndex());
-        stateBuilder.setExtras(b);
+        b.putInt(Playback.PLAYBACK_STATE_EXTRA_CURRENT_QUEUE_INDEX,
+                mQueueManager.getmCurrentQueueIndex());
 
         // Set the activeQueueItemId if the current index is valid.
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
             stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
+
+            // todo temp
+            Log.w(TAG, "updatePlaybackState:"+QueueHelper.getMusicIdOf(currentMusic));
+            Log.w(TAG, "updatePlaybackState:"+mPlaylistsManager.isSongInFavourites(QueueHelper.getMediaIdOf(currentMusic)));
+
+            b.putBoolean(PlaylistsSource.PLAYBACK_STATE_EXTRA_IS_IN_FAVORITES,
+                    mPlaylistsManager.isSongInFavourites(QueueHelper.getMusicIdOf(currentMusic)));
         }
+
+        stateBuilder.setExtras(b);
 
         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
 
@@ -213,13 +227,18 @@ public class PlaybackManager implements Playback.Callback {
             Log.d(TAG, "onPlayFromMediaId:bundle="+extras);
 
             mQueueManager.setQueueFromMediaId(mediaId);
+            if (mShuffleMode==1) {
+                mQueueManager.shuffleMusic(mQueueManager.getCurrentMusicMediaId());
+            }
             handlePlayRequest();
         }
 
         @Override
         public void onSkipToQueueItem(long id) {
-            //todo implement
-            super.onSkipToQueueItem(id);
+            Log.d(TAG, "onSkipToQueueItem:called");
+            Log.i(TAG, "onSkipToQueueItem: id="+id);
+            mQueueManager.setCurrentQueueItem(id);
+            handlePlayRequest();
         }
 
         @Override
@@ -279,6 +298,7 @@ public class PlaybackManager implements Playback.Callback {
                     if (enabled) {
                         mQueueManager.shuffleMusic(mQueueManager.getCurrentMusicMediaId());
                     } else {
+                        Log.w(TAG, "onSetShuffleModeEnabled:cur="+mQueueManager.getCurrentMusicMediaId());
                         mQueueManager.setQueueFromMediaId(
                                 mQueueManager.getCurrentMusicMediaId(), true);
                     }

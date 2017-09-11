@@ -2,6 +2,7 @@ package app.sonu.com.musicplayer.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
 
@@ -11,22 +12,19 @@ import android.support.v7.graphics.Palette;
 
 public class ColorUtil {
 
-    private static final int BACKGROUND_COLOR_FALLBACK = Color.parseColor("#e0e0e0");
-    private static final int TITLE_COLOR_FALLBACK = Color.parseColor("#484848");
-    private static final int BODY_COLOR_FALLBACK = Color.parseColor("#757575");
+    private static final int BACKGROUND_COLOR_FALLBACK = Color.parseColor("#ECEFF1");
+    private static final int TITLE_COLOR_FALLBACK = Color.parseColor("#212121");
+    private static final int BODY_COLOR_FALLBACK = Color.parseColor("#616161");
 
-    private static final int TITLE_COLOR_DARK = Color.parseColor("#484848");
-    private static final int BODY_COLOR_DARK = Color.parseColor("#757575");
+    private static final int TITLE_COLOR_DARK = Color.parseColor("#212121");
+    private static final int BODY_COLOR_DARK = Color.parseColor("#616161");
 
-    private static final int TITLE_COLOR_LIGHT = Color.parseColor("#f5f5f5");
+    private static final int TITLE_COLOR_LIGHT = Color.parseColor("#ffffff");
     private static final int BODY_COLOR_LIGHT = Color.parseColor("#eeeeee");
 
     @Nullable
-    public static void generatePalette(Bitmap bitmap,
-                                          Palette.PaletteAsyncListener paletteAsyncListener) {
-        if (bitmap == null){
-            return;
-        }
+    public static void generatePalette(@NonNull Bitmap bitmap,
+                                       Palette.PaletteAsyncListener paletteAsyncListener) {
         Palette.from(bitmap).generate(paletteAsyncListener);
     }
 
@@ -72,11 +70,10 @@ public class ColorUtil {
         if (palette != null) {
             if (palette.getMutedSwatch() != null) {
                 return palette.getMutedSwatch();
-            } else
-                if (palette.getDarkMutedSwatch() != null) {
-                return palette.getDarkMutedSwatch();
             } else if (palette.getLightMutedSwatch() != null) {
                 return palette.getLightMutedSwatch();
+            } else if (palette.getDarkMutedSwatch() != null) {
+                return palette.getDarkMutedSwatch();
             }
         }
         return null;

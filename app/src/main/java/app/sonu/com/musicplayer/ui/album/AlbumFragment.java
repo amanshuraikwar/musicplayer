@@ -1,13 +1,16 @@
 package app.sonu.com.musicplayer.ui.album;
 
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -16,17 +19,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
-import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
 import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.AlbumSongVisitable;
+import app.sonu.com.musicplayer.list.visitable.DetailTitleVisitable;
+import app.sonu.com.musicplayer.ui.view.StateAwareAppBarLayout;
 import app.sonu.com.musicplayer.util.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,29 +59,25 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
 
     public static final String BACK_STACK_TAG = "__albumfragment__";
 
-    @BindView(R.id.elasticDragDismissLayout)
-    ElasticDragDismissFrameLayout elasticDragDismissFrameLayout;
-
-    @BindView(R.id.titleTv)
-    TextView titleTv;
-
-    @BindView(R.id.subtitleTv)
-    TextView subtitleTv;
-
     @BindView(R.id.artIv)
     ImageView artIv;
 
-    @BindView(R.id.itemsRl)
-    FastScrollRecyclerView itemsRl;
+    @BindView(R.id.itemsRv)
+    FastScrollRecyclerView itemsRv;
 
-    @BindView(R.id.topBarRl)
-    View topBarRl;
+    @BindView(R.id.toolbarLayout)
+    CollapsingToolbarLayout toolbarLayout;
+
+    @BindView(R.id.appBarLayout)
+    StateAwareAppBarLayout appBarLayout;
 
     @BindView(R.id.backIb)
     ImageButton backIb;
 
-    @BindView(R.id.albumMetadataRl)
-    View albumMetadataRl;
+    @BindView(R.id.shuffleFab)
+    FloatingActionButton shuffleFab;
+
+    private int backgroundColor, bodyColor, titleColor;
 
     private SongOnClickListener songOnClickListener = new SongOnClickListener() {
         @Override
@@ -102,25 +101,22 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
         View view = inflater.inflate(R.layout.fragment_album, container, false);
         ButterKnife.bind(this, view);
 
-
-        if (itemsRl.getLayoutManager() == null) {
-            itemsRl.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        if (itemsRv.getLayoutManager() == null) {
+            itemsRv.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         }
 
-        ViewCompat.setNestedScrollingEnabled(itemsRl, false);
-
-        elasticDragDismissFrameLayout.addListener(new ElasticDragDismissListener() {
+        appBarLayout.setOnStateChangeListener(new StateAwareAppBarLayout.OnStateChangeListener() {
             @Override
-            public void onDrag(float elasticOffset,
-                               float elasticOffsetPixels,
-                               float rawOffset,
-                               float rawOffsetPixels) {
-
-            }
-
-            @Override
-            public void onDragDismissed() {
-                mPresenter.onDragDismissed();
+            public void onStateChange(StateAwareAppBarLayout.State toolbarChange) {
+                Log.d(TAG, "state="+toolbarChange);
+                switch (toolbarChange) {
+                    case COLLAPSED:
+                        backIb.setColorFilter(titleColor, PorterDuff.Mode.SRC_IN);
+                        break;
+                    default:
+                        backIb.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                        break;
+                }
             }
         });
 
@@ -128,6 +124,13 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
             @Override
             public void onClick(View v) {
                 mPresenter.onBackIbClick();
+            }
+        });
+
+        shuffleFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.onShuffleAllClick();
             }
         });
 
@@ -159,7 +162,6 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume:called");
-
         Log.d(TAG, "onResume:is presenter's view null="+(mPresenter.getMvpView()==null));
     }
 
@@ -170,17 +172,9 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
     }
 
     @Override
-    public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
-        itemsRl.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList),
-                        new MediaListTypeFactory()));
-        itemsRl.invalidate();
-    }
-
-    @Override
-    public void displayAlbumData(String title, String subtitle, String artPath) {
-        titleTv.setText(title);
-        subtitleTv.setText(subtitle);
+    public void displayListData(final MediaBrowserCompat.MediaItem item,
+                                String artPath,
+                                final List<MediaBrowserCompat.MediaItem> itemList) {
 
         RequestOptions options = new RequestOptions();
         options.centerCrop();
@@ -203,7 +197,7 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
                                                        Target<Bitmap> target,
                                                        DataSource dataSource,
                                                        boolean isFirstResource) {
-                            updateUiColor(resource);
+                            updateUi(item, resource, itemList);
                             return false;
                         }
 
@@ -211,46 +205,63 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
                     })
                     .load(artPath)
                     .apply(options)
+                    .transition(BitmapTransitionOptions.withCrossFade())
                     .into(artIv);
         } else {
             Glide.with(getActivity()).clear(artIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                artIv.setImageDrawable(getActivity().getDrawable(R.drawable.default_album_art_album));
+                artIv.setImageDrawable(getActivity().getDrawable(R.drawable.default_album_art));
             } else {
                 artIv.setImageDrawable(
                         getActivity()
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_album));
+                                .getDrawable(R.drawable.default_album_art));
             }
-            updateUiColor(null);
+            updateUi(item, null, itemList);
         }
     }
 
-    private void updateUiColor(Bitmap resource) {
-        if (resource == null) {
-            setUiColorWithSwatch(null);
-        } else {
-            ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
+    public void updateUi(final MediaBrowserCompat.MediaItem item,
+                         Bitmap art,
+                         final List<MediaBrowserCompat.MediaItem> itemList) {
+        if (art != null) {
+            ColorUtil.generatePalette(art, new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(Palette palette) {
-                    setUiColorWithSwatch(ColorUtil.getColorSwatch(palette));
+                    itemsRv.setAdapter(
+                            new MediaRecyclerViewAdapter(
+                                    getVisitableList(
+                                            item,
+                                            ColorUtil.getColorSwatch(palette),
+                                            itemList),
+                                    new MediaListTypeFactory()));
+                    updateUiColor(ColorUtil.getColorSwatch(palette));
                 }
             });
+        } else {
+            itemsRv.setAdapter(
+                    new MediaRecyclerViewAdapter(
+                            getVisitableList(
+                                    item,
+                                    ColorUtil.getColorSwatch(null),
+                                    itemList),
+                            new MediaListTypeFactory()));
+            updateUiColor(ColorUtil.getColorSwatch(null));
         }
     }
 
-    private void setUiColorWithSwatch(Palette.Swatch swatch) {
+    private void updateUiColor(Palette.Swatch swatch) {
+        backgroundColor = ColorUtil.getBackgroundColor(swatch);
+        titleColor = ColorUtil.getTitleColor(swatch);
+        bodyColor = ColorUtil.getBodyColor(swatch);
 
-        int backgroundColor = ColorUtil.getBackgroundColor(swatch);
-        int titleColor = ColorUtil.getTitleColor(swatch);
-        int bodyColor = ColorUtil.getBodyColor(swatch);
+        toolbarLayout.setContentScrimColor(backgroundColor);
+        shuffleFab.setBackgroundTintList(ColorStateList.valueOf(titleColor));
+        shuffleFab.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_IN);
 
-        topBarRl.setBackgroundColor(ColorUtil.makeColorTransparent(backgroundColor));
-        backIb.setColorFilter(titleColor, PorterDuff.Mode.SRC_IN);
-        albumMetadataRl.setBackgroundColor(backgroundColor);
+        itemsRv.setThumbColor(backgroundColor);
+        itemsRv.setTrackColor(ColorUtil.makeColorTransparent(bodyColor));
 
-        titleTv.setTextColor(titleColor);
-        subtitleTv.setTextColor(bodyColor);
     }
 
     @Override
@@ -263,10 +274,25 @@ public class AlbumFragment extends BaseFragment<AlbumMvpPresenter> implements Al
      * @param songList input list
      * @return visitable list
      */
-    private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> songList) {
+    private List<BaseVisitable> getVisitableList(MediaBrowserCompat.MediaItem item,
+                                                 Palette.Swatch swatch,
+                                                 List<MediaBrowserCompat.MediaItem> songList) {
+        Log.d(TAG, "getVisitableList:called");
+
         List<BaseVisitable> visitableList = new ArrayList<>();
-        for (MediaBrowserCompat.MediaItem item : songList) {
-            AlbumSongVisitable visitable = new AlbumSongVisitable(item);
+
+        int backgroundColor = ColorUtil.getBackgroundColor(swatch);
+        int titleColor = ColorUtil.getTitleColor(swatch);
+        int bodyColor = ColorUtil.getBodyColor(swatch);
+
+        DetailTitleVisitable detailTitleVisitable = new DetailTitleVisitable(item);
+        detailTitleVisitable.setBackgroundColor(backgroundColor);
+        detailTitleVisitable.setTitleTextColor(titleColor);
+        detailTitleVisitable.setSubtitleTextColor(bodyColor);
+        visitableList.add(detailTitleVisitable);
+
+        for (MediaBrowserCompat.MediaItem songItem : songList) {
+            AlbumSongVisitable visitable = new AlbumSongVisitable(songItem);
             visitable.setOnClickListener(songOnClickListener);
             visitableList.add(visitable);
         }

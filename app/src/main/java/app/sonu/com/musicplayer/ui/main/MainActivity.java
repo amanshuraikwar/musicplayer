@@ -23,6 +23,8 @@ import app.sonu.com.musicplayer.list.visitable.AlbumSearchResultVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSearchResultVisitable;
 import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
 import app.sonu.com.musicplayer.list.visitable.SongSearchResultVisitable;
+import app.sonu.com.musicplayer.ui.playlist.PlaylistFragment;
+import app.sonu.com.musicplayer.ui.playlists.PlaylistsFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,6 +36,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -110,8 +113,12 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     @BindView(R.id.appBarLayout)
     AppBarLayout appBarLayout;
 
+    @BindView(R.id.mainFab)
+    FloatingActionButton mainFab;
+
     private AlbumFragment mAlbumFragment;
     private ArtistFragment mArtistFragment;
+    private PlaylistFragment mPlaylistFragment;
 
     private int lastAppBarBackgroundColor;
 
@@ -200,6 +207,7 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         adapter.addFragment(new AllSongsFragment(), AllSongsFragment.TAB_TITLE);
         adapter.addFragment(new AlbumsFragment(), AlbumsFragment.TAB_TITLE);
         adapter.addFragment(new ArtistsFragment(), ArtistsFragment.TAB_TITLE);
+        adapter.addFragment(new PlaylistsFragment(), PlaylistsFragment.TAB_TITLE);
         mediaListVp.setAdapter(adapter);
 
         //making tabs work with viewpager
@@ -219,12 +227,19 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
                 switch (position) {
                     case 0:
                         newColor = AllSongsFragment.APP_BAR_BACKGROUND_COLOR;
+                        mainFab.hide();
                         break;
                     case 1:
                         newColor = AlbumsFragment.APP_BAR_BACKGROUND_COLOR;
+                        mainFab.hide();
                         break;
                     case 2:
                         newColor = ArtistsFragment.APP_BAR_BACKGROUND_COLOR;
+                        mainFab.hide();
+                        break;
+                    case 3:
+                        newColor = PlaylistsFragment.APP_BAR_BACKGROUND_COLOR;
+//                        mainFab.show();
                         break;
                 }
                 animateToolbarColors(lastAppBarBackgroundColor, newColor);
@@ -317,6 +332,8 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
                 return false;
             }
         });
+
+        mainFab.hide();
 
         mPresenter.onCreate(this);
     }
@@ -457,6 +474,33 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
 
         fragmentTransaction.replace(R.id.upperFragmentFl, mArtistFragment);
         fragmentTransaction.addToBackStack(ArtistFragment.BACK_STACK_TAG);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void startPlaylistFragment(MediaBrowserCompat.MediaItem item, View animatingView) {
+        Log.d(TAG, "startAlbumFragment:called");
+
+        if (mPlaylistFragment == null) {
+            mPlaylistFragment = new PlaylistFragment();
+        }
+
+        Bundle args = new Bundle();
+        args.putParcelable("mediaItem", item);
+        mPlaylistFragment.setArguments(args);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(PlaylistFragment.BACK_STACK_TAG, 0);
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fade enterFade = new Fade();
+        enterFade.setStartDelay(0);
+        enterFade.setDuration(300);
+        mPlaylistFragment.setEnterTransition(enterFade);
+
+        fragmentTransaction.replace(R.id.upperFragmentFl, mPlaylistFragment);
+        fragmentTransaction.addToBackStack(PlaylistFragment.BACK_STACK_TAG);
         fragmentTransaction.commit();
     }
 

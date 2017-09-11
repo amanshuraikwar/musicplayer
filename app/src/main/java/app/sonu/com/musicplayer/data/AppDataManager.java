@@ -52,4 +52,24 @@ public class AppDataManager implements DataManager {
     public boolean setFirstRun(Boolean flag) {
         return mPrefsHelper.setFirstRun(flag);
     }
+
+    @Override
+    public String getPlaylistIds() {
+        return mPrefsHelper.getPlaylistIds();
+    }
+
+    @Override
+    public void createPlaylistIdList(String json) {
+        mPrefsHelper.createPlaylistIdList(json);
+    }
+
+    @Override
+    public String getPlaylistById(String id) {
+        return mPrefsHelper.getPlaylistById(id);
+    }
+
+    @Override
+    public void putPlaylist(String id, String playlist) {
+        mPrefsHelper.putPlaylist(id, playlist);
+    }
 }

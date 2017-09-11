@@ -87,6 +87,12 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         mPresenter.onNavUpClick();
     }
 
+    @OnClick(R.id.miniPlayerRl)
+    void onMiniPlayerRlClick() {
+        Log.d(TAG, "navUp:clicked");
+        mPresenter.onNavUpClick();
+    }
+
     @OnClick(R.id.miniPlayerPlayPauseIv)
     void onPlayPauseIbClick(){
         Log.d(TAG, "playPauseIb onClick:called");
@@ -164,12 +170,12 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
             Glide.with(getActivity()).clear(miniPlayerNavUpIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 miniPlayerNavUpIv.setImageDrawable(
-                        getActivity().getDrawable(R.drawable.default_album_art_note));
+                        getActivity().getDrawable(R.drawable.default_song_art));
             } else {
                 miniPlayerNavUpIv.setImageDrawable(
                         getActivity()
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_note));
+                                .getDrawable(R.drawable.default_song_art));
             }
         }
     }

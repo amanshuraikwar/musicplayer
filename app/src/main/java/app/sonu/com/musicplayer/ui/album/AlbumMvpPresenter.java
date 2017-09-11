@@ -15,4 +15,5 @@ public interface AlbumMvpPresenter extends BaseMvpPresenter<AlbumMvpView> {
     void onSongClicked(MediaBrowserCompat.MediaItem item);
     void onDragDismissed();
     void onBackIbClick();
+    void onShuffleAllClick();
 }

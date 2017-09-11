@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -22,6 +23,7 @@ import android.util.Log;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.mediaplayernew.MusicService;
 import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
+import app.sonu.com.musicplayer.mediaplayernew.playlistssource.PlaylistsSource;
 import app.sonu.com.musicplayer.ui.main.MainActivity;
 import app.sonu.com.musicplayer.util.ColorUtil;
 
@@ -158,7 +160,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 // todo implement
                 break;
             case ACTION_ADD_TO_PLAYLIST:
-                // todo implement
+                Bundle b = new Bundle();
+                b.putString(MusicService.KEY_MEDIA_ID, mMetadata.getDescription().getMediaId());
+                mController.sendCommand(MusicService.CMD_FAVOURITES, b, null);
                 break;
             default:
                 Log.w(TAG, "Unknown intent ignored. Action="+action);
@@ -221,6 +225,24 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 Log.e(TAG, "could not connect media controller", e);
             }
         }
+
+        @Override
+        public void onSessionEvent(String event, Bundle extras) {
+//            switch (event) {
+//                case MusicService.SESSION_FAVORITE_EVENT:
+//                    if (mMetadata
+//                            .getDescription()
+//                            .getMediaId()
+//                            .equals(extras.getString(MusicService.KEY_MEDIA_ID))) {
+//                        if (extras.getBoolean(MusicService.KEY_FAV_STATUS)) {
+//                            mMvpView.showFavButtonEnabled();
+//                        } else {
+//                            mMvpView.showFavButtonDisabled();
+//                        }
+//                    }
+//                    break;
+//            }
+        }
     };
 
     private void updateSessionToken() throws RemoteException {
@@ -264,18 +286,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         addPlayPauseAction(notificationBuilder);
 
-        // If skip to next action is enabled
+        // If add to playlist action is enabled
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
             notificationBuilder.addAction(R.drawable.ic_skip_next_grey_24dp,
                     "next", mNextIntent);
         }
 
-        // If add to playlist action is enabled
-        // todo implement
-//        if ((mPlaybackState.getActions() & Playback.CUSTOM_ACTION_ADD_TO_PLAYLIST) != 0) {
-//            notificationBuilder.addAction(R.drawable.ic_playlist_add_black_24dp,
-//                    "next", mAddToPlaylistIntent);
-//        }
+        addAddToPlaylistAction(notificationBuilder);
 
         MediaDescriptionCompat description = mMetadata.getDescription();
 
@@ -296,7 +313,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         notificationBuilder
                 .setColor(notificationColor)
-                .setSmallIcon(R.drawable.ic_music_note_black_24dp)
+                .setSmallIcon(R.drawable.ic_cassette_notification)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setUsesChronometer(true)
                 .setContentIntent(createContentIntent(description))
@@ -313,6 +330,27 @@ public class MediaNotificationManager extends BroadcastReceiver {
         setNotificationPlaybackState(notificationBuilder);
 
         return notificationBuilder.build();
+    }
+
+    private void addAddToPlaylistAction(NotificationCompat.Builder builder) {
+        Log.d(TAG, "addToPlaylistAction");
+
+        String label;
+        int icon;
+        PendingIntent intent = mAddToPlaylistIntent;
+
+        if (mPlaybackState
+                .getExtras()
+                .getBoolean(PlaylistsSource.PLAYBACK_STATE_EXTRA_IS_IN_FAVORITES)) {
+            label = "in_favourites";
+            icon = R.drawable.ic_heart_solid_light_pink_24dp;
+        } else {
+            label = "not_in_favourites";
+            icon = R.drawable.ic_heart_outline_white_24dp;
+        }
+
+        builder.addAction(icon, label, intent);
+
     }
 
     private void addPlayPauseAction(NotificationCompat.Builder builder) {

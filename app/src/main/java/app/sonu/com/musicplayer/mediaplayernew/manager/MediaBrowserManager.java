@@ -140,7 +140,7 @@ public class MediaBrowserManager {
         });
     }
 
-    private void subscribeMediaBrowser() {
+    public void subscribeMediaBrowser() {
         Log.d(TAG, "subscribeMediaBrowser:called");
         if (mMediaId == null) {
             Log.i(TAG, "subscribeMediaBrowser:getting root");
@@ -153,6 +153,7 @@ public class MediaBrowserManager {
         }
 
         if (isMediaBrowserConnected()) {
+            mMediaBrowser.unsubscribe(mMediaId, mSubscriptionCallback);
             mMediaBrowser.subscribe(mMediaId, mSubscriptionCallback);
         } else {
             Log.w(TAG, "subscribeMediaBrowser:media browser not connected");

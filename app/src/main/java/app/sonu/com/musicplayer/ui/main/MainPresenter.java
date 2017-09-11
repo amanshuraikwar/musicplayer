@@ -46,15 +46,22 @@ public class MainPresenter extends BasePresenter<MainMvpView>
 
     private PublishSubject<MediaBrowserCompat.MediaItem> mSelectedItemPublishSubject;
     private PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> mAlbumClickSubject;
+    private PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> mPlaylistClickSubject;
     private PublishSubject<MediaBrowserCompat.MediaItem> mArtistClickSubject;
     private PublishSubject<Integer> mAllSongsScrollToTopSubject;
     private PublishSubject<Integer> mAlbumsScrollToTopSubject;
+    private PublishSubject<Integer> mPlaylistsScrollToTopSubject;
     private PublishSubject<Integer> mArtistsScrollToTopSubject;
+    private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
 
     private MediaBrowserManager mMediaBrowserManager;
     private Context mContext;
 
-    private Disposable albumClickDisposable, artistClickDisposable, selectedItemDisposable;
+    private Disposable albumClickDisposable,
+            artistClickDisposable,
+            selectedItemDisposable,
+            playlistClickDisposable,
+            mMusicPlayerPanelDisposable;
 
     public MainPresenter(DataManager dataManager,
                          PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject,
@@ -63,6 +70,9 @@ public class MainPresenter extends BasePresenter<MainMvpView>
                          PublishSubject<Integer> allSongsScrollToTopSubject,
                          PublishSubject<Integer> albumsScrollToTopSubject,
                          PublishSubject<Integer> artistsScrollToTopSubject,
+                         PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> playlistClickSubject,
+                         PublishSubject<Integer> playlistsScrollToTopSubject,
+                         PublishSubject<Integer> musicPlayerPanelPublishSubject,
                          MediaBrowserManager mediaBrowserManager) {
         super(dataManager);
         mSelectedItemPublishSubject = selectedItemPublishSubject;
@@ -71,6 +81,9 @@ public class MainPresenter extends BasePresenter<MainMvpView>
         mAllSongsScrollToTopSubject = allSongsScrollToTopSubject;
         mAlbumsScrollToTopSubject = albumsScrollToTopSubject;
         mArtistsScrollToTopSubject = artistsScrollToTopSubject;
+        mPlaylistClickSubject = playlistClickSubject;
+        mPlaylistsScrollToTopSubject = playlistsScrollToTopSubject;
+        mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
     }
@@ -82,6 +95,8 @@ public class MainPresenter extends BasePresenter<MainMvpView>
         albumClickDisposable.dispose();
         artistClickDisposable.dispose();
         selectedItemDisposable.dispose();
+        playlistClickDisposable.dispose();
+        mMusicPlayerPanelDisposable.dispose();
     }
 
     @Override
@@ -122,6 +137,30 @@ public class MainPresenter extends BasePresenter<MainMvpView>
             @Override
             public void accept(MediaBrowserCompat.MediaItem item) throws Exception {
                 mMvpView.startArtistFragment(item);
+            }
+        });
+
+        playlistClickDisposable = mPlaylistClickSubject.subscribe(new Consumer<Pair<MediaBrowserCompat.MediaItem, View>>() {
+            @Override
+            public void accept(Pair<MediaBrowserCompat.MediaItem, View> mediaItemViewPair) throws Exception {
+                mMvpView.startPlaylistFragment(mediaItemViewPair.first, mediaItemViewPair.second);
+            }
+        });
+
+        mMusicPlayerPanelDisposable = mMusicPlayerPanelPublishSubject.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                switch (integer) {
+                    case -1:
+                        mMvpView.isSlidingUpPaneHidden();
+                        break;
+                    case 0:
+                        mMvpView.setSlidingUpPaneCollapsed();
+                        break;
+                    case 1:
+                        mMvpView.setSlidingUpPaneExpanded();
+                        break;
+                }
             }
         });
     }
@@ -165,6 +204,8 @@ public class MainPresenter extends BasePresenter<MainMvpView>
             case 2:
                 mArtistsScrollToTopSubject.onNext(0);
                 break;
+            case 3:
+                mPlaylistsScrollToTopSubject.onNext(0);
         }
     }
 

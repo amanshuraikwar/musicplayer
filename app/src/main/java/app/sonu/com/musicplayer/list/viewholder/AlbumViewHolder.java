@@ -53,7 +53,7 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
         albumArtistTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop().placeholder(R.drawable.default_album_art_album);
+        options.centerCrop().placeholder(R.drawable.default_album_art);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
             Glide.with(context)
@@ -64,12 +64,12 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
         } else {
             Glide.with(context).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_album_art_album));
+                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_album_art));
             } else {
                 iconIv.setImageDrawable(
                         context
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_album));
+                                .getDrawable(R.drawable.default_album_art));
             }
         }
 

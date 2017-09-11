@@ -35,4 +35,6 @@ public interface MusicPlayerMvpView extends BaseMvpView {
     void resetSeekbar();
     boolean updateQueueIndex(int index);
     void displayToast(String message);
+    void showFavButtonEnabled();
+    void showFavButtonDisabled();
 }

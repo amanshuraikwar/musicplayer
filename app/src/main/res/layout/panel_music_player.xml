@@ -29,7 +29,7 @@
             android:layout_toEndOf="@+id/playArrowIv"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:textColor="@color/white"
+            android:textColor="@color/veryWhite"
             android:text="The game of love"/>
 
     </RelativeLayout>

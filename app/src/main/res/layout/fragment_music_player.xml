@@ -31,15 +31,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/coal"
-                android:src="@drawable/ic_music_note_light_grey_24dp"
-                android:scaleType="center"/>
+                android:scaleType="centerCrop"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:background="@drawable/gradient_background_dark"
+                android:clickable="false"/>
 
             <LinearLayout
                 android:id="@+id/topBarLl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/drawable_transparent_gradient">
+                android:orientation="vertical">
 
                 <View
                     android:layout_width="match_parent"
@@ -69,24 +73,24 @@
                         android:layout_toEndOf="@id/collapseIv"
                         android:layout_toStartOf="@+id/heartIv"
                         android:text="Now Playing"
-                        android:textColor="@color/white"
+                        android:textColor="@color/veryWhite"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:paddingStart="16dp"
-                        android:paddingEnd="16dp"/>
+                        android:paddingEnd="16dp"
+                        android:visibility="gone"/>
 
                     <ImageView
                         android:id="@+id/heartIv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toStartOf="@+id/moreOptionsIv"
+                        android:layout_alignParentEnd="true"
                         android:padding="16dp"
                         android:layout_centerVertical="true"
                         android:src="@drawable/ic_heart_outline_white_24dp"
                         android:background="?selectableItemBackgroundBorderless"
                         android:drawSelectorOnTop="true"
-                        android:clickable="true"
-                        android:visibility="gone"/>
+                        android:clickable="true"/>
 
                     <ImageView
                         android:id="@+id/moreOptionsIv"

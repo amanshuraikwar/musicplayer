@@ -15,13 +15,14 @@ public class MediaIdHelper {
     public static final String MEDIA_ID_ALL_SONGS = "__ALL_SONGS__";
     public static final String MEDIA_ID_ALBUMS = "__BY_ALBUMS__";
     public static final String MEDIA_ID_ARTISTS = "__BY_ARTISTS__";
+    public static final String MEDIA_ID_PLAYLISTS = "__BY_PLAYLISTS__";
 
-    @SuppressWarnings("WeakerAccess")
     public static final String MEDIA_ID_EMPTY_ROOT = "__EMPTY_ROOT__";
 
     public static final String ALL_SONGS_ROOT_HINT = "__ALL_SONGS__";
     public static final String ALBUMS_ROOT_HINT = "__BY_ALBUMS__";
     public static final String ARTISTS_ROOT_HINT = "__BY_ARTISTS__";
+    public static final String PLAYLISTS_ROOT_HINT = "__BY_PLAYLISTS__";
 
     private static final String CATEGORY_SEPARATOR = "--/--";
     private static final String LEAF_SEPARATOR = "--|--";
@@ -115,7 +116,12 @@ public class MediaIdHelper {
         return mediaID;
     }
 
-    public static String getMediaId(MediaSessionCompat.QueueItem item) {
-        return item.getDescription().getMediaId();
+    public static String getMusicId(String mediaId) {
+        int pos = mediaId.indexOf(LEAF_SEPARATOR);
+        if (pos >= 0) {
+            String parts[] = mediaId.split(LEAF_SEPARATOR);
+            return parts[parts.length-1];
+        }
+        return "";
     }
 }

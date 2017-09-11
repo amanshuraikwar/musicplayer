@@ -17,8 +17,10 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.base.ui.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
 
+import app.sonu.com.musicplayer.mediaplayernew.MusicService;
 import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
 import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
+import app.sonu.com.musicplayer.mediaplayernew.playlistssource.PlaylistsSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -38,12 +40,14 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
     private Context mContext;
     private Disposable mQueueIndexUpdatedDisposable;
     private PlaybackStateCompat mLastPlaybackState;
+    private MediaMetadataCompat mMetadata;
 
     private final MediaBrowserManager.MediaControllerCallback mMediaControllerCallback =
             new MediaBrowserManager.MediaControllerCallback(){
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     Log.d(TAG, "onMetadataChanged:called");
+                    mMetadata = metadata;
                     displayMetadata(metadata);
                 }
 
@@ -80,8 +84,22 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
                 @Override
                 public void onSessionEvent(String event, Bundle extras) {
-                    super.onSessionEvent(event, extras);
+                    switch (event) {
+                        case MusicService.SESSION_FAVORITE_EVENT:
+                            if (mMetadata
+                                    .getDescription()
+                                    .getMediaId()
+                                    .equals(extras.getString(MusicService.KEY_MEDIA_ID))) {
+                                if (extras.getBoolean(MusicService.KEY_FAV_STATUS)) {
+                                    mMvpView.showFavButtonEnabled();
+                                } else {
+                                    mMvpView.showFavButtonDisabled();
+                                }
+                            }
+                            break;
+                    }
                 }
+
             };
 
     public MusicPlayerPresenter(DataManager dataManager,
@@ -185,7 +203,7 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     @Override
     public void onCollapseIvClick() {
-        mMusicPlayerPanelPublishSubject.onNext(-1);
+        mMusicPlayerPanelPublishSubject.onNext(0);
     }
 
     @Override
@@ -237,7 +255,16 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
         mMediaBrowserManager
                 .getMediaController()
                 .getTransportControls()
-                .playFromMediaId(item.getDescription().getMediaId(), null);
+                .skipToQueueItem(item.getQueueId());
+    }
+
+    @Override
+    public void onHeartIvClick() {
+        Bundle b = new Bundle();
+        b.putString(MusicService.KEY_MEDIA_ID, mMetadata.getDescription().getMediaId());
+        mMediaBrowserManager
+                .getMediaController()
+                .sendCommand(MusicService.CMD_FAVOURITES, b, null);
     }
 
     //media browser implementations
@@ -265,7 +292,8 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
         mLastPlaybackState = mMediaBrowserManager.getMediaController().getPlaybackState();
         updatePlaybackState();
-        displayMetadata(mMediaBrowserManager.getMediaController().getMetadata());
+        mMetadata = mMediaBrowserManager.getMediaController().getMetadata();
+        displayMetadata(mMetadata);
         updateQueue(mMediaBrowserManager.getMediaController().getQueue());
         updateShuffleMode(mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
         updateRepeatMode(mMediaBrowserManager.getMediaController().getRepeatMode());
@@ -321,6 +349,14 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
             mMvpView.showPlayIcon();
             mMvpView.stopSeekbarUpdate();
             mMvpView.resetSeekbar();
+        }
+
+        if (mLastPlaybackState
+                .getExtras()
+                .getBoolean(PlaylistsSource.PLAYBACK_STATE_EXTRA_IS_IN_FAVORITES)) {
+            mMvpView.showFavButtonEnabled();
+        } else {
+            mMvpView.showFavButtonDisabled();
         }
     }
 

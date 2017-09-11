@@ -29,7 +29,7 @@
             android:id="@+id/iconIv"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/default_album_art_note"
+            android:src="@drawable/default_song_art"
             android:layout_centerVertical="true"/>
     </android.support.v7.widget.CardView>
 

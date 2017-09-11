@@ -18,6 +18,7 @@ import app.sonu.com.musicplayer.mediaplayernew.MusicService;
 import app.sonu.com.musicplayer.util.MediaIdHelper;
 import app.sonu.com.musicplayer.mediaplayernew.MusicProvider;
 import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
+import app.sonu.com.musicplayer.util.QueueHelper;
 
 /**
  * Created by sonu on 29/7/17.
@@ -176,7 +177,7 @@ public class LocalPlayback
         // register audio noisy receiver for headphone plug/unplug
         registerAudioNoisyReceiver();
 
-        String mediaId = MediaIdHelper.getMediaId(item);
+        String mediaId = QueueHelper.getMediaIdOf(item);
         Log.i(TAG, "play:mediaId=" + mediaId);
 
         // check for mediaId

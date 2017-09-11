@@ -64,7 +64,7 @@ public class SongSearchResultViewHolder extends BaseViewHolder<SongSearchResultV
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop().placeholder(R.drawable.default_album_art_note);
+        options.centerCrop().placeholder(R.drawable.default_song_art);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
             Glide.with(context)
@@ -75,12 +75,12 @@ public class SongSearchResultViewHolder extends BaseViewHolder<SongSearchResultV
         } else {
             Glide.with(context).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_album_art_note));
+                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_song_art));
             } else {
                 iconIv.setImageDrawable(
                         context
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_note));
+                                .getDrawable(R.drawable.default_song_art));
             }
         }
 

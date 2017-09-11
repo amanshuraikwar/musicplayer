@@ -25,15 +25,18 @@ public class QueueManager {
 
     private MusicProvider mMusicProvider;
     private MetadataUpdateListener mMetadataUpdateListener;
+    private PlaylistsManager mPlaylistsManager;
 
     // "Now playing" queue
     private List<MediaSessionCompat.QueueItem> mPlayingQueue;
     private int mCurrentIndex;
 
     public QueueManager(MusicProvider musicProvider,
-                        MetadataUpdateListener metadataUpdateListener) {
-        this.mMusicProvider = musicProvider;
-        this.mMetadataUpdateListener = metadataUpdateListener;
+                        MetadataUpdateListener metadataUpdateListener,
+                        PlaylistsManager playlistsManager) {
+        mMusicProvider = musicProvider;
+        mMetadataUpdateListener = metadataUpdateListener;
+        mPlaylistsManager = playlistsManager;
 
         mPlayingQueue = Collections.synchronizedList(new ArrayList<MediaSessionCompat.QueueItem>());
         mCurrentIndex = 0;
@@ -79,6 +82,11 @@ public class QueueManager {
         return setCurrentQueueIndex(index);
     }
 
+    public void setCurrentQueueItem(long queueItemId) {
+        setCurrentQueueItem(QueueHelper.getMediaIdOf(queueItemId, mPlayingQueue));
+        updateMetadata();
+    }
+
     private void setCurrentQueue(String title, List<MediaSessionCompat.QueueItem> newQueue,
                                    String initialMediaId) {
         Log.d(TAG, "setCurrentQueue:called");
@@ -101,7 +109,7 @@ public class QueueManager {
         } else {
             Log.d(TAG, "setQueueFromMediaId:queue is not reusable");
             setCurrentQueue("now playing",
-                    QueueHelper.getPlayingQueue(mediaId, mMusicProvider),
+                    QueueHelper.getPlayingQueue(mediaId, mMusicProvider, mPlaylistsManager),
                     mediaId);
         }
         updateMetadata();
@@ -116,7 +124,7 @@ public class QueueManager {
         } else {
             Log.d(TAG, "setQueueFromMediaId:queue is not reusable");
             setCurrentQueue("now playing",
-                    QueueHelper.getPlayingQueue(mediaId, mMusicProvider),
+                    QueueHelper.getPlayingQueue(mediaId, mMusicProvider, mPlaylistsManager),
                     mediaId);
         }
         updateMetadata();
@@ -126,7 +134,9 @@ public class QueueManager {
     public void shuffleMusic(String mediaId) {
         if (mPlayingQueue != null) {
             ArrayList<MediaSessionCompat.QueueItem> newQueue = new ArrayList<>();
-            newQueue.add(QueueHelper.getQueueItem(mediaId, mMusicProvider));
+            newQueue.add(QueueHelper.getQueueItem(
+                    mediaId,
+                    mMusicProvider));
             mPlayingQueue.remove(QueueHelper.getQueueIndexOf(mediaId, mPlayingQueue));
             Collections.shuffle(mPlayingQueue);
             newQueue.addAll(mPlayingQueue);
@@ -225,6 +235,8 @@ public class QueueManager {
     public boolean isLastItemPlaying() {
         return mCurrentIndex == (mPlayingQueue.size() - 1);
     }
+
+
 
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);

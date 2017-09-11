@@ -5,23 +5,19 @@
     android:id="@+id/parentRl"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="0dp"
-    android:layout_marginStart="0dp"
-    android:layout_marginTop="0dp"
-    android:layout_marginBottom="0dp"
-    android:paddingStart="0dp"
+    android:paddingStart="@dimen/home_icon_size_padding"
     android:paddingEnd="0dp"
     android:focusable="true"
     android:clickable="true"
+    android:background="@color/veryWhite"
     android:foreground="?android:attr/selectableItemBackground">
 
     <android.support.v7.widget.CardView
         android:id="@+id/iconCv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
         android:layout_marginEnd="16dp"
         app:cardCornerRadius="0dp"
         app:cardBackgroundColor="@color/charcoal"
@@ -31,50 +27,51 @@
             android:id="@+id/iconIv"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/default_album_art_note"
+            android:src="@drawable/default_song_art"
             android:layout_centerVertical="true"/>
     </android.support.v7.widget.CardView>
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/iconCv"
-        android:layout_toStartOf="@+id/songDurationTv">
+        android:layout_toEndOf="@+id/iconCv">
 
         <TextView
             android:id="@+id/songTitleTv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/black"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:layout_toStartOf="@+id/songDurationTv"/>
 
         <TextView
             android:id="@+id/songAlbumTv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="16dp"
+            android:layout_below="@+id/songTitleTv"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/grey"
-            android:textSize="14sp"/>
-    </LinearLayout>
+            android:textSize="14sp"
+            android:layout_toStartOf="@+id/songDurationTv"/>
 
-    <TextView
-        android:id="@+id/songDurationTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp"
-        android:textColor="@color/grey"
-        android:textSize="14sp"
-        android:text="3:56"/>
+        <TextView
+            android:id="@+id/songDurationTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/songAlbumTv"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            android:text="3:56"/>
+    </RelativeLayout>
 </RelativeLayout>

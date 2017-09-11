@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.sonu.com.musicplayer.mediaplayernew.MusicProvider;
+import app.sonu.com.musicplayer.mediaplayernew.manager.PlaylistsManager;
 
 /**
  * Created by amanshu on 7/8/17.
@@ -37,7 +38,7 @@ public class QueueHelper {
      * @return index of the mediaid
      */
     public static int getQueueIndexOf(@NonNull String mediaId,
-                                 @NonNull List<MediaSessionCompat.QueueItem> queue) {
+                                      @NonNull List<MediaSessionCompat.QueueItem> queue) {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
             if (mediaId.equals(item.getDescription().getMediaId())) {
@@ -49,6 +50,25 @@ public class QueueHelper {
         return -1;
     }
 
+    public static String getMediaIdOf(long queueItemId,
+                                      @NonNull List<MediaSessionCompat.QueueItem> queue) {
+        for (MediaSessionCompat.QueueItem item : queue) {
+            if (queueItemId == item.getQueueId()) {
+                return item.getDescription().getMediaId();
+            }
+        }
+
+        return null;
+    }
+
+    public static String getMediaIdOf(@NonNull MediaSessionCompat.QueueItem item) {
+        return item.getDescription().getMediaId();
+    }
+
+    public static String getMusicIdOf(@NonNull MediaSessionCompat.QueueItem item) {
+        return MediaIdHelper.getMusicId(item.getDescription().getMediaId());
+    }
+
     /**
      * for getting playing queue according to mediaid
      * @param mediaId input mediaid
@@ -56,12 +76,20 @@ public class QueueHelper {
      * @return list from given mediaid
      */
     public static List<MediaSessionCompat.QueueItem> getPlayingQueue(@NonNull String mediaId,
-                                                                     @NonNull MusicProvider musicProvider) {
+                                                                     @NonNull MusicProvider musicProvider,
+                                                                     @NonNull PlaylistsManager playlistsManager) {
         Log.d(TAG, "getPlayingQueue:called");
         Log.i(TAG, "getPlayingQueue:id="+mediaId);
 
         List<MediaSessionCompat.QueueItem> playingQueue = new ArrayList<>();
         String[] hierarchy = MediaIdHelper.getHierarchy(mediaId);
+
+        String temp = "";
+        for (String t : hierarchy) {
+            temp+="["+t+"]";
+        }
+        Log.i(TAG, "getPlayingQueue:hierarchy="+temp);
+
         switch (hierarchy[0]) {
             case MediaIdHelper.MEDIA_ID_ALL_SONGS:
                 for (MediaMetadataCompat metadata : musicProvider.getSongs()) {
@@ -75,6 +103,11 @@ public class QueueHelper {
                 break;
             case MediaIdHelper.MEDIA_ID_ARTISTS:
                 for (MediaMetadataCompat metadata : musicProvider.getMusicsByArtistKey(hierarchy[1])) {
+                    playingQueue.add(getQueueItem(metadata, hierarchy));
+                }
+                break;
+            case MediaIdHelper.MEDIA_ID_PLAYLISTS:
+                for (MediaMetadataCompat metadata : playlistsManager.getMusicsByPlaylistKey(hierarchy[1])) {
                     playingQueue.add(getQueueItem(metadata, hierarchy));
                 }
                 break;
@@ -98,14 +131,14 @@ public class QueueHelper {
             if (metadata == null) {
                 return null;
             } else {
-                return getQueueItem(metadata, hierarchy[0]);
+                return getQueueItem(metadata, hierarchy);
             }
         }
         return null;
     }
 
     private static MediaSessionCompat.QueueItem getQueueItem(@NonNull MediaMetadataCompat metadata,
-                                                            @NonNull String rootId) {
+                                                             @NonNull String rootId) {
         String hierarchyAwareMediaId = MediaIdHelper.createMediaId(
                 metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
                 rootId);
@@ -117,7 +150,7 @@ public class QueueHelper {
                         MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
         MediaDescriptionCompat description = builder.build();
 
-        return new MediaSessionCompat.QueueItem(description, System.currentTimeMillis());
+        return new MediaSessionCompat.QueueItem(description, UniqueIdGenerator.getId());
     }
 
     private static MediaSessionCompat.QueueItem getQueueItem(@NonNull MediaMetadataCompat metadata,
@@ -133,6 +166,6 @@ public class QueueHelper {
                         MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE));
         MediaDescriptionCompat description = builder.build();
 
-        return new MediaSessionCompat.QueueItem(description, System.currentTimeMillis());
+        return new MediaSessionCompat.QueueItem(description, UniqueIdGenerator.getId());
     }
 }

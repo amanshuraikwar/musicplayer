@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:layoutMode="opticalBounds"
         android:layout_marginBottom="40dp"
-        android:background="@color/white">
+        android:background="@color/veryWhite">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,8 +28,7 @@
                 <app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout
                     android:id="@+id/colorView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#E1F5FE"/>
+                    android:layout_height="wrap_content"/>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -156,7 +155,7 @@
         android:paddingBottom="8dp"
         android:paddingEnd="16dp"
         android:gravity="center"
-        android:background="#E1F5FE"
+        android:background="@color/blueGrey300"
         android:layout_gravity="bottom">
 
         <TextView
@@ -165,13 +164,13 @@
             android:text="Made with "
             android:textSize="12sp"
             android:layout_gravity="bottom"
-            android:textColor="@color/black"/>
+            android:textColor="@color/veryWhite"/>
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_heart_outline_white_24dp"
-            android:tint="@color/black"
+            android:tint="@color/whiteSmoke"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"/>
 
@@ -181,6 +180,6 @@
             android:text=" by an engineering undergrad."
             android:textSize="12sp"
             android:layout_gravity="bottom"
-            android:textColor="@color/black"/>
+            android:textColor="@color/veryWhite"/>
     </LinearLayout>
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

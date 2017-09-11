@@ -23,4 +23,5 @@ public interface MusicPlayerMvpPresenter extends BaseMvpPresenter<MusicPlayerMvp
     void onShuffleButtonClick();
     void onRepeatButtonClick();
     void onQueueItemClick(MediaSessionCompat.QueueItem item);
+    void onHeartIvClick();
 }

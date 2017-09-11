@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -165,6 +166,9 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     @BindView(R.id.smallAlbumArtIv)
     ImageView smallAlbumArtIv;
 
+    @BindView(R.id.smallAlbumArtCv)
+    CardView smallAlbumArtCv;
+
     @OnClick(R.id.playPauseIb)
     void onPlayPauseIbClick(){
         Log.d(TAG, "playPauseIb onClick:called");
@@ -260,9 +264,9 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
                                             SlidingUpPanelLayout.PanelState previousState,
                                             SlidingUpPanelLayout.PanelState newState) {
                 if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    smallAlbumArtIv.setVisibility(View.VISIBLE);
+                    smallAlbumArtCv.setVisibility(View.VISIBLE);
                 } else {
-                    smallAlbumArtIv.setVisibility(View.GONE);
+                    smallAlbumArtCv.setVisibility(View.GONE);
                     if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                         mQueueLayoutManager.scrollToPositionWithOffset(mCurrentQueueIndex, 0);
                     }
@@ -292,6 +296,13 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             playingQueueRv.setLayoutManager(mQueueLayoutManager);
         }
 
+        heartIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.onHeartIvClick();
+            }
+        });
+
         return view;
     }
 
@@ -313,7 +324,7 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         Glide.with(getActivity()).clear(albumArtIv);
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop().placeholder(R.drawable.default_album_art_note);
+        options.centerCrop();
 
         if (albumArtPath != null) {
             Glide.with(getActivity())
@@ -346,23 +357,25 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             Glide.with(getActivity())
                     .load(albumArtPath)
                     .apply(options)
-                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(smallAlbumArtIv);
         } else {
+            Glide.with(getActivity()).clear(albumArtIv);
+            Glide.with(getActivity()).clear(smallAlbumArtIv);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 albumArtIv.setImageDrawable(getActivity()
-                        .getDrawable(R.drawable.default_album_art_note_big));
+                        .getDrawable(R.drawable.default_song_art));
                 smallAlbumArtIv.setImageDrawable(getActivity()
-                        .getDrawable(R.drawable.default_album_art_note_big));
+                        .getDrawable(R.drawable.default_song_art));
             } else {
                 albumArtIv.setImageDrawable(
                         getActivity()
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_note_big));
+                                .getDrawable(R.drawable.default_song_art));
                 smallAlbumArtIv.setImageDrawable(
                         getActivity()
                                 .getResources()
-                                .getDrawable(R.drawable.default_album_art_note_big));
+                                .getDrawable(R.drawable.default_song_art));
             }
             updateUiColor(null);
         }
@@ -397,12 +410,9 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         bodyTextTv.setBackgroundColor(bodyColor);
         backgroundTextTv.setBackgroundColor(backgroundColor);
 
-        collapseIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
-        moreOptionsIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
         gotoAlbumIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
         gotoArtistIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
-        heartIv.setColorFilter(titleColor,PorterDuff.Mode.SRC_IN);
-        topBarLl.setBackgroundColor(ColorUtil.makeColorTransparent(backgroundColor));
+
         topBarTitleTv.setTextColor(titleColor);
         musicPlayerLowerHalfLl.setBackgroundColor(backgroundColor);
         songTitleMainTv.setTextColor(titleColor);
@@ -412,8 +422,9 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
         totalTimeTv.setTextColor(bodyColor);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            songCurrentPositionSeekBar.setProgressTintList(ColorStateList.valueOf(bodyColor));
-            songCurrentPositionSeekBar.setThumbTintList(ColorStateList.valueOf(bodyColor));
+            songCurrentPositionSeekBar.setProgressBackgroundTintList(ColorStateList.valueOf(bodyColor));
+            songCurrentPositionSeekBar.setProgressTintList(ColorStateList.valueOf(titleColor));
+            songCurrentPositionSeekBar.setThumbTintList(ColorStateList.valueOf(titleColor));
         }
     }
 
@@ -421,10 +432,10 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     public void showPlayIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_accent_48dp, null));
+                    .getDrawable(R.drawable.ic_play_arrow_black_48dp, null));
         } else {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_accent_48dp));
+                    .getDrawable(R.drawable.ic_play_arrow_black_48dp));
         }
     }
 
@@ -432,10 +443,10 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     public void showPauseIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_accent_48dp, null));
+                    .getDrawable(R.drawable.ic_pause_black_48dp, null));
         } else {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_accent_48dp));
+                    .getDrawable(R.drawable.ic_pause_black_48dp));
         }
     }
 
@@ -584,6 +595,34 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     @Override
     public void displayToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showFavButtonEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            heartIv
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_heart_solid_light_pink_24dp));
+        } else {
+            heartIv.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_heart_solid_light_pink_24dp));
+        }
+    }
+
+    @Override
+    public void showFavButtonDisabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            heartIv
+                    .setImageDrawable(
+                            getActivity().getDrawable(R.drawable.ic_heart_outline_white_24dp));
+        } else {
+            heartIv.setImageDrawable(
+                    getActivity()
+                            .getResources()
+                            .getDrawable(R.drawable.ic_heart_outline_white_24dp));
+        }
     }
 
     private List<BaseVisitable> getVisitableList(List<MediaSessionCompat.QueueItem> queue) {

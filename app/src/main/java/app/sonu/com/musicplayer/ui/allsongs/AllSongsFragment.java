@@ -39,7 +39,7 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
 
     private static final String TAG = AllSongsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Songs";
-    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#E1F5FE");
+    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#ffffff");
 
     @BindView(R.id.songsRv)
     RecyclerView songsRv;

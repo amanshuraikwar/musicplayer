@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/lightGrey</color>
-    <color name="colorPrimaryDark">@color/grey</color>
-    <color name="colorAccent">@color/grey</color>
+    <color name="colorPrimary">@color/veryWhite</color>
+    <color name="colorPrimaryDark">@color/blueGrey50</color>
+    <color name="colorAccent">@color/blueGrey300</color>
+
+    <color name="blackTransparent">#880a0a0a</color>
+    <color name="veryWhite">#ffffff</color>
+    <color name="whiteSmoke">#eeeeee</color>
 
     <color name="greyTransparent">#88757575</color>
     <color name="coalTransparent">#882f2f2f</color>
-    <color name="blackTransparent">#880a0a0a</color>
     <color name="fullTransparent">#00000000</color>
 
-    <color name="veryWhite">#ffffff</color>
-    <color name="white">#FAFAFA</color>
-    <color name="whiteSmoke">#eeeeee</color>
     <color name="lightGrey">#e0e0e0</color>
     <color name="grey500">#9E9E9E</color>
     <color name="grey">#757575</color>
@@ -22,8 +22,12 @@
     <color name="black">#212121</color>
     <color name="coal">#2f2f2f</color>
     <color name="blue">#2196f3</color>
+    <color name="lightPink">#F06292</color>
 
     <color name="lightBlue50">#E1F5FE</color>
     <color name="cyan50">#E0F7FA</color>
     <color name="teal50">#E0F2F1</color>
+
+    <color name="blueGrey50">#ECEFF1</color>
+    <color name="blueGrey300">#78909C</color>
 </resources>
