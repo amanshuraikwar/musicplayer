@@ -9,8 +9,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.sonu.com.musicplayer.mediaplayernew.MusicProvider;
-import app.sonu.com.musicplayer.mediaplayernew.manager.PlaylistsManager;
+import app.sonu.com.musicplayer.mediaplayer.MusicProvider;
+import app.sonu.com.musicplayer.mediaplayer.manager.PlaylistsManager;
 
 /**
  * Created by amanshu on 7/8/17.

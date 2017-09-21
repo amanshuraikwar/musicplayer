@@ -5,12 +5,12 @@
     <item>
         <shape
             android:shape="oval">
-            <solid android:color="@color/blueGrey50" />
+            <solid android:color="@color/whiteSmoke" />
         </shape>
     </item>
 
     <item
-        android:drawable="@drawable/ic_person_blue_grey_300_24dp"
+        android:drawable="@drawable/ic_person_light_grey_24dp"
         android:top="8dp"
         android:left="8dp"
         android:bottom="8dp"

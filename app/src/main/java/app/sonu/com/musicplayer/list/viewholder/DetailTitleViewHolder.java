@@ -1,21 +1,13 @@
 package app.sonu.com.musicplayer.list.viewholder;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.LayoutRes;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
-
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseViewHolder;
-import app.sonu.com.musicplayer.list.onclicklistener.AlbumOnClickListener;
+import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.DetailTitleOnClickListener;
-import app.sonu.com.musicplayer.list.visitable.AlbumVisitable;
 import app.sonu.com.musicplayer.list.visitable.DetailTitleVisitable;
 import butterknife.BindView;
 

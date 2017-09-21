@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parentSupl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoOverlay="false"
+    sothree:umanoPanelHeight="@dimen/mini_player_height"
+    sothree:umanoInitialState="hidden"
+    sothree:umanoShadowHeight="2dp">
+
+    <!-- replace with your fragment -->
+    <FrameLayout
+        android:id="@+id/childFl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+    </FrameLayout>
+
+    <!-- music player fragments -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment
+            android:id="@+id/musicPlayerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="app.sonu.com.musicplayer.ui.musicplayer.MusicPlayerFragment"/>
+
+        <RelativeLayout
+            android:id="@+id/miniPlayerParentRl"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/mini_player_height">
+
+            <fragment
+                android:id="@+id/miniPlayerFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:name="app.sonu.com.musicplayer.ui.miniplayer.MiniPlayerFragment"/>
+        </RelativeLayout>
+    </FrameLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

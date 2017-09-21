@@ -3,17 +3,16 @@ package app.sonu.com.musicplayer.ui.allsongs;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.util.List;
 import java.util.Random;
 
+import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.ui.BasePresenter;
+import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -37,13 +36,12 @@ public class AllSongsPresenter extends
 
     public AllSongsPresenter(DataManager dataManager,
                              MediaBrowserManager mediaBrowserManager,
-                             PublishSubject<MediaBrowserCompat.MediaItem> selectedItemPublishSubject,
-                             PublishSubject<Integer> allSongsScrollToTopSubject) {
+                             AppBus appBus) {
         super(dataManager);
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
-        mSelectedItemPublishSubject = selectedItemPublishSubject;
-        mAllSongsScrollToTopSubject = allSongsScrollToTopSubject;
+        mSelectedItemPublishSubject = appBus.selectedSongSubject;
+        mAllSongsScrollToTopSubject = appBus.allSongsScrollToTopSubject;
     }
 
     @Override
@@ -98,17 +96,6 @@ public class AllSongsPresenter extends
     }
 
     @Override
-    public void onRefresh() {
-        Log.d(TAG, "onRefresh:called");
-        mMvpView.stopLoading();
-        if (mMediaBrowserManager.isMediaBrowserConnected()) {
-            mMvpView.displayList(mMediaBrowserManager.getItemList());
-        } else {
-            mMediaBrowserManager.connectMediaBrowser();
-        }
-    }
-
-    @Override
     public void onShuffleAllClick() {
         List<MediaBrowserCompat.MediaItem> songsList = mMediaBrowserManager.getItemList();
         int randomIndex = new Random().nextInt(songsList.size());
@@ -116,7 +103,9 @@ public class AllSongsPresenter extends
                 .getMediaController()
                 .getTransportControls()
                 .playFromMediaId(songsList.get(randomIndex).getMediaId(), null);
+
         mSelectedItemPublishSubject.onNext(songsList.get(randomIndex));
+
         if (!mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
             mMediaBrowserManager
                     .getMediaController()

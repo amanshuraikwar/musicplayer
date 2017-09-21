@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">@color/veryWhite</color>
-    <color name="colorPrimaryDark">@color/blueGrey50</color>
-    <color name="colorAccent">@color/blueGrey300</color>
+    <color name="colorPrimaryDark">@color/whiteSmoke</color>
+    <color name="colorAccent">@color/charcoal</color>
 
     <color name="blackTransparent">#880a0a0a</color>
     <color name="veryWhite">#ffffff</color>
@@ -29,5 +29,8 @@
     <color name="teal50">#E0F2F1</color>
 
     <color name="blueGrey50">#ECEFF1</color>
+    <color name="blueGrey100">#cfd8dc</color>
+    <color name="blueGrey200">#b0bec5</color>
     <color name="blueGrey300">#78909C</color>
+    <color name="blueGrey900">#263238</color>
 </resources>

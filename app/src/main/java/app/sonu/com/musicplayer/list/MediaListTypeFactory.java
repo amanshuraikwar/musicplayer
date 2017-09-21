@@ -2,8 +2,8 @@ package app.sonu.com.musicplayer.list;
 
 import android.view.View;
 
-import app.sonu.com.musicplayer.base.list.BaseTypeFactory;
-import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.list.base.BaseTypeFactory;
+import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.ArtistViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.DetailTitleViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.PlaylistViewHolder;

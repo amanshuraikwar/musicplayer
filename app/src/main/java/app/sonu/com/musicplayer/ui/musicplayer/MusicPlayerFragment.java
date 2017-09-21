@@ -27,7 +27,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -40,17 +39,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
-import app.sonu.com.musicplayer.base.ui.BaseFragment;
-import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
-import app.sonu.com.musicplayer.di.module.UiModule;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
+import app.sonu.com.musicplayer.di.module.FragmentModule;
+import app.sonu.com.musicplayer.ui.base.BaseFragment;
+
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.list.adapter.QueueRecyclerViewAdapter;
 import app.sonu.com.musicplayer.list.onclicklistener.QueueItemOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.QueueItemVisitable;
-import app.sonu.com.musicplayer.ui.main.SlidingUpPaneCallback;
+import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderFragment;
 import app.sonu.com.musicplayer.util.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -222,10 +220,10 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DaggerUiComponent.builder()
-                .uiModule(new UiModule(getActivity()))
-                .applicationComponent(((MyApplication)getActivity().getApplicationContext())
-                        .getApplicationComponent())
+        ((MusicPlayerHolderFragment)getParentFragment())
+                .getMusicPlayerHolderComponent()
+                .fragmentComponentBuilder()
+                .fragmentModule(new FragmentModule())
                 .build()
                 .inject(this);
 
@@ -382,8 +380,9 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
 
         totalTimeTv.setText(songDuration);
 
-        ((SlidingUpPaneCallback) getActivity()).setAntiDragViewNow(musicPlayerLowerHalfLl);
-        ((SlidingUpPaneCallback) getActivity()).setPaneLayout(musicPlayerSupl);
+        // for working of nested supl
+        mPresenter.setAntiDragView(musicPlayerLowerHalfLl);
+        mPresenter.setSupl(musicPlayerSupl);
     }
 
     private void updateUiColor(Bitmap resource) {

@@ -7,6 +7,17 @@
     android:layout_height="@dimen/mini_player_height"
     android:background="@color/veryWhite">
 
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/miniPlayerMpb"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/miniPlayerNavUpIv"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_useIntrinsicPadding="false"
+        app:mpb_progressBackgroundTint="@color/veryWhite"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"/>
+
     <ImageView
         android:id="@+id/miniPlayerNavUpIv"
         android:layout_width="@dimen/mini_player_height"
@@ -22,11 +33,41 @@
         android:paddingEnd="0dp"
         android:background="@color/charcoal"/>
 
+    <FrameLayout
+        android:layout_width="@dimen/mini_player_height"
+        android:layout_height="@dimen/mini_player_height">
+
+        <View
+            android:layout_width="@dimen/mini_player_height"
+            android:layout_height="48dp"
+            android:background="@drawable/gradient_background_dark_bottom_up"
+            android:layout_gravity="bottom"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end">
+
+            <ImageView
+                android:id="@+id/shuffleNotifyIv"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_shuffle_black_12dp"
+                android:tint="@color/veryWhite"/>
+
+            <ImageView
+                android:id="@+id/repeatNotifyIv"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_repeat_black_12dp"
+                android:tint="@color/veryWhite"/>
+        </LinearLayout>
+    </FrameLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/miniPlayerMpb"
         android:layout_toEndOf="@id/miniPlayerNavUpIv"
         android:paddingStart="16dp"
         android:paddingEnd="0dp">
@@ -47,42 +88,21 @@
         <ImageView
             android:id="@+id/miniPlayerPlayPauseIv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
+            android:layout_height="match_parent"
             android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_play_arrow_grey_32dp"
-            android:clickable="true"
-            android:background="?selectableItemBackgroundBorderless"
-            android:drawSelectorOnTop="true"/>
-
-        <ImageView
-            android:id="@+id/shuffleNotifyIv"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_below="@+id/miniPlayerSongTitleTv"
-            android:layout_toEndOf="@+id/repeatNotifyIv"
-            android:src="@drawable/ic_shuffle_black_12dp"/>
-
-        <ImageView
-            android:id="@+id/repeatNotifyIv"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_below="@+id/miniPlayerSongTitleTv"
-            android:src="@drawable/ic_repeat_black_12dp"/>
+            android:src="@drawable/ic_play_arrow_white_48dp"
+            android:tint="@color/grey"
+            android:clickable="true"/>
     </RelativeLayout>
 
-    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-        android:id="@+id/miniPlayerMpb"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/miniPlayerNavUpIv"
-        app:mpb_progressStyle="horizontal"
-        app:mpb_useIntrinsicPadding="false"
-        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"/>
-
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="@color/whiteSmoke"/>-->
 </RelativeLayout>

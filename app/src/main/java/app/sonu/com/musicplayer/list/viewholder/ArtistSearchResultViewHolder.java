@@ -12,7 +12,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.ArtistSearchResultOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.ArtistSearchResultVisitable;
 import butterknife.BindView;
@@ -87,7 +87,7 @@ public class ArtistSearchResultViewHolder extends BaseViewHolder<ArtistSearchRes
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClickListener.onSearchResultClick(visitable.getMediaItem());
+                onClickListener.onSearchResultClick(visitable.getMediaItem(), iconIv);
             }
         });
     }

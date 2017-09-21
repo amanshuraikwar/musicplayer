@@ -1,13 +1,10 @@
 package app.sonu.com.musicplayer.ui.musicplayer;
 
-import android.net.Uri;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import java.util.List;
 
-import app.sonu.com.musicplayer.base.ui.BaseMvpView;
+import app.sonu.com.musicplayer.ui.base.BaseMvpView;
 
 
 /**

@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,16 +17,16 @@ import java.util.List;
 
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
-import app.sonu.com.musicplayer.base.ui.BaseFragment;
-import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
-import app.sonu.com.musicplayer.di.module.UiModule;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
+import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.module.FragmentModule;
+import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.ui.base.BaseFragment;
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
 import app.sonu.com.musicplayer.list.onclicklistener.PlaylistOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.PlaylistVisitable;
-import app.sonu.com.musicplayer.list.visitable.ShuffleAllSongsVisitable;
-import app.sonu.com.musicplayer.list.visitable.SongVisitable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -44,9 +43,6 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
 
     @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
-
-    @BindView(R.id.parentSrl)
-    SwipeRefreshLayout parentSrl;
 
     private LinearLayoutManager linearLayoutManager;
     private PlaylistOnClickListener playlistOnClickListener = new PlaylistOnClickListener() {
@@ -66,10 +62,18 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate:called");
 
-        DaggerUiComponent.builder()
-                .uiModule(new UiModule(getActivity()))
-                .applicationComponent(((MyApplication)getActivity().getApplicationContext())
-                        .getApplicationComponent())
+        MusicPlayerHolderComponent mMusicPlayerHolderComponent =
+                DaggerMusicPlayerHolderComponent
+                        .builder()
+                        .musicPlayerHolderModule(new MusicPlayerHolderModule())
+                        .applicationComponent(
+                                ((MyApplication)getActivity().getApplicationContext())
+                                        .getApplicationComponent())
+                        .build();
+
+        mMusicPlayerHolderComponent
+                .fragmentComponentBuilder()
+                .fragmentModule(new FragmentModule())
                 .build()
                 .inject(this);
 
@@ -83,7 +87,7 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView:called");
-        View view = inflater.inflate(R.layout.fragment_playlists, container, false);
+        View view = inflater.inflate(R.layout.layout_medialist, container, false);
         ButterKnife.bind(this, view);
 
 
@@ -91,13 +95,6 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
             linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
             itemsRv.setLayoutManager(linearLayoutManager);
         }
-
-        parentSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPresenter.onRefresh();
-            }
-        });
 
         mPresenter.onCreateView();
 
@@ -145,16 +142,6 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
         }
 
         return visitableList;
-    }
-
-    @Override
-    public void startLoading() {
-        parentSrl.setRefreshing(true);
-    }
-
-    @Override
-    public void stopLoading() {
-        parentSrl.setRefreshing(false);
     }
 
     @Override

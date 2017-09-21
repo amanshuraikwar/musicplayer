@@ -9,10 +9,11 @@ import android.view.View;
 
 import java.util.List;
 
+import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.ui.BasePresenter;
+import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.allsongs.AllSongsPresenter;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -35,13 +36,12 @@ public class AlbumsPresenter extends BasePresenter<AlbumsMvpView>
 
     public AlbumsPresenter(DataManager dataManager,
                            MediaBrowserManager mediaBrowserManager,
-                           PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> albumClickSubject,
-                           PublishSubject<Integer> albumsScrollToTopSubject) {
+                           AppBus appBus) {
         super(dataManager);
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
-        mAlbumClickSubject = albumClickSubject;
-        mAlbumsScrollToTopSubject = albumsScrollToTopSubject;
+        mAlbumClickSubject = appBus.albumClickSubject;
+        mAlbumsScrollToTopSubject = appBus.albumsScrollToTopSubject;
     }
 
     @Override
@@ -84,11 +84,6 @@ public class AlbumsPresenter extends BasePresenter<AlbumsMvpView>
     public void onAlbumClicked(MediaBrowserCompat.MediaItem item, View animatingView) {
         Log.d(TAG, "onAlbumClicked:currentAlbum=" + item);
         mAlbumClickSubject.onNext(new Pair<>(item, animatingView));
-    }
-
-    @Override
-    public void onRefresh() {
-        mMvpView.stopLoading();
     }
 
     // media browser callback

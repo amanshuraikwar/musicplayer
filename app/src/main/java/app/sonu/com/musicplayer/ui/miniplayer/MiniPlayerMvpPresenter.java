@@ -2,7 +2,7 @@ package app.sonu.com.musicplayer.ui.miniplayer;
 
 import android.support.v4.app.FragmentActivity;
 
-import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
+import app.sonu.com.musicplayer.ui.base.BaseMvpPresenter;
 
 /**
  * Created by sonu on 9/8/17.

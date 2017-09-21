@@ -12,10 +12,10 @@ import android.widget.TextView;
 import com.bumptech.glide.request.RequestOptions;
 
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.PlaylistOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.PlaylistVisitable;
-import app.sonu.com.musicplayer.mediaplayernew.playlistssource.PlaylistsSource;
+import app.sonu.com.musicplayer.mediaplayer.playlistssource.PlaylistsSource;
 import butterknife.BindView;
 
 /**
@@ -87,12 +87,12 @@ public class PlaylistViewHolder extends BaseViewHolder<PlaylistVisitable, Playli
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iconIv
                             .setColorFilter(
-                                    context.getResources().getColor(R.color.blueGrey300, null),
+                                    context.getResources().getColor(R.color.charcoal, null),
                                     PorterDuff.Mode.SRC_IN);
                 } else {
                     iconIv
                             .setColorFilter(
-                                    context.getResources().getColor(R.color.blueGrey300),
+                                    context.getResources().getColor(R.color.charcoal),
                                     PorterDuff.Mode.SRC_IN);
                 }
             }

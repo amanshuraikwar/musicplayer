@@ -1,11 +1,12 @@
 package app.sonu.com.musicplayer.ui.musicplayer;
 
-import android.content.Context;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.view.View;
 
-import app.sonu.com.musicplayer.base.ui.BaseMvpPresenter;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import app.sonu.com.musicplayer.ui.base.BaseMvpPresenter;
 
 /**
  * Created by sonu on 4/7/17.
@@ -24,4 +25,6 @@ public interface MusicPlayerMvpPresenter extends BaseMvpPresenter<MusicPlayerMvp
     void onRepeatButtonClick();
     void onQueueItemClick(MediaSessionCompat.QueueItem item);
     void onHeartIvClick();
+    void setAntiDragView(View view);
+    void setSupl(SlidingUpPanelLayout supl);
 }

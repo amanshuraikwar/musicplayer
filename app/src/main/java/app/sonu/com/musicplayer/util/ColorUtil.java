@@ -12,12 +12,12 @@ import android.support.v7.graphics.Palette;
 
 public class ColorUtil {
 
-    private static final int BACKGROUND_COLOR_FALLBACK = Color.parseColor("#ECEFF1");
-    private static final int TITLE_COLOR_FALLBACK = Color.parseColor("#212121");
-    private static final int BODY_COLOR_FALLBACK = Color.parseColor("#616161");
+    private static final int BACKGROUND_COLOR_FALLBACK = Color.parseColor("#eeeeee");
+    private static final int TITLE_COLOR_FALLBACK = Color.parseColor("#2f2f2f");
+    private static final int BODY_COLOR_FALLBACK = Color.parseColor("#757575");
 
-    private static final int TITLE_COLOR_DARK = Color.parseColor("#212121");
-    private static final int BODY_COLOR_DARK = Color.parseColor("#616161");
+    private static final int TITLE_COLOR_DARK = Color.parseColor("#2f2f2f");
+    private static final int BODY_COLOR_DARK = Color.parseColor("#757575");
 
     private static final int TITLE_COLOR_LIGHT = Color.parseColor("#ffffff");
     private static final int BODY_COLOR_LIGHT = Color.parseColor("#eeeeee");
@@ -68,7 +68,9 @@ public class ColorUtil {
 
     public static Palette.Swatch getColorSwatch(@Nullable Palette palette) {
         if (palette != null) {
-            if (palette.getMutedSwatch() != null) {
+            if (palette.getVibrantSwatch() != null) {
+                return palette.getVibrantSwatch();
+            } else if (palette.getMutedSwatch() != null) {
                 return palette.getMutedSwatch();
             } else if (palette.getLightMutedSwatch() != null) {
                 return palette.getLightMutedSwatch();
@@ -81,7 +83,7 @@ public class ColorUtil {
 
     private static boolean isColorDark(int color){
         double darkness = 1-(0.299*Color.red(color) + 0.587*Color.green(color) + 0.114*Color.blue(color))/255;
-        if(darkness < 0.2) {
+        if(darkness < 0.3) {
             return false; // It's a light color
         } else {
             return true; // It's a dark color

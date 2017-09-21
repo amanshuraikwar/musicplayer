@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.sonu.com.musicplayer.di.ApplicationContext;
-import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
+import app.sonu.com.musicplayer.mediaplayer.musicsource.MusicProviderSource;
 
 /**
  * Created by sonu on 30/6/17.

@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.QueueItemOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.QueueItemVisitable;
 import butterknife.BindView;

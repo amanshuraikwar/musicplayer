@@ -1,6 +1,5 @@
 package app.sonu.com.musicplayer.ui.miniplayer;
 
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,9 +29,12 @@ import java.util.concurrent.TimeUnit;
 
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.ui.BaseFragment;
-import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
-import app.sonu.com.musicplayer.di.module.UiModule;
+import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.module.FragmentModule;
+import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.ui.base.BaseFragment;
+
 import app.sonu.com.musicplayer.util.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -114,16 +116,39 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DaggerUiComponent.builder()
-                .uiModule(new UiModule(getActivity()))
-                .applicationComponent(((MyApplication)getActivity().getApplicationContext())
-                        .getApplicationComponent())
+        MusicPlayerHolderComponent mMusicPlayerHolderComponent =
+                DaggerMusicPlayerHolderComponent
+                        .builder()
+                        .musicPlayerHolderModule(new MusicPlayerHolderModule())
+                        .applicationComponent(
+                                ((MyApplication)getActivity().getApplicationContext())
+                                        .getApplicationComponent())
+                        .build();
+
+        mMusicPlayerHolderComponent
+                .fragmentComponentBuilder()
+                .fragmentModule(new FragmentModule())
                 .build()
                 .inject(this);
 
         Log.d(TAG, "onCreate:is presenter null="+(mPresenter==null));
 
         mPresenter.onCreate(getActivity());
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            miniPlayerMpb
+//                    .setProgressBackgroundTintList(
+//                            ColorStateList.valueOf(getActivity().getColor(R.color.veryWhite)));
+//        } else {
+//            miniPlayerMpb
+//                    .setProgressBackgroundTintList(
+//                            ColorStateList.valueOf(
+//                                    getActivity().getResources().getColor(R.color.veryWhite)));
+//        }
     }
 
     @Override
@@ -156,10 +181,10 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
                             ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
                                 @Override
                                 public void onGenerated(Palette palette) {
-                                    miniPlayerMpb.setProgressTintList(
-                                            ColorStateList.valueOf(
-                                                    ColorUtil.getBackgroundColor(
-                                                            ColorUtil.getColorSwatch(palette))));
+//                                    miniPlayerMpb.setProgressTintList(
+//                                            ColorStateList.valueOf(
+//                                                    ColorUtil.getBackgroundColor(
+//                                                            ColorUtil.getColorSwatch(palette))));
                                 }
                             });
                             return false;
@@ -184,10 +209,10 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     public void showPauseIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_grey_24dp, null));
+                    .getDrawable(R.drawable.ic_pause_white_48dp, null));
         } else {
             miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_grey_24dp));
+                    .getDrawable(R.drawable.ic_pause_white_48dp));
         }
     }
 
@@ -195,10 +220,10 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     public void showPlayIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_grey_24dp, null));
+                    .getDrawable(R.drawable.ic_play_arrow_white_48dp, null));
         } else {
             miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_grey_24dp));
+                    .getDrawable(R.drawable.ic_play_arrow_white_48dp));
         }
     }
 

@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,11 +17,14 @@ import java.util.List;
 
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseListItemOnClickListener;
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
-import app.sonu.com.musicplayer.base.ui.BaseFragment;
-import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
-import app.sonu.com.musicplayer.di.module.UiModule;
+import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
+import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.module.FragmentModule;
+import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.ui.base.BaseFragment;
+
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
 import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
@@ -41,11 +43,8 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     public static final String TAB_TITLE = "Songs";
     public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#ffffff");
 
-    @BindView(R.id.songsRv)
-    RecyclerView songsRv;
-
-    @BindView(R.id.parentSrl)
-    SwipeRefreshLayout parentSrl;
+    @BindView(R.id.itemsRv)
+    RecyclerView itemsRv;
 
     private SongOnClickListener songOnClickListener = new SongOnClickListener() {
         @Override
@@ -66,17 +65,23 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
         }
     };
 
-    private LinearLayoutManager linearLayoutManager;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate:called");
 
-        DaggerUiComponent.builder()
-                .uiModule(new UiModule(getActivity()))
-                .applicationComponent(((MyApplication)getActivity().getApplicationContext())
-                        .getApplicationComponent())
+        MusicPlayerHolderComponent mMusicPlayerHolderComponent =
+                DaggerMusicPlayerHolderComponent
+                        .builder()
+                        .musicPlayerHolderModule(new MusicPlayerHolderModule())
+                        .applicationComponent(
+                                ((MyApplication)getActivity().getApplicationContext())
+                                        .getApplicationComponent())
+                        .build();
+
+        mMusicPlayerHolderComponent
+                .fragmentComponentBuilder()
+                .fragmentModule(new FragmentModule())
                 .build()
                 .inject(this);
 
@@ -90,21 +95,12 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView:called");
-        View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
+        View view = inflater.inflate(R.layout.layout_medialist, container, false);
         ButterKnife.bind(this, view);
 
-
-        if (songsRv.getLayoutManager() == null) {
-            linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-            songsRv.setLayoutManager(linearLayoutManager);
+        if (itemsRv.getLayoutManager() == null) {
+            itemsRv.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         }
-
-        parentSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPresenter.onRefresh();
-            }
-        });
 
         mPresenter.onCreateView();
 
@@ -132,7 +128,7 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
 
     @Override
     public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
-        songsRv.setAdapter(
+        itemsRv.setAdapter(
                 new MediaRecyclerViewAdapter(getVisitableList(itemList),
                         new MediaListTypeFactory()));
     }
@@ -158,22 +154,12 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     }
 
     @Override
-    public void startLoading() {
-        parentSrl.setRefreshing(true);
-    }
-
-    @Override
-    public void stopLoading() {
-        parentSrl.setRefreshing(false);
-    }
-
-    @Override
     public void displayToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void scrollListToTop() {
-        songsRv.smoothScrollToPosition(0);
+        itemsRv.smoothScrollToPosition(0);
     }
 }

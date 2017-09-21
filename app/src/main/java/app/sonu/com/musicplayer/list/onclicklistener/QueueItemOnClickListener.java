@@ -2,7 +2,7 @@ package app.sonu.com.musicplayer.list.onclicklistener;
 
 import android.support.v4.media.session.MediaSessionCompat;
 
-import app.sonu.com.musicplayer.base.list.BaseListItemOnClickListener;
+import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
 
 /**
  * Created by sonu on 16/8/17.

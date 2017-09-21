@@ -1,24 +1,17 @@
 package app.sonu.com.musicplayer.ui.about;
 
-import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.View;
 
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.ui.albums.AlbumsFragment;
-import app.sonu.com.musicplayer.ui.allsongs.AllSongsFragment;
-import app.sonu.com.musicplayer.ui.allsongs.AllSongsPresenter;
-import app.sonu.com.musicplayer.ui.artists.ArtistsFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

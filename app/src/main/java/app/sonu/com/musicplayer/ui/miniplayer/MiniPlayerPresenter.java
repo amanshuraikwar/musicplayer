@@ -10,12 +10,11 @@ import android.util.Log;
 
 import java.util.List;
 
-import javax.inject.Named;
-
+import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.ui.BasePresenter;
+import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -61,12 +60,12 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
 
     public MiniPlayerPresenter(DataManager dataManager,
                                MediaBrowserManager browserManager,
-                               PublishSubject<Integer> musicPlayerPanelPublishSubject) {
+                               AppBus appBus) {
         super(dataManager);
         mMediaBrowserManager = browserManager;
         mMediaBrowserManager.setCallback(this);
         mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
-        mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
+        mMusicPlayerPanelPublishSubject = appBus.musicPlayerPanelStateSubject;
     }
 
     @Override

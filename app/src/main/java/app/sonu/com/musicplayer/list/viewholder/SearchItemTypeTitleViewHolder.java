@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseListItemOnClickListener;
-import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
+import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
 import butterknife.BindView;
 

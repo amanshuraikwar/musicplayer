@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseViewHolder;
+import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.SearchResultOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.SearchResultVisitable;
 import butterknife.BindView;

@@ -2,9 +2,8 @@ package app.sonu.com.musicplayer.list.visitable;
 
 import android.support.v4.media.MediaBrowserCompat;
 
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.list.onclicklistener.AlbumOnClickListener;
 import app.sonu.com.musicplayer.list.onclicklistener.PlaylistOnClickListener;
 
 /**

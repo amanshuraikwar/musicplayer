@@ -2,8 +2,8 @@ package app.sonu.com.musicplayer.list.adapter;
 
 import java.util.List;
 
-import app.sonu.com.musicplayer.base.list.BaseRecyclerViewAdapter;
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
+import app.sonu.com.musicplayer.list.base.BaseRecyclerViewAdapter;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 
 /**

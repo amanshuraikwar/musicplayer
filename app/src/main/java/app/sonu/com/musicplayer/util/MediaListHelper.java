@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
+import app.sonu.com.musicplayer.mediaplayer.musicsource.MusicProviderSource;
 
 /**
  * Created by sonu on 7/9/17.

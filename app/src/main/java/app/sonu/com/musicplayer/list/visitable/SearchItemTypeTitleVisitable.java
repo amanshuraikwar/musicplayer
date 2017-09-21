@@ -1,7 +1,7 @@
 package app.sonu.com.musicplayer.list.visitable;
 
-import app.sonu.com.musicplayer.base.list.BaseListItemOnClickListener;
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
+import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 
 /**

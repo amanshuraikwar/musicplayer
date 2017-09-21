@@ -9,11 +9,11 @@ import android.view.View;
 
 import java.util.List;
 
+import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.ui.BasePresenter;
+import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
-import app.sonu.com.musicplayer.ui.allsongs.AllSongsPresenter;
+import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -37,16 +37,13 @@ public class PlaylistsPresenter extends BasePresenter<PlaylistsMvpView>
 
     public PlaylistsPresenter(DataManager dataManager,
                               MediaBrowserManager mediaBrowserManager,
-                              PublishSubject<Integer> playlistsScrollToTopSubject,
-                              PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>>
-                                      playlistClickSubject,
-                              PublishSubject<String> playlistsChangedSubject) {
+                              AppBus appBus) {
         super(dataManager);
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
-        mPlaylistsScrollToTopSubject = playlistsScrollToTopSubject;
-        mPlaylistClickSubject = playlistClickSubject;
-        mPlaylistsChangedSubject = playlistsChangedSubject;
+        mPlaylistsScrollToTopSubject = appBus.playlistsScrollToTopSubject;
+        mPlaylistClickSubject = appBus.playlistClickSubject;
+        mPlaylistsChangedSubject = appBus.playlistsChangedSubject;
     }
 
     @Override
@@ -101,17 +98,6 @@ public class PlaylistsPresenter extends BasePresenter<PlaylistsMvpView>
     public void onPlaylistClicked(MediaBrowserCompat.MediaItem item, View animatingView) {
         Log.d(TAG, "onPlaylistClicked:currentAlbum=" + item);
         mPlaylistClickSubject.onNext(new Pair<>(item, animatingView));
-    }
-
-    @Override
-    public void onRefresh() {
-        Log.d(TAG, "onRefresh:called");
-        mMvpView.stopLoading();
-        if (mMediaBrowserManager.isMediaBrowserConnected()) {
-            mMvpView.displayList(mMediaBrowserManager.getItemList());
-        } else {
-            mMediaBrowserManager.connectMediaBrowser();
-        }
     }
 
     // media browser callback

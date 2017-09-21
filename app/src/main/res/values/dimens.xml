@@ -2,7 +2,10 @@
 <resources>
     <dimen name="search_view_margin_top">4dp</dimen>
     <dimen name="status_bar_padding">0dp</dimen>
-    <dimen name="music_player_bottom_half_height">238dp</dimen>
+    <dimen name="music_player_bottom_half_height">262dp</dimen>
     <dimen name="home_icon_size_padding">72dp</dimen>
     <dimen name="mini_player_height">56dp</dimen>
+    <dimen name="bottom_navigation_view_height">112dp</dimen>
+    <dimen name="musicplayer_slidinguppanel_peek_height">112dp</dimen>
+    <dimen name="detail_title_bar_height">96dp</dimen>
 </resources>

@@ -3,14 +3,17 @@ package app.sonu.com.musicplayer.ui.artists;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.util.Pair;
 import android.util.Log;
+import android.view.View;
 
 import java.util.List;
 
+import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.ui.BasePresenter;
+import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -24,21 +27,20 @@ public class ArtistsPresenter extends BasePresenter<ArtistsMvpView>
 
     private static final String TAG = ArtistsPresenter.class.getSimpleName();
     private Context mContext;
+    private AppBus mAppBus;
     private MediaBrowserManager mMediaBrowserManager;
-    private PublishSubject<MediaBrowserCompat.MediaItem> mArtistClickSubject;
     private PublishSubject<Integer> mArtistsScrollToTopSubject;
 
     private Disposable mArtistsScrollToTopDisposable;
 
     public ArtistsPresenter(DataManager dataManager,
                             MediaBrowserManager mediaBrowserManager,
-                            PublishSubject<MediaBrowserCompat.MediaItem> artistClickSubject,
-                            PublishSubject<Integer> artistsScrollToTopSubject) {
+                            AppBus appBus) {
         super(dataManager);
+        mAppBus = appBus;
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
-        mArtistClickSubject = artistClickSubject;
-        mArtistsScrollToTopSubject = artistsScrollToTopSubject;
+        mArtistsScrollToTopSubject = appBus.artistsScrollToTopSubject;
     }
 
     @Override
@@ -79,14 +81,9 @@ public class ArtistsPresenter extends BasePresenter<ArtistsMvpView>
     }
 
     @Override
-    public void onArtistClicked(MediaBrowserCompat.MediaItem item) {
+    public void onArtistClicked(MediaBrowserCompat.MediaItem item, View animatingView) {
         Log.d(TAG, "onArtistClicked:currentArtist=" + item);
-        mArtistClickSubject.onNext(item);
-    }
-
-    @Override
-    public void onRefresh() {
-        mMvpView.stopLoading();
+        mAppBus.artistClickSubject.onNext(new Pair<>(item, animatingView));
     }
 
     // media browser callback

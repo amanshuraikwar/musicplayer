@@ -2,15 +2,7 @@ package app.sonu.com.musicplayer.util;
 
 import android.support.v4.media.MediaMetadataCompat;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import app.sonu.com.musicplayer.mediaplayernew.manager.PlaylistsManager;
-import app.sonu.com.musicplayer.mediaplayernew.musicsource.MusicProviderSource;
-import app.sonu.com.musicplayer.mediaplayernew.playlistssource.PlaylistsSource;
+import app.sonu.com.musicplayer.mediaplayer.playlistssource.PlaylistsSource;
 
 /**
  * Created by sonu on 6/9/17.

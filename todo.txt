@@ -1,4 +1,5 @@
-[priority] refactor v0.1 -> reactive programming
+[] ui refacrtor v0.1 -> finalize initial ui
+[] code refactor v0.1 -> reactive programming
 
 [] ask for permissions
 [] create playlists

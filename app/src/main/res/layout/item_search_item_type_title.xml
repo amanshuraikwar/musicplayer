@@ -5,23 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/whiteSmoke"/>
-
     <TextView
         android:text="title"
         android:id="@+id/titleTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="@dimen/home_icon_size_padding"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"
-        android:textStyle="bold"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/whiteSmoke"/>
+        android:textSize="24sp"
+        android:textColor="@color/coal"/>
 </LinearLayout>

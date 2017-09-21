@@ -10,17 +10,22 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+import android.view.View;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.List;
 
+import app.sonu.com.musicplayer.AppBus;
+import app.sonu.com.musicplayer.PerSlidingUpPanelBus;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.ui.BasePresenter;
+import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
 
-import app.sonu.com.musicplayer.mediaplayernew.MusicService;
-import app.sonu.com.musicplayer.mediaplayernew.manager.MediaBrowserManager;
-import app.sonu.com.musicplayer.mediaplayernew.playback.Playback;
-import app.sonu.com.musicplayer.mediaplayernew.playlistssource.PlaylistsSource;
+import app.sonu.com.musicplayer.mediaplayer.MusicService;
+import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.playback.Playback;
+import app.sonu.com.musicplayer.mediaplayer.playlistssource.PlaylistsSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -33,6 +38,9 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
         implements MusicPlayerMvpPresenter, MediaBrowserManager.MediaBrowserCallback{
 
     private static final String TAG = MusicPlayerPresenter.class.getSimpleName();
+
+    private PerSlidingUpPanelBus mSlidingUpPanelBus;
+
     private MediaBrowserManager mMediaBrowserManager;
     private PublishSubject<Integer> mQueueIndexUpdatedSubject;
     private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
@@ -104,14 +112,15 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
 
     public MusicPlayerPresenter(DataManager dataManager,
                                 MediaBrowserManager browserManager,
-                                PublishSubject<Integer> queueIndexUpdatedSubject,
-                                PublishSubject<Integer> musicPlayerPanelPublishSubject) {
+                                AppBus appBus,
+                                PerSlidingUpPanelBus slidingUpPanelBus) {
         super(dataManager);
         mMediaBrowserManager = browserManager;
         mMediaBrowserManager.setCallback(this);
         mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
-        mQueueIndexUpdatedSubject = queueIndexUpdatedSubject;
-        mMusicPlayerPanelPublishSubject = musicPlayerPanelPublishSubject;
+        mQueueIndexUpdatedSubject = appBus.queueIndexUpdatedSubject;
+        mMusicPlayerPanelPublishSubject = appBus.musicPlayerPanelStateSubject;
+        mSlidingUpPanelBus = slidingUpPanelBus;
     }
 
     @Override
@@ -265,6 +274,16 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
         mMediaBrowserManager
                 .getMediaController()
                 .sendCommand(MusicService.CMD_FAVOURITES, b, null);
+    }
+
+    @Override
+    public void setAntiDragView(View view) {
+        mSlidingUpPanelBus.setAntidragViewSubject.onNext(view);
+    }
+
+    @Override
+    public void setSupl(SlidingUpPanelLayout supl) {
+        mSlidingUpPanelBus.setSuplSubject.onNext(supl);
     }
 
     //media browser implementations

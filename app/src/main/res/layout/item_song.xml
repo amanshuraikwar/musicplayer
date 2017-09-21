@@ -23,7 +23,7 @@
         android:layout_margin="16dp"
         app:cardCornerRadius="0dp"
         app:cardBackgroundColor="@null"
-        app:cardElevation="2dp">
+        app:cardElevation="0dp">
 
         <ImageView
             android:id="@+id/iconIv"

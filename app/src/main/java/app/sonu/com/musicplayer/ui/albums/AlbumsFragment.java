@@ -4,8 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,10 +17,13 @@ import java.util.List;
 
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.base.list.BaseVisitable;
-import app.sonu.com.musicplayer.base.ui.BaseFragment;
-import app.sonu.com.musicplayer.di.component.DaggerUiComponent;
-import app.sonu.com.musicplayer.di.module.UiModule;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
+import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
+import app.sonu.com.musicplayer.di.module.FragmentModule;
+import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.ui.base.BaseFragment;
+
 import app.sonu.com.musicplayer.list.onclicklistener.AlbumOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.AlbumVisitable;
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
@@ -35,11 +37,9 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
     public static final String TAB_TITLE = "Albums";
     public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#ffffff");
 
-    @BindView(R.id.albumsRv)
-    RecyclerView albumsRv;
+    @BindView(R.id.itemsRv)
+    RecyclerView itemsRv;
 
-    @BindView(R.id.parentSrl)
-    SwipeRefreshLayout parentSrl;
 
     private AlbumOnClickListener albumOnClickListener = new AlbumOnClickListener() {
         @Override
@@ -58,10 +58,18 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DaggerUiComponent.builder()
-                .uiModule(new UiModule(getActivity()))
-                .applicationComponent(((MyApplication)getActivity().getApplicationContext())
-                        .getApplicationComponent())
+        MusicPlayerHolderComponent mMusicPlayerHolderComponent =
+                DaggerMusicPlayerHolderComponent
+                        .builder()
+                        .musicPlayerHolderModule(new MusicPlayerHolderModule())
+                        .applicationComponent(
+                                ((MyApplication)getActivity().getApplicationContext())
+                                        .getApplicationComponent())
+                        .build();
+
+        mMusicPlayerHolderComponent
+                .fragmentComponentBuilder()
+                .fragmentModule(new FragmentModule())
                 .build()
                 .inject(this);
 
@@ -73,19 +81,14 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_albums, container, false);
+        View view = inflater.inflate(R.layout.layout_medialist, container, false);
         ButterKnife.bind(this, view);
 
-        if (albumsRv.getLayoutManager() == null) {
-            albumsRv.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        if (itemsRv.getLayoutManager() == null) {
+            RecyclerView.LayoutManager layoutManager =
+                    new GridLayoutManager(getActivity().getApplicationContext(), 2);
+            itemsRv.setLayoutManager(layoutManager);
         }
-
-        parentSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPresenter.onRefresh();
-            }
-        });
 
         mPresenter.onCreateView();
 
@@ -113,19 +116,9 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
 
     @Override
     public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
-        albumsRv.setAdapter(
+        itemsRv.setAdapter(
                 new MediaRecyclerViewAdapter(getVisitableList(itemList),
                         new MediaListTypeFactory()));
-    }
-
-    @Override
-    public void startLoading() {
-        parentSrl.setRefreshing(true);
-    }
-
-    @Override
-    public void stopLoading() {
-        parentSrl.setRefreshing(false);
     }
 
     @Override
@@ -135,7 +128,7 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
 
     @Override
     public void scrollListToTop() {
-        albumsRv.smoothScrollToPosition(0);
+        itemsRv.smoothScrollToPosition(0);
     }
 
     /**

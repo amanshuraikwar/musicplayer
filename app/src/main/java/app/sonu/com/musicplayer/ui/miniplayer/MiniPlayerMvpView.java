@@ -1,6 +1,6 @@
 package app.sonu.com.musicplayer.ui.miniplayer;
 
-import app.sonu.com.musicplayer.base.ui.BaseMvpView;
+import app.sonu.com.musicplayer.ui.base.BaseMvpView;
 
 /**
  * Created by sonu on 9/8/17.

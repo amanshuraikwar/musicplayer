@@ -15,7 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name="app.sonu.com.musicplayer.ui.main.MainActivity">
+        <activity android:name=".ui.search.SearchActivity"/>
+
+        <activity android:name=".ui.base.musicplayerholder.MusicPlayerHolderActivity"/>
+
+        <activity android:name=".ui.mediaitemdetail.MediaItemDetailActivity"/>
+
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,14 +34,7 @@
             android:theme="@style/AppThemeNoBackground">
         </activity>
 
-        <service android:name=".mediaplayer.MediaPlayerService" />
-
-        <service
-            android:name=".mediaplayer.MediaPlayerServiceNew"
-            android:exported="false"
-            android:description="@string/music_playing_service_description"/>
-
-        <service android:name=".mediaplayernew.MusicService"
+        <service android:name=".mediaplayer.MusicService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
