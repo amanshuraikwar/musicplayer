@@ -75,6 +75,7 @@ public class MusicPlayerHolderFragment<MvpPresenter extends MusicPlayerHolderMvp
                                             SlidingUpPanelLayout.PanelState panelState,
                                             SlidingUpPanelLayout.PanelState panelState1) {
                 mPresenter.onMusicPlayerPanelStateChanged(panelState1);
+                onSlidingUpPanelStateChanged(panelState1);
             }
         });
     }
@@ -135,5 +136,9 @@ public class MusicPlayerHolderFragment<MvpPresenter extends MusicPlayerHolderMvp
 
     protected SlidingUpPanelLayout getParentSupl() {
         return parentSupl;
+    }
+
+    protected void onSlidingUpPanelStateChanged(SlidingUpPanelLayout.PanelState newState) {
+        // override to get notified when state is changed
     }
 }

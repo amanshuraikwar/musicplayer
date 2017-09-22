@@ -42,6 +42,22 @@ public class MusicPlayerHolderActivity<MvpPresenter extends MusicPlayerHolderMvp
 
         childFl = musicPlayerHolderFragment.childFl;
         mMusicPlayerHolderComponent = musicPlayerHolderFragment.mMusicPlayerHolderComponent;
+
+        musicPlayerHolderFragment
+                .parentSupl
+                .addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+                    @Override
+                    public void onPanelSlide(View view, float v) {
+
+                    }
+
+                    @Override
+                    public void onPanelStateChanged(View view,
+                                                    SlidingUpPanelLayout.PanelState panelState,
+                                                    SlidingUpPanelLayout.PanelState panelState1) {
+                        onSlidingUpPanelStateChanged(panelState1);
+                    }
+                });
     }
 
     @Override
@@ -84,5 +100,9 @@ public class MusicPlayerHolderActivity<MvpPresenter extends MusicPlayerHolderMvp
 
     protected SlidingUpPanelLayout getParentSupl() {
         return musicPlayerHolderFragment.getParentSupl();
+    }
+
+    protected void onSlidingUpPanelStateChanged(SlidingUpPanelLayout.PanelState state) {
+        // override to get notified when state is changed
     }
 }

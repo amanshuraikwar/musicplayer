@@ -6,6 +6,7 @@ import app.sonu.com.musicplayer.list.base.BaseTypeFactory;
 import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.ArtistViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.DetailTitleViewHolder;
+import app.sonu.com.musicplayer.list.viewholder.MediaListHeaderViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.PlaylistViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.QueueItemViewHolder;
 import app.sonu.com.musicplayer.list.viewholder.AlbumSearchResultViewHolder;
@@ -25,6 +26,7 @@ import app.sonu.com.musicplayer.list.visitable.ArtistSearchResultVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSongVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistVisitable;
 import app.sonu.com.musicplayer.list.visitable.DetailTitleVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderVisitable;
 import app.sonu.com.musicplayer.list.visitable.PlaylistVisitable;
 import app.sonu.com.musicplayer.list.visitable.QueueItemVisitable;
 import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
@@ -81,6 +83,9 @@ public class MediaListTypeFactory extends BaseTypeFactory {
     public int type(DetailTitleVisitable detailTitleVisitable) {
         return DetailTitleViewHolder.LAYOUT;
     }
+    public int type(MediaListHeaderVisitable mediaListHeaderVisitable) {
+        return MediaListHeaderViewHolder.LAYOUT;
+    }
 
     @Override
     public BaseViewHolder createViewHolder(View parent, int type) {
@@ -128,6 +133,9 @@ public class MediaListTypeFactory extends BaseTypeFactory {
                 break;
             case DetailTitleViewHolder.LAYOUT:
                 viewHolder = new DetailTitleViewHolder(parent);
+                break;
+            case MediaListHeaderViewHolder.LAYOUT:
+                viewHolder = new MediaListHeaderViewHolder(parent);
                 break;
         }
 

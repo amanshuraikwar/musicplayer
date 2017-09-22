@@ -41,9 +41,6 @@ public class MediaListsFragment
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-
     @BindView(R.id.vp)
     ViewPager vp;
 
@@ -104,11 +101,6 @@ public class MediaListsFragment
             @Override
             public void onPageSelected(int position) {
                 mPresenter.onPageSelected(position);
-//                if (position == 3) {
-//                    fab.show();
-//                } else {
-//                    fab.hide();
-//                }
             }
 
             @Override
@@ -129,8 +121,6 @@ public class MediaListsFragment
                 return false;
             }
         });
-
-        fab.hide();
 
         super.onViewCreated(view, savedInstanceState);
     }

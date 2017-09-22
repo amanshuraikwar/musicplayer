@@ -22,6 +22,7 @@ import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 
 import app.sonu.com.musicplayer.list.onclicklistener.AlbumOnClickListener;
@@ -138,6 +139,7 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> albumList) {
         List<BaseVisitable> visitableList = new ArrayList<>();
+
         for (MediaBrowserCompat.MediaItem item : albumList) {
             AlbumVisitable albumVisitable = new AlbumVisitable(item);
             albumVisitable.setOnClickListener(albumOnClickListener);

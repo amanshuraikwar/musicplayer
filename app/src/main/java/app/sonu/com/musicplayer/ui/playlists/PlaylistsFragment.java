@@ -22,6 +22,10 @@ import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.list.onclicklistener.MediaListHeaderOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderVisitable;
+import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
+import app.sonu.com.musicplayer.mediaplayer.playlistssource.PlaylistsSource;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
@@ -56,6 +60,18 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
 
         }
     };
+    private MediaListHeaderOnClickListener autoPlaylistAddClickListener =
+            new MediaListHeaderOnClickListener() {
+                @Override
+                public void onIconIvClick() {
+                    Log.d(TAG, "addPlaylist:clicked");
+                }
+
+                @Override
+                public void OnClick() {
+
+                }
+            };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,13 +149,34 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
      * @return
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> songList) {
-        List<BaseVisitable> visitableList = new ArrayList<>();
+        List<BaseVisitable> autoVisitableList = new ArrayList<>();
+        List<BaseVisitable> userVisitableList = new ArrayList<>();
 
         for (MediaBrowserCompat.MediaItem item : songList) {
             PlaylistVisitable visitable= new PlaylistVisitable(item);
             visitable.setOnClickListener(playlistOnClickListener);
-            visitableList.add(visitable);
+
+            if (item.getDescription()
+                    .getExtras()
+                    .getLong(PlaylistsSource.CUSTOM_METADATA_KEY_PLAYLIST_TYPE)
+                == PlaylistsSource.PLAYLIST_TYPE_AUTO) {
+                autoVisitableList.add(visitable);
+            } else {
+                userVisitableList.add(visitable);
+            }
+
         }
+
+        List<BaseVisitable> visitableList = new ArrayList<>();
+        visitableList.add(new MediaListHeaderVisitable("Auto", false, 0));
+        visitableList.addAll(autoVisitableList);
+
+        MediaListHeaderVisitable visitable = new MediaListHeaderVisitable("User", true,
+                R.drawable.ic_playlist_add_black_24dp);
+        visitable.setOnClickListener(autoPlaylistAddClickListener);
+
+        visitableList.add(visitable);
+        visitableList.addAll(userVisitableList);
 
         return visitableList;
     }

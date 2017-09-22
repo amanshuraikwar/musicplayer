@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
 import app.sonu.com.musicplayer.MyApplication;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
