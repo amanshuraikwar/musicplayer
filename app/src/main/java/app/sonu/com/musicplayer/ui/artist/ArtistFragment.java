@@ -13,12 +13,10 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSongVisitable;
-import app.sonu.com.musicplayer.list.visitable.DetailTitleVisitable;
+import app.sonu.com.musicplayer.list.visitable.SearchListHeaderVisitable;
 import app.sonu.com.musicplayer.ui.album.AlbumFragment;
-import app.sonu.com.musicplayer.ui.artists.ArtistsMvpView;
 import app.sonu.com.musicplayer.ui.base.mediaitemdetail.MediaItemDetailFragment;
 import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderActivity;
-import app.sonu.com.musicplayer.util.ColorUtil;
 
 /**
  * Created by sonu on 21/9/17.
@@ -47,11 +45,6 @@ public class ArtistFragment extends MediaItemDetailFragment<ArtistMvpPresenter>
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     protected int getDefaultArtId() {
         return R.drawable.default_artist_art_square;
     }
@@ -61,6 +54,9 @@ public class ArtistFragment extends MediaItemDetailFragment<ArtistMvpPresenter>
         Log.d(TAG, "getVisitableList:called");
 
         List<BaseVisitable> visitableList = new ArrayList<>();
+
+        SearchListHeaderVisitable headerVisitable = new SearchListHeaderVisitable("Songs");
+        visitableList.add(headerVisitable);
 
         for (MediaBrowserCompat.MediaItem songItem : songList) {
             ArtistSongVisitable visitable = new ArtistSongVisitable(songItem);

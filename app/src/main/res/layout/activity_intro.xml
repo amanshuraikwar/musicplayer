@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/blueGrey50">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout
+            android:id="@+id/colorView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_music_note_light_128dp"
+            android:tint="@color/blueGrey100"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/app_name_spaced"
+                android:textSize="45sp"
+                android:textColor="@color/blueGrey900"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_description"
+                android:textColor="@color/blueGrey300"
+                android:gravity="center"
+                android:textSize="14sp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/givePermissionsTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/give_permission_description"
+        android:textColor="@color/blueGrey900"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:layout_margin="16dp"/>
+
+    <Button
+        android:id="@+id/givePermissionsBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/give_permission_text"
+        android:textColor="@color/blueGrey900"/>
+</LinearLayout>

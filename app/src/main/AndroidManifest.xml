@@ -15,13 +15,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.search.SearchActivity"/>
 
-        <activity android:name=".ui.base.musicplayerholder.MusicPlayerHolderActivity"/>
+        <activity android:name=".ui.intro.MainIntroActivity"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".ui.mediaitemdetail.MediaItemDetailActivity"/>
+        <activity android:name=".ui.search.SearchActivity"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name=".ui.base.musicplayerholder.MusicPlayerHolderActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.mediaitemdetail.MediaItemDetailActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,7 +39,8 @@
 
         <activity
             android:name="app.sonu.com.musicplayer.ui.about.AboutActivity"
-            android:theme="@style/AppThemeNoBackground">
+            android:theme="@style/AppThemeNoBackground"
+            android:screenOrientation="portrait">
         </activity>
 
         <service android:name=".mediaplayer.MusicService"

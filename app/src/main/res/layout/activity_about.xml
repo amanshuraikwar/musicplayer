@@ -13,8 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layoutMode="opticalBounds"
-        android:layout_marginBottom="40dp"
-        android:background="@color/veryWhite">
+        android:layout_marginBottom="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,19 +32,19 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:src="@drawable/ic_album_light_grey_128dp"
-                    android:tint="@color/lightGrey"/>
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_music_note_light_128dp"
+                    android:tint="@color/blueGrey50"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:layout_gravity="bottom|start"
-                    android:text="@string/app_name"
-                    android:textSize="34sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
+                    android:layout_gravity="center"
+                    android:text="@string/app_name_spaced"
+                    android:textSize="45sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"/>
             </FrameLayout>
 
             <TextView
@@ -56,7 +55,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="4dp"
-                android:text="About"
+                android:text="@string/about_heading"
                 android:textSize="21sp"/>
 
             <TextView
@@ -66,7 +65,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Cassette is just a simple music player bringing you a beautiful UI and a well thought out UX."
+                android:text="@string/about_description"
                 android:textSize="15sp"
                 android:textColor="@color/grey"/>
 
@@ -80,7 +79,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="4dp"
-                android:text="Open Source"
+                android:text="@string/open_source_heading"
                 android:textSize="21sp"/>
 
             <TextView
@@ -90,7 +89,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Cassette is an Open Source project with code available to everyone for free :)"
+                android:text="@string/open_source_description"
                 android:textSize="15sp"
                 android:textColor="@color/grey"/>
 
@@ -102,7 +101,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="4dp"
-                android:text="Github"
+                android:text="@string/github_heading"
                 android:textSize="21sp"/>
 
             <TextView
@@ -114,7 +113,42 @@
                 android:layout_marginEnd="16dp"
                 android:linksClickable="true"
                 android:autoLink="web"
-                android:text="https://github.com/amanshuraikwar/musicplayer"
+                android:text="@string/github_link"
+                android:textSize="15sp"
+                android:textColor="@color/grey"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
+                android:text="@string/instagram_heading"
+                android:textSize="21sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/instagram_description"
+                android:textSize="15sp"
+                android:textColor="@color/grey"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:linksClickable="true"
+                android:autoLink="web"
+                android:text="@string/instagram_link"
                 android:textSize="15sp"
                 android:textColor="@color/grey"/>
 
@@ -126,7 +160,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:textSize="15sp"
-                android:text="Amanshu Raikwar"
+                android:text="@string/developer_name"
                 android:textColor="@color/black"/>
 
             <TextView
@@ -141,7 +175,7 @@
                 android:linksClickable="true"
                 android:autoLink="web"
                 android:textColor="@color/grey"
-                android:text="https://github.com/amanshuraikwar"/>
+                android:text="@string/developer_github_link"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
@@ -150,36 +184,40 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="16dp"
-        android:paddingTop="8dp"
         android:paddingStart="16dp"
-        android:paddingBottom="8dp"
         android:paddingEnd="16dp"
         android:gravity="center"
-        android:background="@color/blueGrey300"
+        android:background="@color/blueGrey900"
         android:layout_gravity="bottom">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Made with "
+            android:text="@string/developer_note_1"
             android:textSize="12sp"
-            android:layout_gravity="bottom"
+            android:layout_gravity="center_vertical"
             android:textColor="@color/veryWhite"/>
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_heart_outline_white_24dp"
-            android:tint="@color/whiteSmoke"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"/>
+        <com.like.LikeButton
+            app:icon_type="heart"
+            app:icon_size="24dp"
+            app:circle_start_color="@color/whiteSmoke"
+            app:like_drawable="@drawable/ic_heart_solid_light_pink_24dp"
+            app:unlike_drawable="@drawable/ic_heart_outline_white_24dp"
+            app:dots_primary_color="@color/lightPink"
+            app:dots_secondary_color="@color/whiteSmoke"
+            app:circle_end_color="@color/lightPink"
+            app:anim_scale_factor="1.6"
+            android:id="@+id/heartLikeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" by an engineering undergrad."
+            android:text="@string/developer_note_2"
             android:textSize="12sp"
-            android:layout_gravity="bottom"
+            android:layout_gravity="center_vertical"
             android:textColor="@color/veryWhite"/>
     </LinearLayout>
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

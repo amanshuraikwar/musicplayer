@@ -83,7 +83,7 @@
             android:textColor="@color/black"
             android:lines="1"
             android:ellipsize="end"
-            android:text="The game of love"/>
+            android:text="@string/sample_song_title"/>
 
         <ImageView
             android:id="@+id/miniPlayerPlayPauseIv"

@@ -6,5 +6,11 @@
         android:id="@+id/menuItemSearch"
         android:title="@string/searchMenuItemTitle"
         android:icon="@drawable/ic_search_grey_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menuItemAbout"
+        android:title="@string/about_menu_item_title"
+        android:icon="@drawable/ic_info_outline_black_24dp"
+        app:showAsAction="never"/>
 </menu>

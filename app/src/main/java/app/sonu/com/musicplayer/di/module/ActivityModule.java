@@ -9,9 +9,7 @@ import app.sonu.com.musicplayer.PerSlidingUpPanelBus;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.di.ActivityContext;
 import app.sonu.com.musicplayer.di.PerActivity;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
-import app.sonu.com.musicplayer.ui.album.AlbumMvpPresenter;
-import app.sonu.com.musicplayer.ui.album.AlbumPresenter;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.main.MainMvpPresenter;
 import app.sonu.com.musicplayer.ui.main.MainPresenter;
 import app.sonu.com.musicplayer.ui.mediaitemdetail.MediaItemDetailMvpPresenter;
@@ -19,7 +17,6 @@ import app.sonu.com.musicplayer.ui.mediaitemdetail.MediaItemDetailPresenter;
 
 import app.sonu.com.musicplayer.ui.search.SearchActivityMvpPresenter;
 import app.sonu.com.musicplayer.ui.search.SearchActivityPresenter;
-import app.sonu.com.musicplayer.util.MediaIdHelper;
 import dagger.Module;
 import dagger.Provides;
 

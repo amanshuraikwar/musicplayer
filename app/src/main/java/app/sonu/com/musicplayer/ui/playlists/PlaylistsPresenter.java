@@ -1,6 +1,7 @@
 package app.sonu.com.musicplayer.ui.playlists;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.util.Pair;
@@ -11,9 +12,11 @@ import java.util.List;
 
 import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
+import app.sonu.com.musicplayer.mediaplayer.MusicService;
+import app.sonu.com.musicplayer.model.PlaylistUpdate;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -29,11 +32,10 @@ public class PlaylistsPresenter extends BasePresenter<PlaylistsMvpView>
 
     private MediaBrowserManager mMediaBrowserManager;
     private Context mContext;
-    private PublishSubject<Integer> mPlaylistsScrollToTopSubject;
-    private PublishSubject<Pair<MediaBrowserCompat.MediaItem, View>> mPlaylistClickSubject;
-    private PublishSubject<String> mPlaylistsChangedSubject;
+    private AppBus mAppBus;
 
-    private Disposable mPlaylistsScrollToTopDisposable, mPlaylistsChangedDisposable;
+    private Disposable mPlaylistsScrollToTopDisposable, playlistUpdatedDisposable, playlistsUpdatedDisposable,
+            playlistAddedDisposable, playlistRemovedDisposable;;
 
     public PlaylistsPresenter(DataManager dataManager,
                               MediaBrowserManager mediaBrowserManager,
@@ -41,9 +43,7 @@ public class PlaylistsPresenter extends BasePresenter<PlaylistsMvpView>
         super(dataManager);
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
-        mPlaylistsScrollToTopSubject = appBus.playlistsScrollToTopSubject;
-        mPlaylistClickSubject = appBus.playlistClickSubject;
-        mPlaylistsChangedSubject = appBus.playlistsChangedSubject;
+        mAppBus = appBus;
     }
 
     @Override
@@ -51,7 +51,10 @@ public class PlaylistsPresenter extends BasePresenter<PlaylistsMvpView>
         Log.d(TAG, "onDetach:called");
         mMediaBrowserManager.disconnectMediaBrowser();
         mPlaylistsScrollToTopDisposable.dispose();
-        mPlaylistsChangedDisposable.dispose();
+        playlistUpdatedDisposable.dispose();
+        playlistsUpdatedDisposable.dispose();
+        playlistAddedDisposable.dispose();
+        playlistRemovedDisposable.dispose();
     }
 
     @Override
@@ -67,20 +70,57 @@ public class PlaylistsPresenter extends BasePresenter<PlaylistsMvpView>
         //init media browser
         mMediaBrowserManager.initMediaBrowser(activity);
 
-        mPlaylistsScrollToTopDisposable = mPlaylistsScrollToTopSubject.subscribe(new Consumer<Integer>() {
+        mPlaylistsScrollToTopDisposable = mAppBus.playlistsScrollToTopSubject.subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer integer) throws Exception {
                 mMvpView.scrollListToTop();
             }
         });
 
-        mPlaylistsChangedDisposable = mPlaylistsChangedSubject.subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                Log.w(TAG, "playlists changed!");
-                mMediaBrowserManager.subscribeMediaBrowser();
-            }
-        });
+        playlistUpdatedDisposable =
+                mAppBus.playlistUpdatedSubject.subscribe(new Consumer<PlaylistUpdate>() {
+                    @Override
+                    public void accept(PlaylistUpdate playlistUpdate) throws Exception {
+                        handlePlaylistUpdate(playlistUpdate);
+                    }
+                });
+
+        playlistsUpdatedDisposable =
+                mAppBus.playlistsUpdatedSubject.subscribe(new Consumer<List<PlaylistUpdate>>() {
+                    @Override
+                    public void accept(List<PlaylistUpdate> playlistUpdateList) throws Exception {
+                        for (PlaylistUpdate playlistUpdate : playlistUpdateList) {
+                            handlePlaylistUpdate(playlistUpdate);
+                        }
+                    }
+                });
+
+        playlistAddedDisposable =
+                mAppBus.playlistAddedSubject.subscribe(new Consumer<MediaBrowserCompat.MediaItem>() {
+                    @Override
+                    public void accept(MediaBrowserCompat.MediaItem item) throws Exception {
+                        mMediaBrowserManager.subscribeMediaBrowser();
+                        // mediaitem does not get boolean to tell if song is in playlist
+                        // todo add dynamic list support
+//                        mMvpView.addPlaylistToRv(item);
+                    }
+                });
+
+        playlistRemovedDisposable =
+                mAppBus.playlistRemovedSubject.subscribe(new Consumer<MediaBrowserCompat.MediaItem>() {
+                    @Override
+                    public void accept(MediaBrowserCompat.MediaItem item) throws Exception {
+                        mMediaBrowserManager.subscribeMediaBrowser();
+                        // mediaitem does not get boolean to tell if song is in playlist
+                        // todo add dynamic list support
+//                        mMvpView.removePlaylistFromRv(item);
+                    }
+                });
+    }
+
+    private void handlePlaylistUpdate(PlaylistUpdate playlistUpdate) {
+        // todo add dynamic list support
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override
@@ -97,14 +137,33 @@ public class PlaylistsPresenter extends BasePresenter<PlaylistsMvpView>
     @Override
     public void onPlaylistClicked(MediaBrowserCompat.MediaItem item, View animatingView) {
         Log.d(TAG, "onPlaylistClicked:currentAlbum=" + item);
-        mPlaylistClickSubject.onNext(new Pair<>(item, animatingView));
+        mAppBus.playlistClickSubject.onNext(new Pair<>(item, animatingView));
+    }
+
+    @Override
+    public void onAddPlaylistBtnClick() {
+        Log.d(TAG, "onAddPlaylistBtnClick:called");
+        mMvpView.showCreatePlaylistDialog();
+    }
+
+    @Override
+    public void onDeletePlaylistClick(MediaBrowserCompat.MediaItem item) {
+        Log.d(TAG, "onDeletePlaylistClick:called");
+        Log.i(TAG, "onDeletePlaylistClick:mediaId="+item.getDescription().getMediaId());
+        if (item != null) {
+            Bundle b = new Bundle();
+            b.putString(MusicService.KEY_PLAYLIST_MEDIA_ID, item.getDescription().getMediaId());
+            mMediaBrowserManager
+                    .getMediaController()
+                    .sendCommand(MusicService.CMD_DELETE_PLAYLIST, b, null);
+        }
     }
 
     // media browser callback
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        // do nothing
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override

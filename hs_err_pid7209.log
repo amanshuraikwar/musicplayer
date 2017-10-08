@@ -16,7 +16,7 @@
 
 ---------------  T H R E A D  ---------------
 
-Current thread (0x00007f1140020800):  GCTaskThread [stack: 0x00007f112f8b2000,0x00007f112f9b3000] [id=7214]
+Current thread (0x00007f1140020800):  GCTaskThread [stack: 0x00007f112f8b2000,0x00007f112f9b3000] [playlistId=7214]
 
 siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x00000000040dcd60
 
@@ -73,7 +73,7 @@ Register to memory mapping:
 RAX=0x0000000000000001 is an unknown value
 RBX=0x00000000f450e000 is an oop
 
-[error occurred during error reporting (printing register info), id 0xb]
+[error occurred during error reporting (printing register info), playlistId 0xb]
 
 Stack: [0x00007f112f8b2000,0x00007f112f9b3000],  sp=0x00007f112f9b1c60,  free space=1023k
 Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
@@ -88,37 +88,37 @@ V  [libjvm.so+0x849c82]  java_start(Thread*)+0xf2
 ---------------  P R O C E S S  ---------------
 
 Java Threads: ( => current thread )
-  0x00007f104c38b800 JavaThread "Cache update executor" [_thread_blocked, id=16610, stack(0x00007f10aecfb000,0x00007f10aedfc000)]
-  0x00007f104c096000 JavaThread "Stdin handler" [_thread_blocked, id=16609, stack(0x00007f10e30c4000,0x00007f10e31c5000)]
-  0x00007f104c097000 JavaThread "Asynchronous log dispatcher for DefaultDaemonConnection: socket connection from /127.0.0.1:41113 to /127.0.0.1:42122" [_thread_blocked, id=16608, stack(0x00007f10aeefd000,0x00007f10aeffe000)]
-  0x00007f10d0014000 JavaThread "Daemon worker Thread 17" [_thread_blocked, id=16605, stack(0x00007f10af0ff000,0x00007f10af200000)]
-  0x00007f10d0007000 JavaThread "Cancel handler" [_thread_blocked, id=16604, stack(0x00007f10e2bc1000,0x00007f10e2cc2000)]
-  0x00007f10d0004000 JavaThread "Handler for socket connection from /127.0.0.1:41113 to /127.0.0.1:42122" [_thread_in_native, id=16603, stack(0x00007f10e29bf000,0x00007f10e2ac0000)]
-  0x00007f10d8010800 JavaThread "Daemon Thread 17" [_thread_blocked, id=16602, stack(0x00007f10e31c5000,0x00007f10e32c6000)]
-  0x00007f1044004800 JavaThread "pool-19-thread-4" [_thread_blocked, id=9270, stack(0x00007f106ec09000,0x00007f106ed0a000)]
-  0x00007f1024002800 JavaThread "pool-19-thread-3" [_thread_blocked, id=9259, stack(0x00007f106f10e000,0x00007f106f20f000)]
-  0x00007f1048004800 JavaThread "pool-19-thread-2" [_thread_blocked, id=9253, stack(0x00007f106f714000,0x00007f106f815000)]
-  0x00007f1038005800 JavaThread "pool-19-thread-1" [_thread_blocked, id=9252, stack(0x00007f10ac55d000,0x00007f10ac65e000)]
-  0x00007f10a4003800 JavaThread "Java2D Disposer" daemon [_thread_blocked, id=7270, stack(0x00007f10ac85e000,0x00007f10ac95f000)]
-  0x00007f10c1642000 JavaThread "pool-2-thread-1" [_thread_blocked, id=7245, stack(0x00007f10e1019000,0x00007f10e111a000)]
-  0x00007f10c0376800 JavaThread "File lock request listener" [_thread_in_native, id=7241, stack(0x00007f10e2645000,0x00007f10e2746000)]
-  0x00007f1140d90800 JavaThread "pool-1-thread-1" [_thread_blocked, id=7234, stack(0x00007f10e2dc3000,0x00007f10e2ec4000)]
-  0x00007f1140d3b800 JavaThread "Incoming local TCP Connector on port 41113" [_thread_in_native, id=7231, stack(0x00007f10e34cd000,0x00007f10e35ce000)]
-  0x00007f11400d1800 JavaThread "Service Thread" daemon [_thread_blocked, id=7229, stack(0x00007f1108d80000,0x00007f1108e81000)]
-  0x00007f11400c6800 JavaThread "C1 CompilerThread3" daemon [_thread_blocked, id=7228, stack(0x00007f1108e81000,0x00007f1108f82000)]
-  0x00007f11400c4800 JavaThread "C2 CompilerThread2" daemon [_thread_blocked, id=7227, stack(0x00007f1108f82000,0x00007f1109083000)]
-  0x00007f11400c2800 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=7226, stack(0x00007f1109083000,0x00007f1109184000)]
-  0x00007f11400bf800 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=7225, stack(0x00007f1109184000,0x00007f1109285000)]
-  0x00007f11400be800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=7224, stack(0x00007f1109285000,0x00007f1109386000)]
-  0x00007f114008b800 JavaThread "Finalizer" daemon [_thread_blocked, id=7223, stack(0x00007f110965e000,0x00007f110975f000)]
-  0x00007f1140087000 JavaThread "Reference Handler" daemon [_thread_blocked, id=7222, stack(0x00007f110975f000,0x00007f1109860000)]
-  0x00007f114000a000 JavaThread "main" [_thread_blocked, id=7212, stack(0x00007f11461aa000,0x00007f11462ab000)]
+  0x00007f104c38b800 JavaThread "Cache update executor" [_thread_blocked, playlistId=16610, stack(0x00007f10aecfb000,0x00007f10aedfc000)]
+  0x00007f104c096000 JavaThread "Stdin handler" [_thread_blocked, playlistId=16609, stack(0x00007f10e30c4000,0x00007f10e31c5000)]
+  0x00007f104c097000 JavaThread "Asynchronous log dispatcher for DefaultDaemonConnection: socket connection from /127.0.0.1:41113 to /127.0.0.1:42122" [_thread_blocked, playlistId=16608, stack(0x00007f10aeefd000,0x00007f10aeffe000)]
+  0x00007f10d0014000 JavaThread "Daemon worker Thread 17" [_thread_blocked, playlistId=16605, stack(0x00007f10af0ff000,0x00007f10af200000)]
+  0x00007f10d0007000 JavaThread "Cancel handler" [_thread_blocked, playlistId=16604, stack(0x00007f10e2bc1000,0x00007f10e2cc2000)]
+  0x00007f10d0004000 JavaThread "Handler for socket connection from /127.0.0.1:41113 to /127.0.0.1:42122" [_thread_in_native, playlistId=16603, stack(0x00007f10e29bf000,0x00007f10e2ac0000)]
+  0x00007f10d8010800 JavaThread "Daemon Thread 17" [_thread_blocked, playlistId=16602, stack(0x00007f10e31c5000,0x00007f10e32c6000)]
+  0x00007f1044004800 JavaThread "pool-19-thread-4" [_thread_blocked, playlistId=9270, stack(0x00007f106ec09000,0x00007f106ed0a000)]
+  0x00007f1024002800 JavaThread "pool-19-thread-3" [_thread_blocked, playlistId=9259, stack(0x00007f106f10e000,0x00007f106f20f000)]
+  0x00007f1048004800 JavaThread "pool-19-thread-2" [_thread_blocked, playlistId=9253, stack(0x00007f106f714000,0x00007f106f815000)]
+  0x00007f1038005800 JavaThread "pool-19-thread-1" [_thread_blocked, playlistId=9252, stack(0x00007f10ac55d000,0x00007f10ac65e000)]
+  0x00007f10a4003800 JavaThread "Java2D Disposer" daemon [_thread_blocked, playlistId=7270, stack(0x00007f10ac85e000,0x00007f10ac95f000)]
+  0x00007f10c1642000 JavaThread "pool-2-thread-1" [_thread_blocked, playlistId=7245, stack(0x00007f10e1019000,0x00007f10e111a000)]
+  0x00007f10c0376800 JavaThread "File lock request listener" [_thread_in_native, playlistId=7241, stack(0x00007f10e2645000,0x00007f10e2746000)]
+  0x00007f1140d90800 JavaThread "pool-1-thread-1" [_thread_blocked, playlistId=7234, stack(0x00007f10e2dc3000,0x00007f10e2ec4000)]
+  0x00007f1140d3b800 JavaThread "Incoming local TCP Connector on port 41113" [_thread_in_native, playlistId=7231, stack(0x00007f10e34cd000,0x00007f10e35ce000)]
+  0x00007f11400d1800 JavaThread "Service Thread" daemon [_thread_blocked, playlistId=7229, stack(0x00007f1108d80000,0x00007f1108e81000)]
+  0x00007f11400c6800 JavaThread "C1 CompilerThread3" daemon [_thread_blocked, playlistId=7228, stack(0x00007f1108e81000,0x00007f1108f82000)]
+  0x00007f11400c4800 JavaThread "C2 CompilerThread2" daemon [_thread_blocked, playlistId=7227, stack(0x00007f1108f82000,0x00007f1109083000)]
+  0x00007f11400c2800 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, playlistId=7226, stack(0x00007f1109083000,0x00007f1109184000)]
+  0x00007f11400bf800 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, playlistId=7225, stack(0x00007f1109184000,0x00007f1109285000)]
+  0x00007f11400be800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, playlistId=7224, stack(0x00007f1109285000,0x00007f1109386000)]
+  0x00007f114008b800 JavaThread "Finalizer" daemon [_thread_blocked, playlistId=7223, stack(0x00007f110965e000,0x00007f110975f000)]
+  0x00007f1140087000 JavaThread "Reference Handler" daemon [_thread_blocked, playlistId=7222, stack(0x00007f110975f000,0x00007f1109860000)]
+  0x00007f114000a000 JavaThread "main" [_thread_blocked, playlistId=7212, stack(0x00007f11461aa000,0x00007f11462ab000)]
 
 Other Threads:
-  0x00007f114007f800 VMThread [stack: 0x00007f1109860000,0x00007f1109961000] [id=7221]
-  0x00007f11400d4000 WatcherThread [stack: 0x00007f1108c7f000,0x00007f1108d80000] [id=7230]
+  0x00007f114007f800 VMThread [stack: 0x00007f1109860000,0x00007f1109961000] [playlistId=7221]
+  0x00007f11400d4000 WatcherThread [stack: 0x00007f1108c7f000,0x00007f1108d80000] [playlistId=7230]
 
-=>0x00007f1140020800 (exited) GCTaskThread [stack: 0x00007f112f8b2000,0x00007f112f9b3000] [id=7214]
+=>0x00007f1140020800 (exited) GCTaskThread [stack: 0x00007f112f8b2000,0x00007f112f9b3000] [playlistId=7214]
 
 VM state:at safepoint (normal execution)
 
@@ -1167,9 +1167,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 0
+core playlistId		: 0
 cpu cores	: 4
 apicid		: 0
 initial apicid	: 0
@@ -1194,9 +1194,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 0
+core playlistId		: 0
 cpu cores	: 4
 apicid		: 1
 initial apicid	: 1
@@ -1221,9 +1221,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 1
+core playlistId		: 1
 cpu cores	: 4
 apicid		: 2
 initial apicid	: 2
@@ -1248,9 +1248,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 1
+core playlistId		: 1
 cpu cores	: 4
 apicid		: 3
 initial apicid	: 3
@@ -1275,9 +1275,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 2
+core playlistId		: 2
 cpu cores	: 4
 apicid		: 4
 initial apicid	: 4
@@ -1302,9 +1302,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 2
+core playlistId		: 2
 cpu cores	: 4
 apicid		: 5
 initial apicid	: 5
@@ -1329,9 +1329,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 3
+core playlistId		: 3
 cpu cores	: 4
 apicid		: 6
 initial apicid	: 6
@@ -1356,9 +1356,9 @@ stepping	: 3
 microcode	: 0x1c
 cpu MHz		: 3299.865
 cache size	: 6144 KB
-physical id	: 0
+physical playlistId	: 0
 siblings	: 8
-core id		: 3
+core playlistId		: 3
 cpu cores	: 4
 apicid		: 7
 initial apicid	: 7

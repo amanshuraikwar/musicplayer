@@ -13,7 +13,7 @@ import java.util.List;
 import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
 
 /**
@@ -82,13 +82,11 @@ public class SearchPresenter extends BasePresenter<SearchMvpView>
     @Override
     public void onAlbumClicked(MediaBrowserCompat.MediaItem item, View animatingView) {
         mAppBus.albumClickSubject.onNext(new Pair<>(item, animatingView));
-        mMvpView.close();
     }
 
     @Override
     public void onArtistClicked(MediaBrowserCompat.MediaItem item, View animatingView) {
         mAppBus.artistClickSubject.onNext(new Pair<>(item, animatingView));
-        mMvpView.close();
     }
 
     @Override
@@ -109,7 +107,7 @@ public class SearchPresenter extends BasePresenter<SearchMvpView>
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        // do nothing
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override

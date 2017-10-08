@@ -1,13 +1,15 @@
 package app.sonu.com.musicplayer.ui.allsongs;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -23,6 +25,8 @@ import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.mediaplayer.MusicService;
+import app.sonu.com.musicplayer.ui.addsongstoplaylists.AddSongsToPlaylistsFragment;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
@@ -41,7 +45,6 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
 
     private static final String TAG = AllSongsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Songs";
-    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#ffffff");
 
     @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
@@ -50,6 +53,26 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
         @Override
         public void onSongClick(MediaBrowserCompat.MediaItem item) {
             mPresenter.onSongClicked(item);
+        }
+
+        @Override
+        public void onOptionsIbClick(final MediaBrowserCompat.MediaItem item, View optionsIb) {
+            PopupMenu popup = new PopupMenu(getActivity(), optionsIb);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.menu_song_options, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.menuItemAddToPlaylist:
+                            mPresenter.onAddToPlaylistClick(item);
+                            break;
+                    }
+
+                    return false;
+                }
+            });
+            popup.show();
         }
 
         @Override
@@ -95,7 +118,7 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView:called");
-        View view = inflater.inflate(R.layout.layout_medialist, container, false);
+        View view = inflater.inflate(R.layout.layout_media_list, container, false);
         ButterKnife.bind(this, view);
 
         if (itemsRv.getLayoutManager() == null) {
@@ -161,5 +184,14 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     @Override
     public void scrollListToTop() {
         itemsRv.smoothScrollToPosition(0);
+    }
+
+    @Override
+    public void showAddToPlaylistsDialog(String songId) {
+        AddSongsToPlaylistsFragment fragment = new AddSongsToPlaylistsFragment();
+        Bundle b = new Bundle();
+        b.putString(MusicService.KEY_SONG_ID, songId);
+        fragment.setArguments(b);
+        fragment.show(getChildFragmentManager(), "AddSongsToPlaylistsFragment");
     }
 }

@@ -13,7 +13,7 @@ import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -90,7 +90,7 @@ public class ArtistsPresenter extends BasePresenter<ArtistsMvpView>
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        // do nothing
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override

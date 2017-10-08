@@ -2,8 +2,7 @@ package app.sonu.com.musicplayer.ui.artist;
 
 import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
-import app.sonu.com.musicplayer.ui.album.AlbumMvpView;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.base.mediaitemdetail.MediaItemDetailFragmentPresenter;
 
 /**

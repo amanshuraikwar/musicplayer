@@ -7,4 +7,5 @@ import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderMvpVi
  */
 
 public interface MediaItemDetailMvpView extends MusicPlayerHolderMvpView {
+
 }

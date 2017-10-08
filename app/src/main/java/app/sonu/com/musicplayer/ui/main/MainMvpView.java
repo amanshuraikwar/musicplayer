@@ -17,4 +17,7 @@ public interface MainMvpView extends BaseMvpView {
     void startAlbumActivity(MediaBrowserCompat.MediaItem item, View animatingView);
     void startArtistActivity(MediaBrowserCompat.MediaItem item, View animatingView);
     void startPlaylistActivity(MediaBrowserCompat.MediaItem item, View animatingView);
+
+    void startIntoActivity();
+    void close();
 }

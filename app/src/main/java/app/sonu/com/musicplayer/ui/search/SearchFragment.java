@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -35,12 +34,10 @@ import app.sonu.com.musicplayer.list.onclicklistener.ArtistSearchResultOnClickLi
 import app.sonu.com.musicplayer.list.onclicklistener.SongSearchResultOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.AlbumSearchResultVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSearchResultVisitable;
-import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
-import app.sonu.com.musicplayer.list.visitable.ShuffleAllSongsVisitable;
+import app.sonu.com.musicplayer.list.visitable.SearchListHeaderVisitable;
 import app.sonu.com.musicplayer.list.visitable.SongSearchResultVisitable;
-import app.sonu.com.musicplayer.list.visitable.SongVisitable;
-import app.sonu.com.musicplayer.mediaplayer.musicsource.MusicProviderSource;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
+import app.sonu.com.musicplayer.util.SearchHelper;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -68,7 +65,6 @@ public class SearchFragment extends BaseFragment<SearchMvpPresenter> implements 
             new SongSearchResultOnClickListener() {
                 @Override
                 public void onSearchResultClick(MediaBrowserCompat.MediaItem item) {
-
                     mPresenter.onSongClicked(item);
                 }
 
@@ -82,13 +78,6 @@ public class SearchFragment extends BaseFragment<SearchMvpPresenter> implements 
             new AlbumSearchResultOnClickListener() {
                 @Override
                 public void onSearchResultClick(MediaBrowserCompat.MediaItem item, View animatingView) {
-//
-//                    searchQueryEt.setText("");
-//                    searchViewParentLl.setVisibility(View.GONE);
-//
-//                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
-
                     mPresenter.onAlbumClicked(item, animatingView);
                 }
 
@@ -102,13 +91,6 @@ public class SearchFragment extends BaseFragment<SearchMvpPresenter> implements 
             new ArtistSearchResultOnClickListener() {
                 @Override
                 public void onSearchResultClick(MediaBrowserCompat.MediaItem item, View animatingView) {
-//
-//                    searchQueryEt.setText("");
-//                    searchViewParentLl.setVisibility(View.GONE);
-//
-//                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    imm.hideSoftInputFromWindow(searchQueryEt.getWindowToken(), 0);
-
                     mPresenter.onArtistClicked(item, animatingView);
                 }
 
@@ -247,35 +229,34 @@ public class SearchFragment extends BaseFragment<SearchMvpPresenter> implements 
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> itemList) {
         List<BaseVisitable> visitableList = new ArrayList<>();
-        String currentItemType = "";
+
+        String currentItemHeader = "";
         for (MediaBrowserCompat.MediaItem item : itemList) {
 
-            String itemType = item.getDescription()
-                    .getExtras()
-                    .getString(MusicProviderSource.CUSTOM_METADATA_KEY_SEARCH_ITEM_TYPE);
+            String itemHeader = SearchHelper.getSearchItemHeader(item.getDescription().getMediaId());
 
-            if (itemType == null) {
+            if (itemHeader == null) {
                 Log.w(TAG, "getVisitableList:item type is null");
                 continue;
             }
 
-            if (!currentItemType.equals(itemType)) {
-                currentItemType = itemType;
-                visitableList.add(new SearchItemTypeTitleVisitable(itemType));
+            if (!currentItemHeader.equals(itemHeader)) {
+                currentItemHeader = itemHeader;
+                visitableList.add(new SearchListHeaderVisitable(itemHeader));
             }
 
             BaseVisitable visitable = null;
 
-            switch (itemType) {
-                case MusicProviderSource.SEARCH_RESULT_ITEM_TYPE_SONG:
+            switch (itemHeader) {
+                case SearchHelper.SONGS_HEADER:
                     visitable = new SongSearchResultVisitable(item);
                     visitable.setOnClickListener(mSongSearchResultOnClickListener);
                     break;
-                case MusicProviderSource.SEARCH_RESULT_ITEM_TYPE_ALBUM:
+                case SearchHelper.ALBUMS_HEADER:
                     visitable = new AlbumSearchResultVisitable(item);
                     visitable.setOnClickListener(mAlbumSearchResultOnClickListener);
                     break;
-                case MusicProviderSource.SEARCH_RESULT_ITEM_TYPE_ARTIST:
+                case SearchHelper.ARTISTS_HEADER:
                     visitable = new ArtistSearchResultVisitable(item);
                     visitable.setOnClickListener(mArtistSearchResultOnClickListener);
                     break;

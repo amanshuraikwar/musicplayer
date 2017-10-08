@@ -78,6 +78,4 @@ public class MediaItemDetailActivity
 
         mPresenter.onCreate(this);
     }
-
-
 }

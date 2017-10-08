@@ -29,8 +29,8 @@ public class AboutActivity extends AppCompatActivity{
 
     int colors[] = {
             Color.parseColor("#ffffff"),
-            Color.parseColor("#eeeeee"),
-            Color.parseColor("#eeeeee"),
+            Color.parseColor("#ffffff"),
+            Color.parseColor("#ffffff"),
             Color.parseColor("#ECEFF1")};
 
     ValueAnimator colorAnimation = ValueAnimator
@@ -70,7 +70,7 @@ public class AboutActivity extends AppCompatActivity{
 
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                colorView.setBackgroundColor((int) animator.getAnimatedValue());
+                elasticDragDismissLayout.setBackgroundColor((int) animator.getAnimatedValue());
             }
 
         });

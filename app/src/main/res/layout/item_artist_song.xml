@@ -1,77 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:appNs="http://schemas.android.com/tools"
     android:id="@+id/parentRl"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/home_icon_size_padding"
     android:paddingEnd="0dp"
-    android:focusable="true"
-    android:clickable="true"
     android:background="@color/veryWhite"
     android:foreground="?android:attr/selectableItemBackground">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/iconCv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/iconIv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/default_song_art"
         android:layout_marginTop="14dp"
         android:layout_marginBottom="14dp"
         android:layout_marginEnd="16dp"
-        app:cardCornerRadius="0dp"
-        app:cardBackgroundColor="@color/charcoal"
-        app:cardElevation="0dp">
+        android:layout_centerVertical="true"/>
 
-        <ImageView
-            android:id="@+id/iconIv"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/default_song_art"
-            android:layout_centerVertical="true"/>
-    </android.support.v7.widget.CardView>
-
-
-    <RelativeLayout
+    <TextView
+        android:id="@+id/extraInfoTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/iconCv">
+        android:layout_toStartOf="@+id/optionsIb"
+        android:textColor="#f5f5f5"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        android:layout_marginEnd="16dp"
+        android:text="@string/sample_song_duration"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/iconIv"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:layout_toStartOf="@id/optionsIb">
 
         <TextView
-            android:id="@+id/songTitleTv"
+            android:id="@+id/titleTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/black"
             android:textSize="16sp"
-            android:layout_toStartOf="@+id/songDurationTv"/>
+            android:text="@string/sample_song_title"/>
 
         <TextView
-            android:id="@+id/songAlbumTv"
+            android:id="@+id/subtitleTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="16dp"
-            android:layout_below="@+id/songTitleTv"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/grey"
             android:textSize="14sp"
-            android:layout_toStartOf="@+id/songDurationTv"/>
+            android:text="@string/sample_album_title"/>
+    </LinearLayout>
 
-        <TextView
-            android:id="@+id/songDurationTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/songAlbumTv"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/grey"
-            android:textSize="14sp"
-            android:text="3:56"/>
-    </RelativeLayout>
+    <ImageButton
+        android:id="@+id/optionsIb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_more_vert_grey_24dp"
+        android:padding="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:drawSelectorOnTop="true"/>
 </RelativeLayout>

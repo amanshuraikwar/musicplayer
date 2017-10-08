@@ -14,4 +14,6 @@ public interface PlaylistsMvpPresenter extends BaseMvpPresenter<PlaylistsMvpView
     void onCreate(FragmentActivity activity);
     void onCreateView();
     void onPlaylistClicked(MediaBrowserCompat.MediaItem item, View animatingView);
+    void onAddPlaylistBtnClick();
+    void onDeletePlaylistClick(MediaBrowserCompat.MediaItem item);
 }

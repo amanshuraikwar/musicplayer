@@ -30,9 +30,6 @@ public class ArtistSearchResultViewHolder extends BaseViewHolder<ArtistSearchRes
     @BindView(R.id.titleTv)
     TextView titleTv;
 
-    @BindView(R.id.extraInfoTv)
-    TextView extraInfoTv;
-
     @BindView(R.id.subtitleTv)
     TextView subtitleTv;
 
@@ -51,16 +48,6 @@ public class ArtistSearchResultViewHolder extends BaseViewHolder<ArtistSearchRes
                      final ArtistSearchResultOnClickListener onClickListener,
                      Context context) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
-//        songDurationTv.setText(
-//                getFormattedDuration(
-//                        visitable
-//                                .getMediaItem()
-//                                .getDescription()
-//                                .getExtras()
-//                                .getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-//                )
-//        );
-
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();

@@ -12,4 +12,5 @@ public interface MainMvpPresenter extends BaseMvpPresenter<MainMvpView> {
     void onCreate(FragmentActivity activity);
     void onNavigationItemSelected(int itemId);
     void onNavigationItemReselected(int itemId);
+    void disableFirstRunFlag();
 }

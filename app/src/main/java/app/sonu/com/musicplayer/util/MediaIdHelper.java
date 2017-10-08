@@ -16,6 +16,8 @@ public class MediaIdHelper {
     public static final String MEDIA_ID_ALBUMS = "__BY_ALBUMS__";
     public static final String MEDIA_ID_ARTISTS = "__BY_ARTISTS__";
     public static final String MEDIA_ID_PLAYLISTS = "__BY_PLAYLISTS__";
+    public static final String MEDIA_ID_PLAYLISTS_FOR_SONG = "__BY_PLAYLISTS_FOR_SONG__";
+    public static final String MEDIA_ID_ALBUMS_OF_ARTIST = "__ALBUMS_BY_ARTIST__";
 
     public static final String MEDIA_ID_EMPTY_ROOT = "__EMPTY_ROOT__";
 
@@ -23,6 +25,8 @@ public class MediaIdHelper {
     public static final String ALBUMS_ROOT_HINT = "__BY_ALBUMS__";
     public static final String ARTISTS_ROOT_HINT = "__BY_ARTISTS__";
     public static final String PLAYLISTS_ROOT_HINT = "__BY_PLAYLISTS__";
+    public static final String PLAYLISTS_FOR_SONG_ROOT_HINT = "__BY_PLAYLISTS_FOR_SONG__";
+    public static final String ALBUMS_OF_ARTIST_ROOT_HINT = "__ALBUMS_BY_ARTIST__";
 
     private static final String CATEGORY_SEPARATOR = "--/--";
     private static final String LEAF_SEPARATOR = "--|--";
@@ -33,7 +37,7 @@ public class MediaIdHelper {
      * @param categories categories to determine the list in which the song is present
      * @return built mediaid
      */
-    public static String createMediaId(String musicId, String... categories) {
+    public static String createHierarchyAwareMediaId(String musicId, String... categories) {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (categories != null) {
@@ -51,7 +55,7 @@ public class MediaIdHelper {
                 stringBuilder.append(LEAF_SEPARATOR).append(musicId);
             }
         } else {
-            Log.w(TAG, "createMediaId:categories is null");
+            Log.w(TAG, "createHierarchyAwareMediaId:categories is null");
         }
 
         return stringBuilder.toString();
@@ -69,25 +73,12 @@ public class MediaIdHelper {
     }
 
     /**
-     * for extracting musicid from hierarchy aware mediaid
-     * @param mediaId given hierarchy aware mediaid
-     * @return musicid
-     */
-    public static String extractMusicIdFromMediaId(@NonNull String mediaId) {
-        int pos = mediaId.indexOf(LEAF_SEPARATOR);
-        if (pos >= 0) {
-            return mediaId.substring(pos + LEAF_SEPARATOR.length());
-        }
-        return null;
-    }
-
-    /**
      *
      * @param mediaID
      * @return
      */
     public static boolean isBrowseable(@NonNull String mediaID) {
-        return mediaID.indexOf(LEAF_SEPARATOR) < 0;
+        return !mediaID.contains(LEAF_SEPARATOR);
     }
 
     /**
@@ -113,10 +104,15 @@ public class MediaIdHelper {
         if (pos >= 0) {
             mediaID = mediaID.substring(0, pos);
         }
-        return mediaID;
+
+        String parts[] = mediaID.split(CATEGORY_SEPARATOR);
+        if (parts.length > 1) {
+            return parts[1];
+        }
+        return "";
     }
 
-    public static String getMusicId(String mediaId) {
+    public static String getSongIdFromMediaId(String mediaId) {
         int pos = mediaId.indexOf(LEAF_SEPARATOR);
         if (pos >= 0) {
             String parts[] = mediaId.split(LEAF_SEPARATOR);

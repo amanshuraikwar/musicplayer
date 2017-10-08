@@ -16,7 +16,7 @@
             android:id="@+id/iconIv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/default_artist_art"/>
+            android:src="@drawable/default_artist_art_square"/>
     </app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout>
 
     <LinearLayout
@@ -29,21 +29,23 @@
         android:paddingEnd="8dp">
 
         <TextView
-            android:id="@+id/artistTitleTv"
+            android:id="@+id/titleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/black"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:text="@string/sample_artist_name"/>
 
         <TextView
-            android:id="@+id/artistSubtitleTv"
+            android:id="@+id/subtitleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/grey"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:text="@string/sample_artist_no_tracks"/>
     </LinearLayout>
 </LinearLayout>

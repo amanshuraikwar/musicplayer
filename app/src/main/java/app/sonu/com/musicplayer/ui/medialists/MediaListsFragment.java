@@ -3,7 +3,6 @@ package app.sonu.com.musicplayer.ui.medialists;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,7 +14,8 @@ import android.view.ViewGroup;
 import app.sonu.com.musicplayer.R;
 
 import app.sonu.com.musicplayer.di.module.FragmentModule;
-import app.sonu.com.musicplayer.list.adapter.MediaListsViewPagerAdapter;
+import app.sonu.com.musicplayer.list.adapter.HomeViewPagerAdapter;
+import app.sonu.com.musicplayer.ui.about.AboutActivity;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderFragment;
 import app.sonu.com.musicplayer.ui.albums.AlbumsFragment;
@@ -36,7 +36,7 @@ public class MediaListsFragment
 
     private static final String TAG = MediaListsFragment.class.getSimpleName();
 
-    private MediaListsViewPagerAdapter mAdapter;
+    private HomeViewPagerAdapter mAdapter;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -80,7 +80,7 @@ public class MediaListsFragment
         if (mAdapter == null) {
             Log.d(TAG, "adapter is null:called");
             mAdapter =
-                    new MediaListsViewPagerAdapter(getChildFragmentManager());
+                    new HomeViewPagerAdapter(getChildFragmentManager());
             mAdapter.addFragment(new AllSongsFragment(), AllSongsFragment.TAB_TITLE);
             mAdapter.addFragment(new AlbumsFragment(), AlbumsFragment.TAB_TITLE);
             mAdapter.addFragment(new ArtistsFragment(), ArtistsFragment.TAB_TITLE);
@@ -117,6 +117,10 @@ public class MediaListsFragment
                 switch (item.getItemId()) {
                     case R.id.menuItemSearch:
                         getActivity().startActivity(new Intent(getActivity(), SearchActivity.class));
+                        break;
+                    case R.id.menuItemAbout:
+                        startActivity(new Intent(getActivity(), AboutActivity.class));
+                        break;
                 }
                 return false;
             }

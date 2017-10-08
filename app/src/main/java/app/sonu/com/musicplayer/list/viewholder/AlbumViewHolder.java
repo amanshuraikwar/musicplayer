@@ -37,11 +37,11 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
     @LayoutRes
     public static final int LAYOUT = R.layout.item_album;
 
-    @BindView(R.id.albumTitleTv)
-    TextView albumTitleTv;
+    @BindView(R.id.titleTv)
+    TextView titleTv;
 
-    @BindView(R.id.albumArtistTv)
-    TextView albumArtistTv;
+    @BindView(R.id.subtitleTv)
+    TextView subtitleTv;
 
     @BindView(R.id.parentRl)
     View parentView;
@@ -57,8 +57,8 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
     public void bind(final AlbumVisitable visitable,
                      final AlbumOnClickListener onClickListener,
                      Context context) {
-        albumTitleTv.setText(visitable.getMediaItem().getDescription().getTitle());
-        albumArtistTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
+        titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
+        subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
         options.centerCrop().placeholder(R.drawable.default_album_art);
@@ -131,7 +131,7 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
         int bodyColor = ColorUtil.getBodyColor(swatch);
 
         parentView.setBackgroundColor(backgroundColor);
-        albumTitleTv.setTextColor(titleColor);
-        albumArtistTv.setTextColor(bodyColor);
+        titleTv.setTextColor(titleColor);
+        subtitleTv.setTextColor(bodyColor);
     }
 }

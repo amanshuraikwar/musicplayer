@@ -6,11 +6,14 @@ import android.view.View;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import app.sonu.com.musicplayer.di.component.DaggerBusComponent;
 import app.sonu.com.musicplayer.di.module.BusModule;
+import app.sonu.com.musicplayer.model.PlaylistUpdate;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -26,10 +29,6 @@ public class AppBus {
     @Inject
     @Named(BusModule.PROVIDER_MUSIC_PLAYER_PANEL_STATE_CHANGED)
     public PublishSubject<SlidingUpPanelLayout.PanelState> musicPlayerPanelStateChangedSubject;
-
-    @Inject
-    @Named(BusModule.PROVIDER_SELECTED_SONG)
-    public PublishSubject<MediaBrowserCompat.MediaItem> selectedSongSubject;
 
     @Inject
     @Named(BusModule.PROVIDER_ALBUM_CLICK)
@@ -64,8 +63,20 @@ public class AppBus {
     public PublishSubject<Integer> playlistsScrollToTopSubject;
 
     @Inject
-    @Named(BusModule.PROVIDER_PLAYLISTS_CHANGED)
-    public PublishSubject<String> playlistsChangedSubject;
+    @Named(BusModule.PROVIDER_PLAYLIST_UPDATED)
+    public PublishSubject<PlaylistUpdate> playlistUpdatedSubject;
+
+    @Inject
+    @Named(BusModule.PROVIDER_PLAYLISTS_UPDATED)
+    public PublishSubject<List<PlaylistUpdate>> playlistsUpdatedSubject;
+
+    @Inject
+    @Named(BusModule.PROVIDER_PLAYLIST_ADDED)
+    public PublishSubject<MediaBrowserCompat.MediaItem> playlistAddedSubject;
+
+    @Inject
+    @Named(BusModule.PROVIDER_PLAYLIST_REMOVED)
+    public PublishSubject<MediaBrowserCompat.MediaItem> playlistRemovedSubject;
 
     @Inject
     @Named(BusModule.PROVIDER_MEDIALIST_SELECTED)

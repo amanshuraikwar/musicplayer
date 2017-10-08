@@ -2,9 +2,12 @@ package app.sonu.com.musicplayer.list.viewholder;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.media.MediaMetadataCompat;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +18,8 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.ArtistSongVisitable;
+import app.sonu.com.musicplayer.util.DurationUtil;
+import app.sonu.com.musicplayer.util.LogHelper;
 import butterknife.BindView;
 
 /**
@@ -23,23 +28,28 @@ import butterknife.BindView;
 
 public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, SongOnClickListener> {
 
+    private static final String TAG = LogHelper.getLogTag(ArtistSongViewHolder.class);
+
     @LayoutRes
     public static final int LAYOUT = R.layout.item_artist_song;
 
-    @BindView(R.id.songTitleTv)
-    TextView songTitleTv;
+    @BindView(R.id.titleTv)
+    TextView titleTv;
 
-    @BindView(R.id.songDurationTv)
-    TextView songDurationTv;
-
-    @BindView(R.id.songAlbumTv)
-    TextView songAlbumTv;
+    @BindView(R.id.subtitleTv)
+    TextView subtitleTv;
 
     @BindView(R.id.parentRl)
     View parentView;
 
     @BindView(R.id.iconIv)
     ImageView iconIv;
+
+    @BindView(R.id.optionsIb)
+    ImageButton optionsIb;
+
+    @BindView(R.id.extraInfoTv)
+    TextView extraInfoTv;
 
     public ArtistSongViewHolder(View itemView) {
         super(itemView);
@@ -49,18 +59,9 @@ public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, So
     public void bind(final ArtistSongVisitable visitable,
                      final SongOnClickListener onClickListener,
                      Context context) {
-        songTitleTv.setText(visitable.getMediaItem().getDescription().getTitle());
-        songDurationTv.setText(
-                getFormattedDuration(
-                        visitable
-                                .getMediaItem()
-                                .getDescription()
-                                .getExtras()
-                                .getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-                )
-        );
 
-        songAlbumTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
+        titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
+        subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
         options.centerCrop();
@@ -88,16 +89,28 @@ public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, So
                 onClickListener.onSongClick(visitable.getMediaItem());
             }
         });
-    }
 
-    private String getFormattedDuration(long duration) {
-        duration = duration/1000;
-        String formattedDuration = "";
+        optionsIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.onOptionsIbClick(visitable.getMediaItem(), optionsIb);
+            }
+        });
 
-        formattedDuration += duration/60;
-        formattedDuration += ":";
-        formattedDuration += String.format("%02d", duration%60);
+        Bundle extras = visitable
+                .getMediaItem()
+                .getDescription()
+                .getExtras();
 
-        return formattedDuration;
+        if (extras == null) {
+            Log.e(TAG, "bind:extras is null");
+            return;
+        }
+
+        extraInfoTv.setText(
+                DurationUtil.getFormattedDuration(
+                        extras.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+                )
+        );
     }
 }

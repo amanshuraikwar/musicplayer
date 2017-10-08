@@ -14,7 +14,8 @@ import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
+import app.sonu.com.musicplayer.util.MediaMetadataHelper;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -131,7 +132,7 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        // do nothing
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override
@@ -173,7 +174,7 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
             return;
         }
         mMvpView.displaySong(
-                metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE),
+                MediaMetadataHelper.getSongDisplayTitle(metadata),
                 metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
         mMvpView.updateDuration(
                 metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));

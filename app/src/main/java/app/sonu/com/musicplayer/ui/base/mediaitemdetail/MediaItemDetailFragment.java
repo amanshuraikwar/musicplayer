@@ -12,9 +12,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -30,7 +33,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import app.sonu.com.musicplayer.R;
@@ -38,8 +40,8 @@ import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
 import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
-import app.sonu.com.musicplayer.list.visitable.AlbumSongVisitable;
-import app.sonu.com.musicplayer.ui.album.AlbumFragment;
+import app.sonu.com.musicplayer.mediaplayer.MusicService;
+import app.sonu.com.musicplayer.ui.addsongstoplaylists.AddSongsToPlaylistsFragment;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 import app.sonu.com.musicplayer.ui.view.StateAwareAppBarLayout;
 import app.sonu.com.musicplayer.util.ColorUtil;
@@ -94,6 +96,26 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
         }
 
         @Override
+        public void onOptionsIbClick(final MediaBrowserCompat.MediaItem item, View optionsIb) {
+            PopupMenu popup = new PopupMenu(getActivity(), optionsIb);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.menu_song_options, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.menuItemAddToPlaylist:
+                            mPresenter.onAddToPlaylistClick(item);
+                            break;
+                    }
+
+                    return false;
+                }
+            });
+            popup.show();
+        }
+
+        @Override
         public void OnClick() {
 
         }
@@ -109,7 +131,7 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.layout_media_item_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_media_item_detail, container, false);
         ButterKnife.bind(this, view);
 
         if (itemsRv.getLayoutManager() == null) {
@@ -260,6 +282,15 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
     @Override
     public void close() {
         getActivity().finish();
+    }
+
+    @Override
+    public void showAddToPlaylistsDialog(String songId) {
+        AddSongsToPlaylistsFragment fragment = new AddSongsToPlaylistsFragment();
+        Bundle b = new Bundle();
+        b.putString(MusicService.KEY_SONG_ID, songId);
+        fragment.setArguments(b);
+        fragment.show(getChildFragmentManager(), "AddSongsToPlaylistsFragment");
     }
 
     protected int getDefaultArtId() {

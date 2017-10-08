@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +16,9 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.PlaylistOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.PlaylistVisitable;
-import app.sonu.com.musicplayer.mediaplayer.playlistssource.PlaylistsSource;
+import app.sonu.com.musicplayer.mediaplayer.playlist.PlaylistsSource;
+import app.sonu.com.musicplayer.model.Playlist;
+import app.sonu.com.musicplayer.util.MediaMetadataHelper;
 import butterknife.BindView;
 
 /**
@@ -39,6 +42,9 @@ public class PlaylistViewHolder extends BaseViewHolder<PlaylistVisitable, Playli
     @BindView(R.id.iconIv)
     ImageView iconIv;
 
+    @BindView(R.id.optionsIb)
+    ImageButton optionsIb;
+
     public PlaylistViewHolder(View itemView) {
         super(itemView);
     }
@@ -50,16 +56,16 @@ public class PlaylistViewHolder extends BaseViewHolder<PlaylistVisitable, Playli
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
-        RequestOptions options = new RequestOptions();
+        final RequestOptions options = new RequestOptions();
         options.centerCrop().placeholder(R.drawable.default_album_art);
 
         Bundle bundle = visitable.getMediaItem().getDescription().getExtras();
 
         if (bundle != null) {
             int iconDrawableId =
-                    (int) bundle.getLong(PlaylistsSource.CUSTOM_METADATA_KEY_PLAYLIST_ICON_DRAWABLE_ID);
+                    (int) bundle.getLong(MediaMetadataHelper.CUSTOM_METADATA_KEY_PLAYLIST_ICON_DRAWABLE_ID);
             int color =
-                    (int) bundle.getLong(PlaylistsSource.CUSTOM_METADATA_KEY_PLAYLIST_COLOR);
+                    (int) bundle.getLong(MediaMetadataHelper.CUSTOM_METADATA_KEY_PLAYLIST_COLOR);
 
             if (iconDrawableId != 0) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -97,6 +103,19 @@ public class PlaylistViewHolder extends BaseViewHolder<PlaylistVisitable, Playli
                 }
             }
         }
+
+        if (visitable.getPlaylistType() == Playlist.Type.AUTO.hashCode()) {
+            optionsIb.setVisibility(View.GONE);
+        } else {
+            optionsIb.setVisibility(View.VISIBLE);
+        }
+
+        optionsIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.onOptionsIbClick(visitable.getMediaItem(), optionsIb);
+            }
+        });
 
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override

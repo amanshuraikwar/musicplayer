@@ -1,27 +1,46 @@
-[] ui refacrtor v0.1 -> finalize initial ui
-[] code refactor v0.1 -> reactive programming
+[done] add functionality to shuffle all buttons on detail screens
+[done] play songs from playlists
+[done] finalise design of detail fragments
+[done] resolve the bug with fragments
+[done] design search ui
+[done] after dismissing the activity, when restarted and the music was playing repeat mode and shuffle mode are not shown correctly
+[done] update queue index using queue playlistId of elements when activity is restarted after dismissed and music was playing
+[done] model localplayback class again
+[done] resolve the bug with notificaiton
+[done] resolve the bug with no activity playback
+[done] make search in albums and artists too
+[done] implement efficient queue control
+[done] separate fragment for search ui
+[done] create playlist
+[done] delete playlist - options menu of playlist
+[done] options menu in musicplayer album art add to playlist
+[done] dialog with playlists on it, is a checkable list, after checking each item, song is added to that playlists
 
-[] ask for permissions
-[] create playlists
-[] add contextual option menu in mediabrowseritems
-	[] play next
-	[] add to playlist
-[] add options menu in musicplayer album art
-	[] add to playlist
+[] search ui borken because of item_type null
+[] separate class for search implementation
 
+[] contextual option menu in mediabrowseritems add to playlist
+[] musicplayer album art viewpager / scrollable album art
 [] add a viewpager in song album art
 [] double tap to add to favorites
-[] fast scroll in allsongs, albums, artists list
+[] album art not showing on lock screen
+[] ask for permissions
 [] create empty list illustrations
+[] app launher icons
+[] add 5th screen in app's main navigation with button to aboutactivity
+[] add artist on click on album screen to open artist details
+[] add albums by artist in artist detail fragment
+[] app intro
+[**] release on playstore v0.2
+
+[] after creating to playlist, take to search fragment to add songs to playlists the easy way, user can check songs on search results and add to the playists, search ui can be usef for this too
+[] queue items be arrangable up and down
+[] improve performance of search
+[] fast scroll in allsongs, albums, artists list
 [] solve bug with pixelated default song art
 [] slove bug with playlist metadata not updated as songs are updated because metada is coming from previous screen
+
 [] add images to playlists
-
-[] album art not showing on lock screen
-[] make search ui separate
-[] improve performance of search
-
-[**] release on playstore
 
 [want to play only 5 songs]
 [] select those five songs to make a queue of only those 5 songs
@@ -32,19 +51,4 @@
 
 [] use objectanimation with animated vector drawable to change from songs albums and artists
 
-[done] add functionality to shuffle all buttons on detail screens
-[done] play songs from playlists
-[done] finalise design of detail fragments
-[done] resolve the bug with fragments
-[done] design search ui
-[done] after dismissing the activity, when restarted and the music was playing repeat mode and shuffle mode are not shown correctly
-[done] update queue index using queue id of elements when activity is restarted after dismissed and music was playing
-[done] model localplayback class again
-[done] resolve the bug with notificaiton
-[done] resolve the bug with no activity playback
-[done] make search in albums and artists too
-[done] implement efficient queue control
 
-[not going to do] use bottom sheets instead of slidinguppanel
-[not going to do] separate fragment for queue
-[not going to do] separate fragment for search ui

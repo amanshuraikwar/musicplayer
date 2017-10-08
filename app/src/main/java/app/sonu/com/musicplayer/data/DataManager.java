@@ -9,5 +9,6 @@ import app.sonu.com.musicplayer.data.prefs.PrefsHelper;
  * Created by sonu on 29/6/17.
  */
 
+// facade to access data for the app
 public interface DataManager extends ApiHelper, PrefsHelper, LocalStorageHelper, DbHelper {
 }

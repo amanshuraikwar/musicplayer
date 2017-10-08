@@ -1,6 +1,5 @@
 package app.sonu.com.musicplayer.ui.artists;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -39,7 +38,6 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
 
     private static final String TAG = ArtistsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Artists";
-    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#ffffff");
 
     @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
@@ -92,7 +90,7 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView:called");
-        View view = inflater.inflate(R.layout.layout_medialist, container, false);
+        View view = inflater.inflate(R.layout.layout_media_list, container, false);
         ButterKnife.bind(this, view);
 
         if (itemsRv.getLayoutManager() == null) {

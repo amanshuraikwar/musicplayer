@@ -3,8 +3,10 @@ package app.sonu.com.musicplayer.ui.base.musicplayerholder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -88,6 +90,11 @@ public class MusicPlayerHolderActivity<MvpPresenter extends MusicPlayerHolderMvp
     @Override
     public void setSupl(SlidingUpPanelLayout supl) {
         musicPlayerHolderFragment.setSupl(supl);
+    }
+
+    @Override
+    public void displayToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     protected void loadChild(Fragment fragment) {

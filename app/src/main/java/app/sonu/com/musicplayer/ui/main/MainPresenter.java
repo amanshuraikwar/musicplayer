@@ -3,6 +3,7 @@ package app.sonu.com.musicplayer.ui.main;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.util.Pair;
+import android.util.Log;
 import android.view.View;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -11,6 +12,7 @@ import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
+import app.sonu.com.musicplayer.util.LogHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -20,6 +22,8 @@ import io.reactivex.functions.Consumer;
 
 public class MainPresenter extends BasePresenter<MainMvpView>
         implements MainMvpPresenter {
+
+    private static final String TAG = LogHelper.getLogTag(MainPresenter.class);
 
     private AppBus mAppBus;
 
@@ -44,7 +48,13 @@ public class MainPresenter extends BasePresenter<MainMvpView>
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart:called");
+        Log.i(TAG, "onStart:is MvpView null="+(mMvpView==null));
 
+        if (mDataManager.isFirstRun()) {
+            mMvpView.startIntoActivity();
+            mMvpView.close();
+        }
     }
 
     @Override
@@ -120,5 +130,10 @@ public class MainPresenter extends BasePresenter<MainMvpView>
                 mAppBus.playlistsScrollToTopSubject.onNext(1);
                 break;
         }
+    }
+
+    @Override
+    public void disableFirstRunFlag() {
+        mDataManager.setFirstRun(false);
     }
 }

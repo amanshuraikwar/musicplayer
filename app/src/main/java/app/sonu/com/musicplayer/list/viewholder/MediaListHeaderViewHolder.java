@@ -8,11 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import app.sonu.com.musicplayer.R;
-import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
 import app.sonu.com.musicplayer.list.base.BaseViewHolder;
 import app.sonu.com.musicplayer.list.onclicklistener.MediaListHeaderOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.MediaListHeaderVisitable;
-import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
 import butterknife.BindView;
 
 /**
@@ -23,7 +21,7 @@ public class MediaListHeaderViewHolder extends BaseViewHolder<MediaListHeaderVis
         MediaListHeaderOnClickListener> {
 
     @LayoutRes
-    public static final int LAYOUT = R.layout.item_list_title;
+    public static final int LAYOUT = R.layout.item_media_list_header;
 
     @BindView(R.id.iconIv)
     ImageView iconIv;

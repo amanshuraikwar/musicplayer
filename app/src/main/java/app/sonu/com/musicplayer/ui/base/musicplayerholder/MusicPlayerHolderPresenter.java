@@ -13,8 +13,9 @@ import java.util.List;
 
 import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.PerSlidingUpPanelBus;
+import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -132,17 +133,20 @@ public class MusicPlayerHolderPresenter<MvpView extends MusicPlayerHolderMvpView
     // media browser callback
     @Override
     public void onMediaBrowserConnected() {
-
+        Log.d(TAG, "onMediaBrowserConnected:called");
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override
     public void onMediaBrowserConnectionSuspended() {
-
+        Log.e(TAG, "onMediaBrowserConnectionSuspended:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
 
     @Override
     public void onMediaBrowserConnectionFailed() {
-
+        Log.e(TAG, "onMediaBrowserConnectionFailed:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
 
     @Override
@@ -164,11 +168,12 @@ public class MusicPlayerHolderPresenter<MvpView extends MusicPlayerHolderMvpView
 
     @Override
     public void onMediaBrowserSubscriptionError(String id) {
-
+        Log.e(TAG, "onMediaBrowserSubscriptionError:called");
+        mMvpView.displayToast(mContext.getResources().getString(R.string.unexpected_error_message));
     }
 
     @Override
     public void onSearchResult(List<MediaBrowserCompat.MediaItem> items) {
-
+        // do nothing
     }
 }

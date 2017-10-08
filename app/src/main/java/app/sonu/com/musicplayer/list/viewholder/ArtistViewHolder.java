@@ -35,11 +35,11 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
     @LayoutRes
     public static final int LAYOUT = R.layout.item_artist;
 
-    @BindView(R.id.artistTitleTv)
-    TextView artistTitleTv;
+    @BindView(R.id.titleTv)
+    TextView titleTv;
 
-    @BindView(R.id.artistSubtitleTv)
-    TextView artistSubtitleTv;
+    @BindView(R.id.subtitleTv)
+    TextView subtitleTv;
 
     @BindView(R.id.parentRl)
     View parentView;
@@ -55,12 +55,11 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
     public void bind(final ArtistVisitable visitable,
                      final ArtistOnClickListener onClickListener,
                      Context context) {
-        artistTitleTv.setText(visitable.getMediaItem().getDescription().getTitle());
-
-        artistSubtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
+        titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
+        subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
         RequestOptions options = new RequestOptions();
-        options.centerCrop().placeholder(R.drawable.default_artist_art);
+        options.centerCrop().placeholder(R.drawable.default_artist_art_square);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
             Glide.with(context)
@@ -130,7 +129,7 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
         int bodyColor = ColorUtil.getBodyColor(swatch);
 
         parentView.setBackgroundColor(backgroundColor);
-        artistTitleTv.setTextColor(titleColor);
-        artistSubtitleTv.setTextColor(bodyColor);
+        titleTv.setTextColor(titleColor);
+        subtitleTv.setTextColor(bodyColor);
     }
 }

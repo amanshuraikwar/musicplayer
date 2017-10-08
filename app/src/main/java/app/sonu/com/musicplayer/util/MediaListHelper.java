@@ -6,22 +6,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import app.sonu.com.musicplayer.mediaplayer.musicsource.MusicProviderSource;
-
 /**
  * Created by sonu on 7/9/17.
  */
 
 public class MediaListHelper {
     //comparing two metadata on the basis of their last modified date
-    private static final Comparator<MediaMetadataCompat> mediaMetadataDateComparator =
+    private static final Comparator<MediaMetadataCompat> mediaMetadataDateModifiedComparator =
             new Comparator<MediaMetadataCompat>() {
                 @Override
                 public int compare(MediaMetadataCompat o1, MediaMetadataCompat o2) {
                     return o1
-                            .getString(MusicProviderSource.CUSTOM_METADATA_KEY_DATE_MODIFIED)
+                            .getString(MediaMetadataHelper.CUSTOM_METADATA_KEY_DATE_MODIFIED)
                             .compareTo(
-                                    o2.getString(MusicProviderSource.CUSTOM_METADATA_KEY_DATE_MODIFIED));
+                                    o2.getString(MediaMetadataHelper.CUSTOM_METADATA_KEY_DATE_MODIFIED));
                 }
             };
 
@@ -31,14 +29,14 @@ public class MediaListHelper {
                 @Override
                 public int compare(MediaMetadataCompat o1, MediaMetadataCompat o2) {
                     return o1
-                            .getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE)
+                            .getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                             .compareTo(
-                                    o2.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE));
+                                    o2.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
                 }
             };
 
     public static void sortByDateModified(List<MediaMetadataCompat> items) {
-        Collections.sort(items, Collections.reverseOrder(mediaMetadataDateComparator));
+        Collections.sort(items, Collections.reverseOrder(mediaMetadataDateModifiedComparator));
     }
 
     public static void sortByTitle(List<MediaMetadataCompat> items) {

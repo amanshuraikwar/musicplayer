@@ -1,5 +1,6 @@
 package app.sonu.com.musicplayer;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -30,6 +31,10 @@ public class PerSlidingUpPanelBus {
     @Inject
     @Named(PerSlidingUpPanelBusModule.PROVIDER_SET_SUPL)
     public PublishSubject<SlidingUpPanelLayout> setSuplSubject;
+
+    @Inject
+    @Named(PerSlidingUpPanelBusModule.PROVIDER_SET_SCROLL_VIEW)
+    public PublishSubject<RecyclerView> setScrollViewSubject;
 
     public PerSlidingUpPanelBus() {
         DaggerPerSlidingUpPanelBusComponent

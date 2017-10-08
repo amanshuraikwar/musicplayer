@@ -6,10 +6,13 @@ import android.view.View;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import app.sonu.com.musicplayer.AppBus;
+import app.sonu.com.musicplayer.model.PlaylistUpdate;
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.subjects.PublishSubject;
@@ -20,27 +23,37 @@ import io.reactivex.subjects.PublishSubject;
 @Module
 public class BusModule {
 
-    public static final String PROVIDER_SELECTED_SONG = "SELECTED_SONG";
     public static final String PROVIDER_ALBUM_CLICK = "ALBUM_CLICK";
+
     public static final String PROVIDER_ARTIST_CLICK = "ARTIST_CLICK";
+
     public static final String PROVIDER_PLAYLIST_CLICK = "PLAYLIST_CLICK";
+
     public static final String PROVIDER_QUEUE_INDEX_UPDATED = "QUEUE_INDEX_UPDATED";
+
     public static final String PROVIDER_ALL_SONGS_SCROLL_TO_TOP = "ALL_SONGS_SCROLL_TO_TOP";
+
     public static final String PROVIDER_ALBUMS_SCROLL_TO_TOP = "ALBUMS_SCROLL_TO_TOP";
+
     public static final String PROVIDER_ARTISTS_SCROLL_TO_TOP = "ARTISTS_SCROLL_TO_TOP";
+
     public static final String PROVIDER_PLAYLISTS_SCROLL_TO_TOP = "PLAYLISTS_SCROLL_TO_TOP";
-    public static final String PROVIDER_PLAYLISTS_CHANGED = "PLAYLISTS_CHANGED";
+
+    public static final String PROVIDER_PLAYLIST_UPDATED = "PLAYLIST_UPDATED";
+
+    public static final String PROVIDER_PLAYLISTS_UPDATED = "PLAYLISTS_UPDATED";
+
+    public static final String PROVIDER_PLAYLIST_ADDED = "PLAYLIST_ADDED";
+
+    public static final String PROVIDER_PLAYLIST_REMOVED = "PLAYLIST_REMOVED";
+
     public static final String PROVIDER_MUSIC_PLAYER_PANEL_STATE = "MUSIC_PLAYER_PANEL_STATE";
+
     public static final String PROVIDER_MUSIC_PLAYER_PANEL_STATE_CHANGED = "MUSIC_PLAYER_PANEL_STATE_CHANGED";
 
     public static final String PROVIDER_MEDIALIST_SELECTED = "MEDIALIST_SELECTED";
-    public static final String PROVIDER_NAVIGATION_ITEM_SELECTED = "NAVIGATION_ITEM_SELECTED";
 
-    @Provides
-    @Named(PROVIDER_SELECTED_SONG)
-    PublishSubject<MediaBrowserCompat.MediaItem> getSelectedSongProvider() {
-        return PublishSubject.create();
-    }
+    public static final String PROVIDER_NAVIGATION_ITEM_SELECTED = "NAVIGATION_ITEM_SELECTED";
 
     @Provides
     @Named(PROVIDER_ALBUM_CLICK)
@@ -91,8 +104,26 @@ public class BusModule {
     }
 
     @Provides
-    @Named(PROVIDER_PLAYLISTS_CHANGED)
-    PublishSubject<String> getPlaylistsChangedProvider() {
+    @Named(PROVIDER_PLAYLIST_UPDATED)
+    PublishSubject<PlaylistUpdate> getPlaylistUpdatedProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Named(PROVIDER_PLAYLISTS_UPDATED)
+    PublishSubject<List<PlaylistUpdate>> getPlaylistsUpdatedProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Named(PROVIDER_PLAYLIST_ADDED)
+    PublishSubject<MediaBrowserCompat.MediaItem> getPlaylistAddedProvider() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Named(PROVIDER_PLAYLIST_REMOVED)
+    PublishSubject<MediaBrowserCompat.MediaItem> getPlaylistRemovedProvider() {
         return PublishSubject.create();
     }
 

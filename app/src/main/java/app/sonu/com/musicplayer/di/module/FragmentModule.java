@@ -4,7 +4,15 @@ import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.PerSlidingUpPanelBus;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.di.PerFragment;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
+import app.sonu.com.musicplayer.ui.addsongstoplaylists.AddSongsToPlaylistsMvpPresenter;
+import app.sonu.com.musicplayer.ui.addsongstoplaylists.AddSongsToPlaylistsPresenter;
+import app.sonu.com.musicplayer.ui.artistalbums.ArtistAlbumsMvpPresenter;
+import app.sonu.com.musicplayer.ui.artistalbums.ArtistAlbumsPresenter;
+import app.sonu.com.musicplayer.ui.albumcover.AlbumCoverMvpPresenter;
+import app.sonu.com.musicplayer.ui.albumcover.AlbumCoverPresenter;
+import app.sonu.com.musicplayer.ui.createplaylist.CreatePlaylistMvpPresenter;
+import app.sonu.com.musicplayer.ui.createplaylist.CreatePlaylistPresenter;
 import app.sonu.com.musicplayer.ui.album.AlbumMvpPresenter;
 import app.sonu.com.musicplayer.ui.album.AlbumPresenter;
 import app.sonu.com.musicplayer.ui.artist.ArtistMvpPresenter;
@@ -25,6 +33,10 @@ import app.sonu.com.musicplayer.ui.miniplayer.MiniPlayerMvpPresenter;
 import app.sonu.com.musicplayer.ui.miniplayer.MiniPlayerPresenter;
 import app.sonu.com.musicplayer.ui.musicplayer.MusicPlayerMvpPresenter;
 import app.sonu.com.musicplayer.ui.musicplayer.MusicPlayerPresenter;
+import app.sonu.com.musicplayer.ui.playbackcontrols.PlaybackControlsMvpPresenter;
+import app.sonu.com.musicplayer.ui.playbackcontrols.PlaybackControlsPresenter;
+import app.sonu.com.musicplayer.ui.playingqueue.PlayingQueueMvpPresenter;
+import app.sonu.com.musicplayer.ui.playingqueue.PlayingQueuePresenter;
 import app.sonu.com.musicplayer.ui.playlist.PlaylistMvpPresenter;
 import app.sonu.com.musicplayer.ui.playlist.PlaylistPresenter;
 import app.sonu.com.musicplayer.ui.playlists.PlaylistsMvpPresenter;
@@ -258,4 +270,102 @@ public class FragmentModule {
                         SearchPresenter.class.getSimpleName()),
                 appBus);
     }
+
+    @Provides
+    @PerFragment
+    CreatePlaylistMvpPresenter getCreatePlaylistMvpPresenter(CreatePlaylistPresenter createPlaylistPresenter) {
+        return createPlaylistPresenter;
+    }
+
+    @Provides
+    @PerFragment
+    CreatePlaylistPresenter getCreatePlaylistPresenter(DataManager dataManager) {
+        return new CreatePlaylistPresenter(dataManager,
+                new MediaBrowserManager(null,
+                        CreatePlaylistPresenter.class.getSimpleName()));
+    }
+
+    @Provides
+    @PerFragment
+    AddSongsToPlaylistsMvpPresenter getAddSongsToPlaylistsMvpPresenter(
+            AddSongsToPlaylistsPresenter addSongsToPlaylistsPresenter) {
+        return addSongsToPlaylistsPresenter;
+    }
+
+    @Provides
+    @PerFragment
+    AddSongsToPlaylistsPresenter getAddSongsToPlaylistsPresenter(DataManager dataManager,
+                                                                 AppBus appBus) {
+        return new AddSongsToPlaylistsPresenter(dataManager,
+                new MediaBrowserManager(MediaIdHelper.PLAYLISTS_FOR_SONG_ROOT_HINT,
+                        CreatePlaylistPresenter.class.getSimpleName()),
+                appBus);
+    }
+
+    @Provides
+    @PerFragment
+    ArtistAlbumsMvpPresenter getArtistAlbumsMvpPresenter(ArtistAlbumsPresenter artistAlbumsPresenter) {
+        return artistAlbumsPresenter;
+    }
+
+    @Provides
+    @PerFragment
+    ArtistAlbumsPresenter getArtistAlbumsPresenter(DataManager dataManager, AppBus appBus) {
+        return new ArtistAlbumsPresenter(dataManager,
+                new MediaBrowserManager(MediaIdHelper.ALBUMS_OF_ARTIST_ROOT_HINT,
+                        ArtistAlbumsPresenter.class.getSimpleName()),
+                appBus);
+    }
+
+    @Provides
+    @PerFragment
+    AlbumCoverMvpPresenter getAlbumCoverMvpPresenter(AlbumCoverPresenter albumCoverPresenter) {
+        return albumCoverPresenter;
+    }
+
+    @Provides
+    @PerFragment
+    AlbumCoverPresenter getAlbumCoverPresenter(DataManager dataManager,
+                                                 AppBus appBus) {
+        return new AlbumCoverPresenter(
+                dataManager,
+                new MediaBrowserManager(null, MusicPlayerPresenter.class.getSimpleName()),
+                appBus);
+    }
+
+    @Provides
+    @PerFragment
+    PlayingQueueMvpPresenter getPlayingQueueMvpPresenter(PlayingQueuePresenter playingQueuePresenter) {
+        return playingQueuePresenter;
+    }
+
+    @Provides
+    @PerFragment
+    PlayingQueuePresenter getPlayingQueuePresenter(DataManager dataManager,
+                                                    AppBus appBus,
+                                                    PerSlidingUpPanelBus slidingUpPanelBus) {
+        return new PlayingQueuePresenter(
+                dataManager,
+                new MediaBrowserManager(null, MusicPlayerPresenter.class.getSimpleName()),
+                appBus,
+                slidingUpPanelBus);
+    }
+
+    @Provides
+    @PerFragment
+    PlaybackControlsMvpPresenter getPlaybackControlsMvpPresenter(
+            PlaybackControlsPresenter playbackControlsPresenter) {
+        return playbackControlsPresenter;
+    }
+
+    @Provides
+    @PerFragment
+    PlaybackControlsPresenter getPlaybackControlsPresenter(DataManager dataManager,
+                                                   AppBus appBus) {
+        return new PlaybackControlsPresenter(
+                dataManager,
+                new MediaBrowserManager(null, MusicPlayerPresenter.class.getSimpleName()),
+                appBus);
+    }
 }
+

@@ -139,16 +139,6 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            miniPlayerMpb
-//                    .setProgressBackgroundTintList(
-//                            ColorStateList.valueOf(getActivity().getColor(R.color.veryWhite)));
-//        } else {
-//            miniPlayerMpb
-//                    .setProgressBackgroundTintList(
-//                            ColorStateList.valueOf(
-//                                    getActivity().getResources().getColor(R.color.veryWhite)));
-//        }
     }
 
     @Override
@@ -163,33 +153,6 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
                     .asBitmap()
                     .load(albumArtPath)
                     .apply(options)
-                    .listener(new RequestListener<Bitmap>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e,
-                                                    Object model,
-                                                    Target<Bitmap> target,
-                                                    boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Bitmap resource,
-                                                       Object model,
-                                                       Target<Bitmap> target,
-                                                       DataSource dataSource,
-                                                       boolean isFirstResource) {
-                            ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(Palette palette) {
-//                                    miniPlayerMpb.setProgressTintList(
-//                                            ColorStateList.valueOf(
-//                                                    ColorUtil.getBackgroundColor(
-//                                                            ColorUtil.getColorSwatch(palette))));
-                                }
-                            });
-                            return false;
-                        }
-                    })
                     .into(miniPlayerNavUpIv);
         } else {
             Glide.with(getActivity()).clear(miniPlayerNavUpIv);

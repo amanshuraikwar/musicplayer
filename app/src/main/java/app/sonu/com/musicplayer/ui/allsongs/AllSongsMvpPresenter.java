@@ -14,4 +14,5 @@ public interface AllSongsMvpPresenter extends BaseMvpPresenter<AllSongsMvpView> 
     void onCreateView();
     void onSongClicked(MediaBrowserCompat.MediaItem item);
     void onShuffleAllClick();
+    void onAddToPlaylistClick(MediaBrowserCompat.MediaItem item);
 }

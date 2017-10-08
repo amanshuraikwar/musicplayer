@@ -10,9 +10,10 @@ public interface PrefsHelper {
     boolean isFirstRun();
     boolean setFirstRun(Boolean flag);
 
-    String getPlaylistIds();
-    void createPlaylistIdList(String json);
+    String getPlaylistIdList();
+    void createPlaylistIdList(String playlistIdListJson);
 
-    String getPlaylistById(String id);
-    void putPlaylist(String id, String playlist);
+    String getPlaylistByPlaylistId(String playlistId);
+    void putPlaylist(String playlistId, String playlistJson);
+    void removePlaylist(String playlistId);
 }

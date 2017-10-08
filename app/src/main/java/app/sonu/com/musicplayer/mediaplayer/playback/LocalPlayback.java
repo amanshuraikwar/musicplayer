@@ -16,8 +16,8 @@ import java.io.IOException;
 
 import app.sonu.com.musicplayer.mediaplayer.MusicService;
 import app.sonu.com.musicplayer.util.MediaIdHelper;
-import app.sonu.com.musicplayer.mediaplayer.MusicProvider;
-import app.sonu.com.musicplayer.mediaplayer.musicsource.MusicProviderSource;
+import app.sonu.com.musicplayer.mediaplayer.media.MediaProvider;
+import app.sonu.com.musicplayer.util.MediaMetadataHelper;
 import app.sonu.com.musicplayer.util.QueueHelper;
 
 /**
@@ -53,7 +53,7 @@ public class LocalPlayback
 
     private static final String focusStates[] = {"no focus no duck", "no focus can duck", "focus"};
 
-    private final MusicProvider mMusicProvider;
+    private final MediaProvider mMediaProvider;
     private final Context mContext;
 
     private Callback mCallback;
@@ -87,9 +87,9 @@ public class LocalPlayback
                 }
             };
 
-    public LocalPlayback(Context context, MusicProvider musicProvider) {
+    public LocalPlayback(Context context, MediaProvider mediaProvider) {
         this.mContext = context.getApplicationContext();
-        this.mMusicProvider = musicProvider;
+        this.mMediaProvider = mediaProvider;
 
         this.mAudioManager =
                 (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
@@ -186,16 +186,16 @@ public class LocalPlayback
             return false;
         }
 
-        String musicId = MediaIdHelper.extractMusicIdFromMediaId(mediaId);
-        Log.i(TAG, "play:musicId=" + musicId);
+        String songId = MediaIdHelper.getSongIdFromMediaId(mediaId);
+        Log.i(TAG, "play:songId=" + songId);
 
         // check for musicId
-        if (musicId == null) {
-            Log.w(TAG, "play:musicId is null");
+        if (songId == null) {
+            Log.w(TAG, "play:songId is null");
             return false;
         }
 
-        MediaMetadataCompat track = mMusicProvider.getMusic(musicId);
+        MediaMetadataCompat track = mMediaProvider.getSongBySongId(songId);
 
         // check for track in library
         if (track == null) {
@@ -208,7 +208,7 @@ public class LocalPlayback
         // reset player for a new source
         resetPlayer();
 
-        String source = track.getString(MusicProviderSource.CUSTOM_METADATA_KEY_TRACK_SOURCE);
+        String source = track.getString(MediaMetadataHelper.CUSTOM_METADATA_KEY_SOURCE);
         Log.i(TAG, "play:source=" + source);
 
         // set new data source

@@ -11,4 +11,5 @@ import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
 
 public interface PlaylistOnClickListener extends BaseListItemOnClickListener {
     void onPlaylistClick(MediaBrowserCompat.MediaItem item, View animatingView);
+    void onOptionsIbClick(MediaBrowserCompat.MediaItem item, View optionsIb);
 }

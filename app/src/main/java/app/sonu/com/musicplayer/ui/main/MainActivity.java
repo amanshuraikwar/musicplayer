@@ -21,6 +21,7 @@ import app.sonu.com.musicplayer.di.module.ActivityModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
 import app.sonu.com.musicplayer.ui.album.AlbumFragment;
 import app.sonu.com.musicplayer.ui.base.BaseActivity;
+import app.sonu.com.musicplayer.ui.intro.MainIntroActivity;
 import app.sonu.com.musicplayer.ui.mediaitemdetail.MediaItemDetailActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,6 +60,14 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
                 .inject(this);
 
         ButterKnife.bind(this);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            boolean setFirstRunFlagFalse = extras.getBoolean("disable_first_time_flag", false);
+            if (setFirstRunFlagFalse) {
+                mPresenter.disableFirstRunFlag();
+            }
+        }
 
         bnv.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -135,6 +144,16 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
         Intent i = new Intent(this, MediaItemDetailActivity.class);
         i.putExtras(b);
         startActivity(i);
+    }
+
+    @Override
+    public void startIntoActivity() {
+        startActivity(new Intent(MainActivity.this, MainIntroActivity.class));
+    }
+
+    @Override
+    public void close() {
+        finish();
     }
 
     @Override

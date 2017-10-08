@@ -16,4 +16,5 @@ public interface AllSongsMvpView extends BaseMvpView {
     void displayList(List<MediaBrowserCompat.MediaItem> itemList);
     void displayToast(String message);
     void scrollListToTop();
+    void showAddToPlaylistsDialog(String songId);
 }

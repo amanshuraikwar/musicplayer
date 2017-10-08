@@ -12,7 +12,8 @@ import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -29,7 +30,6 @@ public class AllSongsPresenter extends
 
     private MediaBrowserManager mMediaBrowserManager;
     private Context mContext;
-    private PublishSubject<MediaBrowserCompat.MediaItem> mSelectedItemPublishSubject;
     private PublishSubject<Integer> mAllSongsScrollToTopSubject;
 
     private Disposable mAllSongsScrollToTopDisposable;
@@ -40,7 +40,6 @@ public class AllSongsPresenter extends
         super(dataManager);
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
-        mSelectedItemPublishSubject = appBus.selectedSongSubject;
         mAllSongsScrollToTopSubject = appBus.allSongsScrollToTopSubject;
     }
 
@@ -91,8 +90,6 @@ public class AllSongsPresenter extends
                 .getMediaController()
                 .getTransportControls()
                 .playFromMediaId(item.getMediaId(), null);
-
-        mSelectedItemPublishSubject.onNext(item);
     }
 
     @Override
@@ -104,8 +101,6 @@ public class AllSongsPresenter extends
                 .getTransportControls()
                 .playFromMediaId(songsList.get(randomIndex).getMediaId(), null);
 
-        mSelectedItemPublishSubject.onNext(songsList.get(randomIndex));
-
         if (!mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
             mMediaBrowserManager
                     .getMediaController()
@@ -114,11 +109,17 @@ public class AllSongsPresenter extends
         }
     }
 
+    @Override
+    public void onAddToPlaylistClick(MediaBrowserCompat.MediaItem item) {
+        mMvpView.showAddToPlaylistsDialog(
+                MediaIdHelper.getSongIdFromMediaId(item.getDescription().getMediaId()));
+    }
+
     // media browser callback
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        // do nothing
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override

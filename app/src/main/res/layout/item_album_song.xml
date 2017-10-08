@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:appNs="http://schemas.android.com/tools"
     android:id="@+id/parentRl"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/home_icon_size_padding"
     android:paddingEnd="0dp"
-    android:focusable="true"
     android:clickable="true"
     android:background="@color/veryWhite"
     android:foreground="?android:attr/selectableItemBackground">
@@ -22,8 +19,20 @@
         android:paddingEnd="16dp"
         android:paddingBottom="14dp"
         android:paddingTop="14dp"
-        android:text="1"
-        android:gravity="start|center_vertical"/>
+        android:gravity="start|center_vertical"
+        android:text="@string/sample_track_no"/>
+
+    <TextView
+        android:id="@+id/extraInfoTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/optionsIb"
+        android:textColor="#f5f5f5"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        android:layout_marginEnd="16dp"
+        android:text="@string/sample_song_duration"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -31,46 +40,29 @@
         android:orientation="vertical"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/trackNoTv"
-        android:layout_toStartOf="@+id/songDurationTv">
+        android:layout_toStartOf="@+id/optionsIb">
 
         <TextView
-            android:id="@+id/songTitleTv"
+            android:id="@+id/titleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:lines="1"
             android:textColor="@color/black"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/songArtistTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:lines="1"
-            android:textColor="@color/charcoal"
-            android:textSize="14sp"/>
+            android:textSize="16sp"
+            android:text="@string/sample_song_title"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/songDurationTv"
+    <ImageButton
+        android:id="@+id/optionsIb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_more_vert_grey_24dp"
+        android:padding="8dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@color/grey"
-        android:textSize="14sp"
-        android:text="3:56"/>
+        android:background="?selectableItemBackgroundBorderless"
+        android:drawSelectorOnTop="true"/>
 
-    <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="1dp"-->
-        <!--android:layout_below="@+id/iconCv"-->
-        <!--android:layout_toEndOf="@id/iconCv"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:background="@color/whiteSmoke"/>-->
 </RelativeLayout>

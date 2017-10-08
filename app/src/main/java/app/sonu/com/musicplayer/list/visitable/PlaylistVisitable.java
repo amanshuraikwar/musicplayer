@@ -13,13 +13,19 @@ import app.sonu.com.musicplayer.list.onclicklistener.PlaylistOnClickListener;
 public class PlaylistVisitable extends BaseVisitable<PlaylistOnClickListener, MediaListTypeFactory> {
 
     private MediaBrowserCompat.MediaItem item;
+    private int playlistType;
 
-    public PlaylistVisitable(MediaBrowserCompat.MediaItem item) {
+    public PlaylistVisitable(MediaBrowserCompat.MediaItem item, int playlistType) {
         this.item = item;
+        this.playlistType = playlistType;
     }
 
     public MediaBrowserCompat.MediaItem getMediaItem() {
         return item;
+    }
+
+    public int getPlaylistType() {
+        return playlistType;
     }
 
     @Override

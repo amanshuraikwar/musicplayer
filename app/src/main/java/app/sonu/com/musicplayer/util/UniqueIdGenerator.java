@@ -8,6 +8,6 @@ public class UniqueIdGenerator {
     private static long id = System.currentTimeMillis();
 
     public static long getId() {
-        return ++id;
+        return id--;
     }
 }

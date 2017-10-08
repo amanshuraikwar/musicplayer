@@ -3,7 +3,7 @@ package app.sonu.com.musicplayer.ui.search;
 import app.sonu.com.musicplayer.AppBus;
 import app.sonu.com.musicplayer.PerSlidingUpPanelBus;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderPresenter;
 
 /**

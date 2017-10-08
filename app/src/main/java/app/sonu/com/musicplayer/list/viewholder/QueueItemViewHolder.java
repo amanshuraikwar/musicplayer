@@ -54,7 +54,7 @@ public class QueueItemViewHolder extends BaseViewHolder<QueueItemVisitable, Queu
                      Context context) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
-        indexTv.setText(visitable.getIndexToDisplay()+"");
+        indexTv.setText(String.valueOf(visitable.getIndexToDisplay()));
 
         if (visitable.getIndexToDisplay() == 0) {
             playingIconIv.setVisibility(View.VISIBLE);

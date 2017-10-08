@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -121,6 +122,11 @@ public class MusicPlayerHolderFragment<MvpPresenter extends MusicPlayerHolderMvp
     @Override
     public void setSupl(SlidingUpPanelLayout supl) {
         // todo implement
+    }
+
+    @Override
+    public void displayToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     protected void loadChild(Fragment fragment) {

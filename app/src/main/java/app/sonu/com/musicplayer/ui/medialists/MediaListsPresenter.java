@@ -49,7 +49,6 @@ public class MediaListsPresenter
                 mAppBus.navigationItemSelectedSubject.subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) throws Exception {
-                        Log.w("tyoyo", integer+"");
                         switch (integer) {
                             case R.id.menuItemSongs:
                                 mMvpView.setMedialistSelected(0);

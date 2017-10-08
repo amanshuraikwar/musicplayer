@@ -10,9 +10,9 @@ import java.util.Random;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.data.DataManager;
-import app.sonu.com.musicplayer.mediaplayer.manager.MediaBrowserManager;
-import app.sonu.com.musicplayer.ui.album.AlbumMvpView;
+import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 
 /**
  * Created by sonu on 21/9/17.
@@ -31,7 +31,6 @@ public class MediaItemDetailFragmentPresenter<MvpView extends MediaItemDetailFra
     public MediaItemDetailFragmentPresenter(DataManager dataManager,
                                             MediaBrowserManager mediaBrowserManager) {
         super(dataManager);
-        mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager = mediaBrowserManager;
         mMediaBrowserManager.setCallback(this);
     }
@@ -96,8 +95,6 @@ public class MediaItemDetailFragmentPresenter<MvpView extends MediaItemDetailFra
                 .getMediaController()
                 .getTransportControls()
                 .playFromMediaId(item.getMediaId(), null);
-
-//        mSelectedItemPublishSubject.onNext(item);
     }
 
     @Override
@@ -108,12 +105,14 @@ public class MediaItemDetailFragmentPresenter<MvpView extends MediaItemDetailFra
     @Override
     public void onShuffleAllClick() {
         List<MediaBrowserCompat.MediaItem> songsList = mMediaBrowserManager.getItemList();
+        if (songsList.size() <= 0) {
+            return;
+        }
         int randomIndex = new Random().nextInt(songsList.size());
         mMediaBrowserManager
                 .getMediaController()
                 .getTransportControls()
                 .playFromMediaId(songsList.get(randomIndex).getMediaId(), null);
-//        mSelectedItemPublishSubject.onNext(songsList.get(randomIndex));
         if (!mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
             mMediaBrowserManager
                     .getMediaController()
@@ -127,11 +126,17 @@ public class MediaItemDetailFragmentPresenter<MvpView extends MediaItemDetailFra
         return mMediaItem;
     }
 
+    @Override
+    public void onAddToPlaylistClick(MediaBrowserCompat.MediaItem item) {
+        mMvpView.showAddToPlaylistsDialog(
+                MediaIdHelper.getSongIdFromMediaId(item.getDescription().getMediaId()));
+    }
+
     // mediabrowser callback
     @Override
     public void onMediaBrowserConnected() {
         Log.d(TAG, "onMediaBrowserConnected:called");
-        // do nothing
+        mMediaBrowserManager.subscribeMediaBrowser();
     }
 
     @Override

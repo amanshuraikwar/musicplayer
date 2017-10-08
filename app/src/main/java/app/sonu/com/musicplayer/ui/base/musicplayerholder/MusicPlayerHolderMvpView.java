@@ -17,4 +17,5 @@ public interface MusicPlayerHolderMvpView extends BaseMvpView {
     boolean isSlidingUpPaneHidden();
     void setAntiDragView(View view);
     void setSupl(SlidingUpPanelLayout supl);
+    void displayToast(String message);
 }

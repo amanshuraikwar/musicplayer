@@ -15,4 +15,5 @@ public interface MediaItemDetailFragmentMvpView extends BaseMvpView {
     void displayMediaList(List<MediaBrowserCompat.MediaItem> itemList);
     void displayToast(String message);
     void close();
+    void showAddToPlaylistsDialog(String songId);
 }

@@ -4,14 +4,6 @@
     android:id="@+id/parentRl"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="0dp"
-    android:layout_marginStart="0dp"
-    android:layout_marginTop="0dp"
-    android:layout_marginBottom="0dp"
-    android:paddingStart="0dp"
-    android:paddingEnd="0dp"
-    android:focusable="true"
-    android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground">
 
     <FrameLayout
@@ -22,16 +14,16 @@
 
         <TextView
             android:id="@+id/indexTv"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:textColor="@color/grey"
-            android:text="1"
+            android:text="@string/sample_track_no"
             android:gravity="center"/>
 
         <ImageView
             android:id="@+id/playingIconIv"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:src="@drawable/ic_volume_up_charcoal_24dp"
             android:padding="24dp"
             android:tint="@color/grey"
@@ -40,7 +32,7 @@
 
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_toEndOf="@+id/iconIndexFl"
@@ -51,7 +43,7 @@
             android:id="@+id/titleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lose yourself to Dance"
+            android:text="@string/sample_song_title"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:lines="1"
@@ -61,7 +53,7 @@
             android:id="@+id/subtitleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Daft Punk"
+            android:text="@string/sample_artist_name"
             android:textColor="@color/grey"
             android:textSize="14sp"/>
     </LinearLayout>

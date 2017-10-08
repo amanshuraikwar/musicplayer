@@ -13,18 +13,10 @@ import app.sonu.com.musicplayer.ui.base.BaseMvpPresenter;
  */
 
 public interface MusicPlayerMvpPresenter extends BaseMvpPresenter<MusicPlayerMvpView> {
-    void playPauseButtonOnClick();
-    void skipNextButtonOnClick();
-    void skipPreviousButtonOnClick();
     void onCreate(FragmentActivity activity);
     void onCreateView();
-    void updateProgress();
-    void onSeekbarStopTrackingTouch(int progress);
-    void onCollapseIvClick();
-    void onShuffleButtonClick();
-    void onRepeatButtonClick();
-    void onQueueItemClick(MediaSessionCompat.QueueItem item);
     void onHeartIvClick();
     void setAntiDragView(View view);
     void setSupl(SlidingUpPanelLayout supl);
+    void onCollapseIvClick();
 }

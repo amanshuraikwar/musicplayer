@@ -1,6 +1,5 @@
 package app.sonu.com.musicplayer.ui.albums;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -22,7 +21,6 @@ import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
-import app.sonu.com.musicplayer.list.visitable.SearchItemTypeTitleVisitable;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 
 import app.sonu.com.musicplayer.list.onclicklistener.AlbumOnClickListener;
@@ -36,11 +34,9 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
 
     private static final String TAG = AlbumsFragment.class.getSimpleName();
     public static final String TAB_TITLE = "Albums";
-    public static final int APP_BAR_BACKGROUND_COLOR = Color.parseColor("#ffffff");
 
     @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
-
 
     private AlbumOnClickListener albumOnClickListener = new AlbumOnClickListener() {
         @Override
@@ -82,7 +78,7 @@ public class AlbumsFragment extends BaseFragment<AlbumsMvpPresenter> implements 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_medialist, container, false);
+        View view = inflater.inflate(R.layout.layout_media_list, container, false);
         ButterKnife.bind(this, view);
 
         if (itemsRv.getLayoutManager() == null) {

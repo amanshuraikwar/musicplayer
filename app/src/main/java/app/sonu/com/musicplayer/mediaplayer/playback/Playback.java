@@ -28,19 +28,31 @@ public interface Playback {
 
     // getter methods
     boolean isPlaying();
+
     boolean isStopped();
+
     boolean isPaused();
+
     boolean isIdle();
+
     boolean isPreparing();
+
     int getState();
+
     int getCurrentPosition();
 
 
+    // setter methods
     void start();
+
     boolean play(@NonNull QueueItem item);
+
     boolean play();
+
     boolean pause();
+
     boolean stop();
+
     void seekTo(int position);
 
     void setCallback(Callback callback);

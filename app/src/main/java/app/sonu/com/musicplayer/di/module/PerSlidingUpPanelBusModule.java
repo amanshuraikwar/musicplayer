@@ -1,5 +1,6 @@
 package app.sonu.com.musicplayer.di.module;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -20,6 +21,7 @@ public class PerSlidingUpPanelBusModule {
     public static final String PROVIDER_SET_ANTIDRAG_VIEW = "SET_ANTIDRAG_VIEW";
     public static final String PROVIDER_SET_DRAG_VIEW = "SET_DRAG_VIEW";
     public static final String PROVIDER_SET_SUPL = "SET_SUPL";
+    public static final String PROVIDER_SET_SCROLL_VIEW = "SET_SCROLL_VIEW";
 
     @Provides
     @Named(PROVIDER_SET_ANTIDRAG_VIEW)
@@ -36,6 +38,12 @@ public class PerSlidingUpPanelBusModule {
     @Provides
     @Named(PROVIDER_SET_SUPL)
     PublishSubject<SlidingUpPanelLayout> getSetSuplSubject() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @Named(PROVIDER_SET_SCROLL_VIEW)
+    PublishSubject<RecyclerView> getScrollViewSubject() {
         return PublishSubject.create();
     }
 }

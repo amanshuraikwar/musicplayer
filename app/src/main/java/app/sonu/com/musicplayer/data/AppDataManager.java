@@ -54,22 +54,27 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public String getPlaylistIds() {
-        return mPrefsHelper.getPlaylistIds();
+    public String getPlaylistIdList() {
+        return mPrefsHelper.getPlaylistIdList();
     }
 
     @Override
-    public void createPlaylistIdList(String json) {
-        mPrefsHelper.createPlaylistIdList(json);
+    public void createPlaylistIdList(String playlistJson) {
+        mPrefsHelper.createPlaylistIdList(playlistJson);
     }
 
     @Override
-    public String getPlaylistById(String id) {
-        return mPrefsHelper.getPlaylistById(id);
+    public String getPlaylistByPlaylistId(String playlistId) {
+        return mPrefsHelper.getPlaylistByPlaylistId(playlistId);
     }
 
     @Override
-    public void putPlaylist(String id, String playlist) {
-        mPrefsHelper.putPlaylist(id, playlist);
+    public void putPlaylist(String playlistId, String playlistJson) {
+        mPrefsHelper.putPlaylist(playlistId, playlistJson);
+    }
+
+    @Override
+    public void removePlaylist(String playlistId) {
+        mPrefsHelper.removePlaylist(playlistId);
     }
 }

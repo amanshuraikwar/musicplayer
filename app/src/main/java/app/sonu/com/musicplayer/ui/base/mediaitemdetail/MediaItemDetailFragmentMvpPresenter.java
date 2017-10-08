@@ -18,4 +18,5 @@ public interface MediaItemDetailFragmentMvpPresenter<MvpView extends MediaItemDe
     void onBackIbClick();
     void onShuffleAllClick();
     MediaBrowserCompat.MediaItem getMediaItem();
+    void onAddToPlaylistClick(MediaBrowserCompat.MediaItem item);
 }

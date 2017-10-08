@@ -17,6 +17,9 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
         mavenCentral()
         maven { url "https://jitpack.io" }
     }
@@ -26,12 +29,12 @@ allprojects {
 ext {
     // Sdk and tools
     minSdkVersion = 19
-    targetSdkVersion = 25
-    compileSdkVersion = 25
-    buildToolsVersion = '25.0.2'
+    targetSdkVersion = 26
+    compileSdkVersion = 26
+    buildToolsVersion = '26.0.1'
 
     // App dependencies
-    supportLibraryVersion = '25.3.1'
+    supportLibraryVersion = '26.0.1'
     gsonVersion = '2.8.0'
 
     dagger2Version = '2.7'

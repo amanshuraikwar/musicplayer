@@ -35,7 +35,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/backIb"
                 android:layout_toStartOf="@+id/clearIb"
-                android:hint="Search your music library"
+                android:hint="@string/search_query_hint"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:paddingTop="14dp"
@@ -62,5 +62,6 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/itemsRv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@color/veryWhite"/>
 </LinearLayout>
