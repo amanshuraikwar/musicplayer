@@ -46,19 +46,32 @@ public class MainIntroActivity extends AppCompatActivity {
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
 
-            givePermissionsBtn.setVisibility(View.GONE);
+            givePermissionsBtn.setText("Done");
             givePermissionsTv.setText("Enjoy the material music!");
 
-        }
+            givePermissionsBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("disable_first_time_flag", true);
+                    Intent intent = new Intent(MainIntroActivity.this, MainActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
 
-        givePermissionsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityCompat.requestPermissions(MainIntroActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-            }
-        });
+                    finish();
+                }
+            });
+
+        } else {
+            givePermissionsBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ActivityCompat.requestPermissions(MainIntroActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                }
+            });
+        }
     }
 
     @Override

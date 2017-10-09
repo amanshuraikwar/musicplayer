@@ -180,6 +180,9 @@ public class MediaProviderImpl extends MediaProvider {
         } else {
             Log.w(TAG, "getChildren:skipping unmatched mediaId: "+mediaId);
         }
+
+        Log.i(TAG, "getChildren:mediaItems size="+mediaItems.size());
+
         return mediaItems;
     }
 

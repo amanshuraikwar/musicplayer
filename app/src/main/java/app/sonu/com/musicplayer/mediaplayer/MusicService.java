@@ -256,9 +256,11 @@ public class MusicService extends MediaBrowserServiceCompat
             if (rootHints != null) {
                 String rootHint =
                         rootHints.getString(getResources().getString(R.string.root_hint_key));
+                Log.i(TAG, "onGetRoot:rootHint="+rootHint);
                 if (rootHint != null) {
                     switch (rootHint) {
                         case MediaIdHelper.ALL_SONGS_ROOT_HINT:
+                            Log.i(TAG, "onGetRoot:allSongs");
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_ALL_SONGS, null);
                         case MediaIdHelper.ALBUMS_ROOT_HINT:
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_ALBUMS, null);
@@ -366,7 +368,7 @@ public class MusicService extends MediaBrowserServiceCompat
     }
 
     private boolean allowBrowsing(String clientPackageName ,int clientUid) {
-        return clientPackageName.contains("android.sonu.com.musicplayer");
+        return clientPackageName.contains("app.sonu.com.musicplayer");
     }
 
     //playback service callback
