@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.util.Log;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,8 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSongVisitable;
-import app.sonu.com.musicplayer.list.visitable.SearchListHeaderVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderPaddedVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderVisitable;
 import app.sonu.com.musicplayer.ui.album.AlbumFragment;
 import app.sonu.com.musicplayer.ui.base.mediaitemdetail.MediaItemDetailFragment;
 import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderActivity;
@@ -55,8 +55,8 @@ public class ArtistFragment extends MediaItemDetailFragment<ArtistMvpPresenter>
 
         List<BaseVisitable> visitableList = new ArrayList<>();
 
-        SearchListHeaderVisitable headerVisitable = new SearchListHeaderVisitable("Songs");
-        visitableList.add(headerVisitable);
+        visitableList.add(new MediaListHeaderPaddedVisitable("Songs", true,
+                "SHUFFLE"));
 
         for (MediaBrowserCompat.MediaItem songItem : songList) {
             ArtistSongVisitable visitable = new ArtistSongVisitable(songItem);

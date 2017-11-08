@@ -1,42 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentRl"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/lightGrey"
     android:foreground="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/reorderIv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_reorder_grey_24dp"
+        android:padding="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        tools:ignore="ContentDescription" />
 
     <FrameLayout
         android:id="@+id/iconIndexFl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/reorderIv">
 
         <TextView
             android:id="@+id/indexTv"
             android:layout_width="68dp"
-            android:layout_height="68dp"
-            android:textColor="@color/grey"
+            android:layout_height="wrap_content"
             android:text="@string/sample_track_no"
+            android:textAppearance="@style/bodyTextStyle"
             android:gravity="center"/>
 
         <ImageView
             android:id="@+id/playingIconIv"
             android:layout_width="68dp"
-            android:layout_height="68dp"
-            android:src="@drawable/ic_volume_up_charcoal_24dp"
-            android:padding="24dp"
-            android:tint="@color/grey"
-            android:visibility="gone"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_volume_up_grey_24dp"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
     </FrameLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_toEndOf="@+id/iconIndexFl"
-        android:layout_toStartOf="@+id/moreOptionsIv"
+        android:layout_toStartOf="@+id/optionsIb"
         android:layout_centerVertical="true">
 
         <TextView
@@ -44,29 +56,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sample_song_title"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:lines="1"
-            android:ellipsize="marquee"/>
+            android:textAppearance="@style/titleTextStyle"
+            android:ellipsize="marquee"
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/subtitleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sample_artist_name"
-            android:textColor="@color/grey"
-            android:textSize="14sp"/>
+            android:textAppearance="@style/bodyTextStyle"
+            android:lines="1"/>
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/moreOptionsIv"
+    <ImageButton
+        android:id="@+id/optionsIb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_more_vert_grey_24dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:padding="16dp"
-        android:clickable="true"
+        android:padding="8dp"
+        android:layout_marginEnd="16dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:visibility="gone"/>
+        android:src="@drawable/ic_more_vert_grey_24dp"
+        tools:ignore="ContentDescription" />
 </RelativeLayout>

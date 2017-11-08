@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 import android.view.View;
@@ -48,9 +49,6 @@ public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, So
     @BindView(R.id.optionsIb)
     ImageButton optionsIb;
 
-    @BindView(R.id.extraInfoTv)
-    TextView extraInfoTv;
-
     public ArtistSongViewHolder(View itemView) {
         super(itemView);
     }
@@ -58,7 +56,7 @@ public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, So
     @Override
     public void bind(final ArtistSongVisitable visitable,
                      final SongOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
 
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
@@ -67,17 +65,17 @@ public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, So
         options.centerCrop();
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
-            Glide.with(context)
+            Glide.with(activity)
                     .load(visitable.getMediaItem().getDescription().getIconUri().getEncodedPath())
                     .apply(options)
                     .into(iconIv);
         } else {
-            Glide.with(context).clear(iconIv);
+            Glide.with(activity).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_song_art));
+                iconIv.setImageDrawable(activity.getDrawable(R.drawable.default_song_art));
             } else {
                 iconIv.setImageDrawable(
-                        context
+                        activity
                                 .getResources()
                                 .getDrawable(R.drawable.default_song_art));
             }
@@ -106,11 +104,5 @@ public class ArtistSongViewHolder extends BaseViewHolder<ArtistSongVisitable, So
             Log.e(TAG, "bind:extras is null");
             return;
         }
-
-        extraInfoTv.setText(
-                DurationUtil.getFormattedDuration(
-                        extras.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-                )
-        );
     }
 }

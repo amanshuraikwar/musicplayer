@@ -2,6 +2,7 @@ package app.sonu.com.musicplayer.list.viewholder;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import app.sonu.com.musicplayer.R;
@@ -30,7 +31,7 @@ public class ShuffleAllSongsViewHolder extends BaseViewHolder<ShuffleAllSongsVis
     @Override
     public void bind(ShuffleAllSongsVisitable visitable,
                      final BaseListItemOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

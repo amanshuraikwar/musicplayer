@@ -281,17 +281,13 @@ public class PlaybackManager implements Playback.Callback {
 
         //todo deprecated in 26.0.0-beta-2
         @Override
-        public void onSetShuffleModeEnabled(boolean enabled) {
-            Log.d(TAG, "onSetShuffleModeEnabled:called");
-            Log.d(TAG, "onSetShuffleModeEnabled:enabled="+enabled);
-            int mode = 0;
-            if (enabled) {
-                mode = 1;
-            }
+        public void onSetShuffleMode(int mode) {
+            Log.d(TAG, "onSetShuffleMode:called");
+            Log.d(TAG, "onSetShuffleMode:mode="+mode);
 
             if (setShuffleMode(mode)) {
                 if (mQueueManager.getCurrentSong() != null) {
-                    if (enabled) {
+                    if (mode == 1) {
                         mQueueManager.shuffleMusic(mQueueManager.getCurrentSongMediaId());
                     } else {
                         Log.w(TAG, "onSetShuffleModeEnabled:cur="+mQueueManager.getCurrentSongMediaId());

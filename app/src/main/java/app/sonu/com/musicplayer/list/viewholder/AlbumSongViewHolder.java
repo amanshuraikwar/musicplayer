@@ -3,6 +3,7 @@ package app.sonu.com.musicplayer.list.viewholder;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 import android.view.View;
@@ -31,9 +32,6 @@ public class AlbumSongViewHolder extends BaseViewHolder<AlbumSongVisitable, Song
     @BindView(R.id.titleTv)
     TextView titleTv;
 
-    @BindView(R.id.extraInfoTv)
-    TextView extraInfoTv;
-
     @BindView(R.id.parentRl)
     View parentView;
 
@@ -50,7 +48,7 @@ public class AlbumSongViewHolder extends BaseViewHolder<AlbumSongVisitable, Song
     @Override
     public void bind(final AlbumSongVisitable visitable,
                      final SongOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
 
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
 
@@ -78,12 +76,6 @@ public class AlbumSongViewHolder extends BaseViewHolder<AlbumSongVisitable, Song
             Log.e(TAG, "bind:extras is null");
             return;
         }
-
-        extraInfoTv.setText(
-                DurationUtil.getFormattedDuration(
-                        extras.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-                )
-        );
 
         trackNoTv.setText(
                 String.valueOf(extras.getLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER)));

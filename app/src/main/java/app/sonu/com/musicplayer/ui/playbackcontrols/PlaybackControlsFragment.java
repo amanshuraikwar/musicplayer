@@ -10,15 +10,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,7 +75,7 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
             Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> mScheduleFuture;
 
-    private int lastTitleColor, lastBackgroundColor, lastBodyColor;
+    private int lastDarkColor, lastLightColor;
 
     @BindView(R.id.playbackControlsParentLl)
     View playbackControlsParentLl;
@@ -108,6 +112,9 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
 
     @BindView(R.id.smallAlbumArtCv)
     CardView smallAlbumArtCv;
+
+    @BindView(R.id.songInfoLl)
+    LinearLayout songInfoLl;
 
     @OnClick(R.id.playPauseIb)
     void onPlayPauseIbClick(){
@@ -254,37 +261,38 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
     private void updateUiColor(Bitmap resource) {
 
         if (resource == null) {
-            setUiColorWithSwatch(null);
+            setUiColorWithPalette(null);
         } else {
             ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(Palette palette) {
-                    setUiColorWithSwatch(ColorUtil.getColorSwatch(palette));
+                    setUiColorWithPalette(palette);
                 }
             });
         }
     }
 
-    private void setUiColorWithSwatch(Palette.Swatch swatch) {
+    private void setUiColorWithPalette(Palette palette) {
 
-        int backgroundColor = ColorUtil.getBackgroundColor(swatch);
-        int titleColor = ColorUtil.getTitleColor(swatch);
-        int bodyColor = ColorUtil.getBodyColor(swatch);
+        final int darkColor = ColorUtil.getDarkColor(palette);
+        final int lightColor = ColorUtil.getLightColor(palette);
 
-        if (titleColor != lastTitleColor) {
+        if (darkColor != lastDarkColor) {
             ValueAnimator colorAnimation = ValueAnimator
-                    .ofObject(new ArgbEvaluator(),lastTitleColor, titleColor);
+                    .ofObject(new ArgbEvaluator(), lastDarkColor, darkColor);
             colorAnimation.setDuration(200); // milliseconds
             colorAnimation.setRepeatCount(0);
-            colorAnimation.setStartDelay(200);
+            colorAnimation.setStartDelay(0);
             colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                 @Override
                 public void onAnimationUpdate(ValueAnimator animator) {
                     addToPlaylistIv.setColorFilter((Integer) animator.getAnimatedValue());
                     songTitleMainTv.setTextColor((Integer) animator.getAnimatedValue());
+                    playPauseIb.setColorFilter((Integer) animator.getAnimatedValue());
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
                         songCurrentPositionSeekBar
                                 .setProgressTintList(
                                         ColorStateList.valueOf(
@@ -296,73 +304,29 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
                     }
 
                 }
-
-
-
             });
             colorAnimation.start();
+
+            mPresenter.onDarkColorChanged(lastDarkColor, darkColor);
+
+            lastDarkColor = darkColor;
         }
 
-        if (backgroundColor != lastBackgroundColor) {
-            ValueAnimator colorAnimation = ValueAnimator
-                    .ofObject(new ArgbEvaluator(),lastBackgroundColor, backgroundColor);
-            colorAnimation.setDuration(200); // milliseconds
-            colorAnimation.setRepeatCount(0);
-            colorAnimation.setStartDelay(200);
-            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        if (lastLightColor != lightColor) {
+            mPresenter.onLightColorChanged(lastLightColor, lightColor);
 
-                @Override
-                public void onAnimationUpdate(ValueAnimator animator) {
-                    playbackControlsParentLl.setBackgroundColor((int) animator.getAnimatedValue());
-                }
-
-
-
-            });
-            colorAnimation.start();
+            lastLightColor = lightColor;
         }
-
-        if (bodyColor != lastBodyColor) {
-            ValueAnimator colorAnimation = ValueAnimator
-                    .ofObject(new ArgbEvaluator(),lastBodyColor, bodyColor);
-            colorAnimation.setDuration(200); // milliseconds
-            colorAnimation.setRepeatCount(0);
-            colorAnimation.setStartDelay(200);
-            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator animator) {
-                    songArtistMainTv.setTextColor((Integer) animator.getAnimatedValue());
-                    elapsedTimeTv.setTextColor((Integer) animator.getAnimatedValue());
-                    totalTimeTv.setTextColor((Integer) animator.getAnimatedValue());
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        songCurrentPositionSeekBar
-                                .setProgressBackgroundTintList(
-                                        ColorStateList.valueOf(
-                                                (Integer) animator.getAnimatedValue()));
-                    }
-                }
-
-
-
-            });
-            colorAnimation.start();
-        }
-
-        lastTitleColor = titleColor;
-        lastBodyColor = bodyColor;
-        lastBackgroundColor = backgroundColor;
     }
 
     @Override
     public void showPlayIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_black_48dp, null));
+                    .getDrawable(R.drawable.ic_play_circle_filled_grey_64dp, null));
         } else {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_black_48dp));
+                    .getDrawable(R.drawable.ic_play_circle_filled_grey_64dp));
         }
     }
 
@@ -370,10 +334,10 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
     public void showPauseIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_black_48dp, null));
+                    .getDrawable(R.drawable.ic_pause_circle_filled_grey_64dp, null));
         } else {
             playPauseIb.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_black_48dp));
+                    .getDrawable(R.drawable.ic_pause_circle_filled_grey_64dp));
         }
     }
 
@@ -423,30 +387,20 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
 
     @Override
     public void setShuffleModeEnabled() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            shuffleIb
-                    .setImageDrawable(
-                            getActivity().getDrawable(R.drawable.ic_shuffle_grey_24dp));
-        } else {
-            shuffleIb.setImageDrawable(
-                    getActivity()
-                            .getResources()
-                            .getDrawable(R.drawable.ic_shuffle_grey_24dp));
-        }
+        shuffleIb
+                .setColorFilter(
+                        ContextCompat
+                                .getColor(getContext(),
+                                        R.color.black), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     @Override
     public void setShuffleModeDisabled() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            shuffleIb
-                    .setImageDrawable(
-                            getActivity().getDrawable(R.drawable.ic_shuffle_light_grey_24dp));
-        } else {
-            shuffleIb.setImageDrawable(
-                    getActivity()
-                            .getResources()
-                            .getDrawable(R.drawable.ic_shuffle_light_grey_24dp));
-        }
+        shuffleIb
+                .setColorFilter(
+                        ContextCompat
+                                .getColor(getContext(),
+                                        R.color.grey), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -454,13 +408,19 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             repeatIb
                     .setImageDrawable(
-                            getActivity().getDrawable(R.drawable.ic_repeat_light_grey_24dp));
+                            getActivity().getDrawable(R.drawable.ic_repeat_grey_24dp));
         } else {
             repeatIb.setImageDrawable(
                     getActivity()
                             .getResources()
-                            .getDrawable(R.drawable.ic_repeat_light_grey_24dp));
+                            .getDrawable(R.drawable.ic_repeat_grey_24dp));
         }
+
+        repeatIb
+                .setColorFilter(
+                        ContextCompat
+                                .getColor(getContext(),
+                                        R.color.grey), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -475,6 +435,12 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
                             .getResources()
                             .getDrawable(R.drawable.ic_repeat_grey_24dp));
         }
+
+        repeatIb
+                .setColorFilter(
+                        ContextCompat
+                                .getColor(getContext(),
+                                        R.color.black), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -489,6 +455,12 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
                             .getResources()
                             .getDrawable(R.drawable.ic_repeat_one_grey_24dp));
         }
+
+        shuffleIb
+                .setColorFilter(
+                        ContextCompat
+                                .getColor(getContext(),
+                                        R.color.black), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -503,6 +475,26 @@ public class PlaybackControlsFragment extends BaseFragment<PlaybackControlsMvpPr
         b.putString(MusicService.KEY_SONG_ID, songId);
         fragment.setArguments(b);
         fragment.show(getChildFragmentManager(), "AddSongsToPlaylistsFragment");
+    }
+
+    @Override
+    public void showMiniAlbumArt() {
+        smallAlbumArtCv.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideMiniAlbumArt() {
+        smallAlbumArtCv.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setMetadataGravityCenter() {
+        songInfoLl.setGravity(Gravity.CENTER_HORIZONTAL);
+    }
+
+    @Override
+    public void setMetadataGravityStart() {
+        songInfoLl.setGravity(Gravity.START);
     }
 
     @Override

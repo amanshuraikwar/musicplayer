@@ -1,10 +1,10 @@
 package app.sonu.com.musicplayer.list.viewholder;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import app.sonu.com.musicplayer.R;
@@ -23,8 +23,8 @@ public class MediaListHeaderViewHolder extends BaseViewHolder<MediaListHeaderVis
     @LayoutRes
     public static final int LAYOUT = R.layout.item_media_list_header;
 
-    @BindView(R.id.iconIv)
-    ImageView iconIv;
+    @BindView(R.id.headerActionBtn)
+    Button headerActionBtn;
 
     @BindView(R.id.titleTv)
     TextView titleTv;
@@ -36,29 +36,24 @@ public class MediaListHeaderViewHolder extends BaseViewHolder<MediaListHeaderVis
     @Override
     public void bind(final MediaListHeaderVisitable visitable,
                      final MediaListHeaderOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
+
         titleTv.setText(visitable.getTitle());
 
-        if (visitable.getIconVisibility()) {
-            iconIv.setVisibility(View.VISIBLE);
+        if (visitable.getActionVisibility()) {
+            headerActionBtn.setVisibility(View.VISIBLE);
+            headerActionBtn.setText(visitable.getActionText());
         } else {
-            iconIv.setVisibility(View.GONE);
+            headerActionBtn.setVisibility(View.GONE);
         }
 
-        iconIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickListener.onIconIvClick();
-            }
-        });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            iconIv.setImageDrawable(context.getDrawable(visitable.getIconIvDrawableId()));
-        } else {
-            iconIv.setImageDrawable(
-                    context
-                            .getResources()
-                            .getDrawable(visitable.getIconIvDrawableId()));
+        if (onClickListener != null) {
+            headerActionBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onActionClick();
+                }
+            });
         }
     }
 }

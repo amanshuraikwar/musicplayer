@@ -2,7 +2,6 @@ package app.sonu.com.musicplayer.list.visitable;
 
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.list.MediaListTypeFactory;
-import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
 import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.onclicklistener.MediaListHeaderOnClickListener;
 
@@ -14,27 +13,34 @@ public class MediaListHeaderVisitable extends BaseVisitable<MediaListHeaderOnCli
         MediaListTypeFactory> {
 
     private String title;
-    private boolean iconVisibility;
-    private int iconIvDrawableId = R.drawable.ic_playlist_add_black_24dp;
+    private boolean actionVisibility = false;
+    private String actionText = "MORE";
 
-    public MediaListHeaderVisitable(String title, boolean iconVisibility, int iconIvDrawableId) {
+    public MediaListHeaderVisitable(String title) {
         this.title = title;
-        this.iconVisibility = iconVisibility;
-        if (iconIvDrawableId != 0) {
-            this.iconIvDrawableId = iconIvDrawableId;
-        }
+    }
+
+    public MediaListHeaderVisitable(String title, boolean actionVisibility) {
+        this.title = title;
+        this.actionVisibility = actionVisibility;
+    }
+
+    public MediaListHeaderVisitable(String title, boolean actionVisibility, String actionText) {
+        this.title = title;
+        this.actionVisibility = actionVisibility;
+        this.actionText = actionText;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public boolean getIconVisibility() {
-        return iconVisibility;
+    public boolean getActionVisibility() {
+        return actionVisibility;
     }
 
-    public int getIconIvDrawableId() {
-        return iconIvDrawableId;
+    public String getActionText() {
+        return actionText;
     }
 
     @Override

@@ -7,5 +7,5 @@ import app.sonu.com.musicplayer.list.base.BaseListItemOnClickListener;
  */
 
 public interface MediaListHeaderOnClickListener extends BaseListItemOnClickListener {
-    void onIconIvClick();
+    void onActionClick();
 }

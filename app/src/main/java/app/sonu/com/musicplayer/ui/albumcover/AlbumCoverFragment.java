@@ -56,7 +56,6 @@ public class AlbumCoverFragment extends BaseFragment<AlbumCoverMvpPresenter> imp
             @Override
             public void onPageSelected(int position) {
                 Log.d(TAG, "onPageSelected:called");
-                Log.i(TAG, "onPageSelected:position="+position+" currentIndex="+mCurrentQueueIndex);
                 if (mCurrentQueueIndex != position) {
                     mPresenter.onPageSelected(mAdapter.getQueueItem(position));
                 }
@@ -64,7 +63,7 @@ public class AlbumCoverFragment extends BaseFragment<AlbumCoverMvpPresenter> imp
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                Log.d(TAG, "onPageSelected:called");
             }
         });
 

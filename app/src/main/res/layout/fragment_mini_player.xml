@@ -1,45 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/miniPlayerRl"
     android:layout_width="match_parent"
     android:layout_height="@dimen/mini_player_height"
-    android:background="@color/veryWhite">
+    android:background="@color/white">
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:id="@+id/miniPlayerMpb"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/miniPlayerNavUpIv"
         app:mpb_progressStyle="horizontal"
         app:mpb_useIntrinsicPadding="false"
-        app:mpb_progressBackgroundTint="@color/veryWhite"
+        app:mpb_progressBackgroundTint="@android:color/transparent"
         style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"/>
 
-    <ImageView
-        android:id="@+id/miniPlayerNavUpIv"
-        android:layout_width="@dimen/mini_player_height"
-        android:layout_height="@dimen/mini_player_height"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/default_song_art"
-        android:clickable="true"
-        android:drawSelectorOnTop="true"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:background="@color/charcoal"/>
+    <android.support.v7.widget.CardView
+        android:id="@+id/albumArtCv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="@dimen/card_radius_small"
+        app:cardElevation="@dimen/card_elevation_small">
 
-    <FrameLayout
-        android:layout_width="@dimen/mini_player_height"
-        android:layout_height="@dimen/mini_player_height">
+        <ImageView
+            android:id="@+id/albumArtIv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/default_song_art"
+            tools:ignore="ContentDescription" />
 
         <View
-            android:layout_width="@dimen/mini_player_height"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/gradient_background_dark_bottom_up"
             android:layout_gravity="bottom"/>
 
@@ -52,57 +49,56 @@
                 android:id="@+id/shuffleNotifyIv"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                android:src="@drawable/ic_shuffle_black_12dp"
-                android:tint="@color/veryWhite"/>
+                android:src="@drawable/ic_shuffle_grey_12dp"
+                android:tint="@color/white"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/repeatNotifyIv"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                android:src="@drawable/ic_repeat_black_12dp"
-                android:tint="@color/veryWhite"/>
+                android:src="@drawable/ic_repeat_grey_12dp"
+                android:tint="@color/white"
+                tools:ignore="ContentDescription" />
         </LinearLayout>
-    </FrameLayout>
+    </android.support.v7.widget.CardView>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@id/miniPlayerNavUpIv"
-        android:paddingStart="16dp"
-        android:paddingEnd="0dp">
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="64dp"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/miniPlayerSongTitleTv"
+            android:id="@+id/songTitleTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/miniPlayerPlayPauseIv"
-            android:textSize="16sp"
-            android:textColor="@color/black"
+            android:text="@string/sample_song_title"
             android:lines="1"
             android:ellipsize="end"
-            android:text="@string/sample_song_title"/>
+            android:textAppearance="@style/headerTextStyle"/>
 
-        <ImageView
-            android:id="@+id/miniPlayerPlayPauseIv"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_play_arrow_white_48dp"
-            android:tint="@color/grey"
-            android:clickable="true"/>
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/subtitleTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sample_artist_name"
+            android:lines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/bodyTextStyle"
+            android:textColor="@color/black"/>
+    </LinearLayout>
 
-    <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="1dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:background="@color/whiteSmoke"/>-->
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/playPauseIv"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_play_circle_filled_grey_40dp"
+        android:clickable="true"
+        android:focusable="true"
+        tools:ignore="ContentDescription" />
+</FrameLayout>

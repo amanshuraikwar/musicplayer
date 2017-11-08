@@ -4,6 +4,7 @@ package app.sonu.com.musicplayer.list.viewholder;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -46,7 +47,7 @@ public class SongPlaylistViewHolder extends BaseViewHolder<SongPlaylistVisitable
     @Override
     public void bind(final SongPlaylistVisitable visitable,
                      final SongPlaylistOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
 
         parentView.setOnClickListener(new View.OnClickListener() {

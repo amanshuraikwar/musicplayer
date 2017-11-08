@@ -32,6 +32,8 @@ public abstract class MediaProvider {
     // for storing art for artists
     final ConcurrentHashMap<String, String> mArtistArtById;
 
+    final ConcurrentHashMap<String, List<MediaMetadataCompat>> mAlbumListByArtistId;
+
     @SuppressWarnings("WeakerAccess")
     public enum State {
         NON_INITIALIZED, INITIALIZING, INITIALIZED;
@@ -54,6 +56,7 @@ public abstract class MediaProvider {
         this.mSongListByAlbumId = new ConcurrentHashMap<>();
         this.mSongListByArtistId = new ConcurrentHashMap<>();
         this.mArtistArtById = new ConcurrentHashMap<>();
+        this.mAlbumListByArtistId = new ConcurrentHashMap<>();
     }
 
     /**
@@ -114,6 +117,13 @@ public abstract class MediaProvider {
      * @return list of children
      */
     public abstract List<MediaBrowserCompat.MediaItem> getChildren(@NonNull String mediaId);
+
+    /**
+     * get all albums by artist id
+     * @param artistId artist id
+     * @return iterable of albums
+     */
+    public abstract List<MediaMetadataCompat> getAlbumsByArtist(String artistId);
 
     /**
      * get all albums in sorted order

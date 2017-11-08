@@ -72,11 +72,13 @@ public class FragmentModule {
     @Provides
     @PerFragment
     MiniPlayerPresenter getMiniPlayerPresenter(DataManager dataManager,
-                                               AppBus appBus) {
+                                               AppBus appBus,
+                                               PerSlidingUpPanelBus slidingUpPanelBus) {
         return  new MiniPlayerPresenter(
                 dataManager,
                 new MediaBrowserManager(null, MiniPlayerPresenter.class.getSimpleName()),
-                appBus);
+                appBus,
+                slidingUpPanelBus);
     }
 
     @Provides
@@ -361,11 +363,13 @@ public class FragmentModule {
     @Provides
     @PerFragment
     PlaybackControlsPresenter getPlaybackControlsPresenter(DataManager dataManager,
-                                                   AppBus appBus) {
+                                                   AppBus appBus,
+                                                   PerSlidingUpPanelBus slidingUpPanelBus) {
         return new PlaybackControlsPresenter(
                 dataManager,
                 new MediaBrowserManager(null, MusicPlayerPresenter.class.getSimpleName()),
-                appBus);
+                appBus,
+                slidingUpPanelBus);
     }
 }
 

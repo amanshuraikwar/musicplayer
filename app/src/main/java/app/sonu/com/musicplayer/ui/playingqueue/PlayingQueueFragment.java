@@ -102,8 +102,8 @@ public class PlayingQueueFragment extends BaseFragment<PlayingQueueMvpPresenter>
 
     @Override
     public void displayQueue(List<MediaSessionCompat.QueueItem> queue) {
-        mQueueAdapter = new QueueRecyclerViewAdapter(getVisitableList(queue),
-                new MediaListTypeFactory());
+        mQueueAdapter = new QueueRecyclerViewAdapter(getActivity(),
+                new MediaListTypeFactory(), getVisitableList(queue));
         itemsRv.setAdapter(mQueueAdapter);
 
         updateQueueIndex(mCurrentQueueIndex);

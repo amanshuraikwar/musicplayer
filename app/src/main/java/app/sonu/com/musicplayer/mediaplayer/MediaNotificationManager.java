@@ -11,13 +11,13 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import app.sonu.com.musicplayer.R;
@@ -304,7 +304,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setLargeIcon(art)
                 .setDeleteIntent(mDeleteIntent)
                 .setStyle(
-                        new NotificationCompat
+                        new android.support.v4.media.app.NotificationCompat
                                 .MediaStyle()
                                 .setShowActionsInCompactView(new int[]{0,1,2})
                 .setMediaSession(mSessionToken));
@@ -325,13 +325,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
         if (extras == null) {
             Log.e(TAG, "addAddToPlaylistAction:extras are null");
             label = "not_in_favourites";
-            icon = R.drawable.ic_heart_outline_white_24dp;
+            icon = R.drawable.ic_heart_outline_grey_24dp;
         } else if (extras.getBoolean(PlaylistsSource.PLAYBACK_STATE_EXTRA_IS_IN_FAVORITES)) {
             label = "in_favourites";
-            icon = R.drawable.ic_heart_solid_light_pink_24dp;
+            icon = R.drawable.ic_heart_solid_grey_24dp;
         } else {
             label = "not_in_favourites";
-            icon = R.drawable.ic_heart_outline_white_24dp;
+            icon = R.drawable.ic_heart_outline_grey_24dp;
         }
 
         builder.addAction(icon, label, mAddToPlaylistIntent);

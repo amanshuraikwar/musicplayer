@@ -19,4 +19,5 @@ public interface MusicPlayerMvpPresenter extends BaseMvpPresenter<MusicPlayerMvp
     void setAntiDragView(View view);
     void setSupl(SlidingUpPanelLayout supl);
     void onCollapseIvClick();
+    void onBottomHalfPanelStateChanged(SlidingUpPanelLayout.PanelState state);
 }

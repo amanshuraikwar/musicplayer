@@ -19,6 +19,7 @@ import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.module.ActivityModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.ui.about.AboutActivity;
 import app.sonu.com.musicplayer.ui.album.AlbumFragment;
 import app.sonu.com.musicplayer.ui.base.BaseActivity;
 import app.sonu.com.musicplayer.ui.intro.MainIntroActivity;
@@ -95,21 +96,21 @@ public class MainActivity extends BaseActivity<MainMvpPresenter>
     @Override
     public void showNavigationBar() {
         bnv.setVisibility(View.VISIBLE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Window window = getWindow();
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+//        }
     }
 
     @Override
     public void hideNavigationBar() {
         bnv.setVisibility(View.GONE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.blueGrey300));
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Window window = getWindow();
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.setStatusBarColor(getResources().getColor(R.color.blueGrey300));
+//        }
 
     }
 

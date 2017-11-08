@@ -11,6 +11,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -96,6 +97,15 @@ public class MediaProviderImpl extends MediaProvider {
                         mSongListByArtistId.put(artistId, new ArrayList<MediaMetadataCompat>());
                     }
                     mSongListByArtistId.get(artistId).add(item);
+
+                    // adding current album to its artist cache
+                    if (!mAlbumListByArtistId.containsKey(artistId)) {
+                        mAlbumListByArtistId.put(artistId, new ArrayList<MediaMetadataCompat>());
+                    }
+                    // if album is not already in cache
+                    if (!mAlbumListByArtistId.get(artistId).contains(mAlbumListById.get(albumId))) {
+                        mAlbumListByArtistId.get(artistId).add(mAlbumListById.get(albumId));
+                    }
                 }
 
                 // forming artist cache
@@ -177,6 +187,13 @@ public class MediaProviderImpl extends MediaProvider {
                         MediaIdHelper.MEDIA_ID_ARTISTS,
                         MediaIdHelper.getHierarchyId(mediaId)));
             }
+        } else if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_ALBUMS_OF_ARTIST)) { // albums of artist
+            String artist = MediaIdHelper.getHierarchy(mediaId)[1];
+            for (MediaMetadataCompat album : getAlbumsByArtist(artist)) {
+                mediaItems.add(createBrowsableMediaItem(album,
+                        MediaIdHelper.MEDIA_ID_ALBUMS,
+                        album.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)));
+            }
         } else {
             Log.w(TAG, "getChildren:skipping unmatched mediaId: "+mediaId);
         }
@@ -194,6 +211,20 @@ public class MediaProviderImpl extends MediaProvider {
         }
 
         return allAlbums;
+    }
+
+    @Override
+    public List<MediaMetadataCompat> getAlbumsByArtist(String artistId) {
+        Log.d(TAG, "getAlbums:called");
+        if (mCurrentState != MediaProvider.State.INITIALIZED) {
+            return Collections.emptyList();
+        }
+
+        if (mAlbumListByArtistId.get(artistId) == null) {
+            return Collections.emptyList();
+        }
+
+        return mAlbumListByArtistId.get(artistId);
     }
 
     @Override

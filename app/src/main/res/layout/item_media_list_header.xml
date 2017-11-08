@@ -5,34 +5,24 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:text="@string/sample_media_list_header"
         android:id="@+id/titleTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/iconIv"
-        android:layout_marginStart="@dimen/home_icon_size_padding"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="8dp"
-        android:textSize="24sp"
-        android:textColor="@color/coal"/>
+        android:layout_toStartOf="@+id/headerActionBtn"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/sample_media_list_header"
+        android:textAppearance="@style/headerTextStyle"/>
 
-    <ImageView
-        android:id="@+id/iconIv"
+    <Button
+        android:id="@+id/headerActionBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_playlist_add_black_24dp"
-        android:tint="@color/coal"
+        android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:padding="4dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/whiteSmoke"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/home_icon_size_padding"/>
+        android:text="@string/more_action_text"
+        android:textColor="@color/colorAccent"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"/>
 </RelativeLayout>

@@ -13,15 +13,13 @@
         android:paddingBottom="20dp"
         android:paddingEnd="24dp"
         android:text="@string/new_playlist_title"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="@color/coal"/>
+        android:textAppearance="@style/titleTextStyle"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/titleTv"
-        android:background="@color/whiteSmoke"/>
+        android:background="@color/lightGrey"/>
 
     <EditText
         android:id="@+id/playlistTitleEt"
@@ -29,8 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/titleTv"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
         android:hint="@string/playlist_title_hint"
         android:lines="1"
@@ -41,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/playlistTitleEt"
-        android:background="@color/whiteSmoke"/>
+        android:background="@color/lightGrey"/>
 
     <Button
         android:id="@+id/createBtn"
@@ -51,10 +49,7 @@
         android:layout_alignParentEnd="true"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:text="@string/create_playlist_btn_text"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"/>
+        android:textColor="@color/colorAccent"/>
 
     <Button
         android:id="@+id/cancelBtn"
@@ -64,8 +59,5 @@
         android:layout_toStartOf="@+id/createBtn"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:text="@string/cancel_btn_text"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"/>
+        android:textColor="@color/colorAccent"/>
 </RelativeLayout>

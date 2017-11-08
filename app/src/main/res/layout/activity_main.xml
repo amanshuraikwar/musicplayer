@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+    android:layout_height="match_parent">
 
     <fragment
         android:id="@+id/homeMusicPlayerHolderFragment"
@@ -12,14 +11,15 @@
         android:layout_height="match_parent"
         android:name="app.sonu.com.musicplayer.ui.home.HomeFragment"/>
 
+    <!-- have to set background:white to display shadow -_- weird -->
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bnv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/veryWhite"
-        app:itemBackground="@color/veryWhite"
+        android:background="@color/white"
+        app:itemBackground="@color/white"
         app:itemIconTint="@drawable/bottom_navigation_view_icon_tint_selector"
-        app:itemTextColor="@color/coal"
+        app:itemTextColor="@color/colorAccent"
         app:menu="@menu/bottom_navigation_items"/>
 </FrameLayout>

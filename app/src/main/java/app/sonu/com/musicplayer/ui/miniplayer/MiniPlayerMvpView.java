@@ -7,7 +7,7 @@ import app.sonu.com.musicplayer.ui.base.BaseMvpView;
  */
 
 public interface MiniPlayerMvpView extends BaseMvpView {
-    void displaySong(String title, String albumArtPath);
+    void displaySong(String title, String subtitle, String albumArtPath);
     void showPauseIcon();
     void showPlayIcon();
     void setSeekBarPosition(int position);
@@ -21,4 +21,6 @@ public interface MiniPlayerMvpView extends BaseMvpView {
     void setRepeatModeAll();
     void setRepeatModeOne();
     void displayToast(String message);
+    void setUiDarkColor(int oldColor, int newColor);
+    void setUiLightColor(int oldColor, int newColor);
 }

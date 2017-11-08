@@ -101,11 +101,11 @@ public class AllSongsPresenter extends
                 .getTransportControls()
                 .playFromMediaId(songsList.get(randomIndex).getMediaId(), null);
 
-        if (!mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
+        if (!(mMediaBrowserManager.getMediaController().getShuffleMode() == 1)) {
             mMediaBrowserManager
                     .getMediaController()
                     .getTransportControls()
-                    .setShuffleModeEnabled(true);
+                    .setShuffleMode(1);
         }
     }
 

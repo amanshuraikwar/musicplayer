@@ -13,15 +13,13 @@
         android:paddingBottom="20dp"
         android:paddingEnd="24dp"
         android:text="@string/add_songs_to_playlists_title"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="@color/coal"/>
+        android:textAppearance="@style/titleTextStyle"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/titleTv"
-        android:background="@color/whiteSmoke"/>
+        android:background="@color/lightGrey"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/itemsRv"
@@ -33,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/itemsRv"
-        android:background="@color/whiteSmoke"/>
+        android:background="@color/lightGrey"/>
 
     <Button
         android:id="@+id/createNewPlaylistBtn"
@@ -43,10 +41,7 @@
         android:layout_toStartOf="@+id/doneBtn"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:text="@string/create_new_playlist_btn_text"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"/>
+        android:textColor="@color/colorAccent"/>
 
     <Button
         android:id="@+id/doneBtn"
@@ -56,9 +51,6 @@
         android:layout_alignParentEnd="true"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:text="@string/done_btn_text"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"/>
+        android:textColor="@color/colorAccent"/>
 </RelativeLayout>
 

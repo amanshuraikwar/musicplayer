@@ -3,6 +3,7 @@ package app.sonu.com.musicplayer.list.viewholder;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,7 +47,7 @@ public class AlbumSearchResultViewHolder extends BaseViewHolder<AlbumSearchResul
     @Override
     public void bind(final AlbumSearchResultVisitable visitable,
                      final AlbumSearchResultOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
@@ -54,18 +55,18 @@ public class AlbumSearchResultViewHolder extends BaseViewHolder<AlbumSearchResul
         options.centerCrop().placeholder(R.drawable.default_album_art);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
-            Glide.with(context)
+            Glide.with(activity)
                     .load(visitable.getMediaItem().getDescription().getIconUri().getEncodedPath())
                     .apply(options)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(iconIv);
         } else {
-            Glide.with(context).clear(iconIv);
+            Glide.with(activity).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_album_art));
+                iconIv.setImageDrawable(activity.getDrawable(R.drawable.default_album_art));
             } else {
                 iconIv.setImageDrawable(
-                        context
+                        activity
                                 .getResources()
                                 .getDrawable(R.drawable.default_album_art));
             }

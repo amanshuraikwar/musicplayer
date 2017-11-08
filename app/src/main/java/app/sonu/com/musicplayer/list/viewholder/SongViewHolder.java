@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
@@ -38,9 +39,6 @@ public class SongViewHolder extends BaseViewHolder<SongVisitable, SongOnClickLis
     @BindView(R.id.titleTv)
     TextView titleTv;
 
-    @BindView(R.id.extraInfoTv)
-    TextView extraInfoTv;
-
     @BindView(R.id.subtitleTv)
     TextView subtitleTv;
 
@@ -60,7 +58,7 @@ public class SongViewHolder extends BaseViewHolder<SongVisitable, SongOnClickLis
     @Override
     public void bind(final SongVisitable visitable,
                      final SongOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
@@ -68,18 +66,18 @@ public class SongViewHolder extends BaseViewHolder<SongVisitable, SongOnClickLis
         options.centerCrop().placeholder(R.drawable.default_song_art);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
-            Glide.with(context)
+            Glide.with(activity)
                     .load(visitable.getMediaItem().getDescription().getIconUri().getEncodedPath())
                     .apply(options)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(iconIv);
         } else {
-            Glide.with(context).clear(iconIv);
+            Glide.with(activity).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_song_art));
+                iconIv.setImageDrawable(activity.getDrawable(R.drawable.default_song_art));
             } else {
                 iconIv.setImageDrawable(
-                        context
+                        activity
                                 .getResources()
                                 .getDrawable(R.drawable.default_song_art));
             }
@@ -98,11 +96,6 @@ public class SongViewHolder extends BaseViewHolder<SongVisitable, SongOnClickLis
             Log.e(TAG, "bind:extras is null");
             return;
         }
-
-        extraInfoTv.setText(
-                DurationUtil.getFormattedDuration(
-                        extras.getLong(MediaMetadataCompat.METADATA_KEY_DURATION))
-        );
 
         optionsIb.setOnClickListener(new View.OnClickListener() {
             @Override

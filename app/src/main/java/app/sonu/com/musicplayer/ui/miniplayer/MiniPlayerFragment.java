@@ -1,11 +1,12 @@
 package app.sonu.com.musicplayer.ui.miniplayer;
 
-import android.graphics.Bitmap;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v7.graphics.Palette;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,11 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,7 +32,8 @@ import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 
-import app.sonu.com.musicplayer.util.ColorUtil;
+import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderFragment;
+import app.sonu.com.musicplayer.ui.musicplayer.MusicPlayerFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -65,17 +63,20 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
 
     private ScheduledFuture<?> mScheduleFuture;
 
-    @BindView(R.id.miniPlayerSongTitleTv)
-    TextView miniPlayerSongTitleTv;
+    @BindView(R.id.songTitleTv)
+    TextView songTitleTv;
 
-    @BindView(R.id.miniPlayerPlayPauseIv)
-    ImageView miniPlayerPlayPauseIv;
+    @BindView(R.id.subtitleTv)
+    TextView subtitleTv;
+
+    @BindView(R.id.playPauseIv)
+    ImageView playPauseIv;
 
     @BindView(R.id.miniPlayerMpb)
     MaterialProgressBar miniPlayerMpb;
 
-    @BindView(R.id.miniPlayerNavUpIv)
-    ImageView miniPlayerNavUpIv;
+    @BindView(R.id.albumArtIv)
+    ImageView albumArtIv;
 
     @BindView(R.id.shuffleNotifyIv)
     ImageView shuffleNotifyIv;
@@ -83,11 +84,8 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     @BindView(R.id.repeatNotifyIv)
     ImageView repeatNotifyIv;
 
-    @OnClick(R.id.miniPlayerNavUpIv)
-    void onNavUpClicked() {
-        Log.d(TAG, "navUp:clicked");
-        mPresenter.onNavUpClick();
-    }
+    @BindView(R.id.miniPlayerRl)
+    View miniPlayerRl;
 
     @OnClick(R.id.miniPlayerRl)
     void onMiniPlayerRlClick() {
@@ -95,7 +93,7 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         mPresenter.onNavUpClick();
     }
 
-    @OnClick(R.id.miniPlayerPlayPauseIv)
+    @OnClick(R.id.playPauseIv)
     void onPlayPauseIbClick(){
         Log.d(TAG, "playPauseIb onClick:called");
         mPresenter.playPauseButtonOnClick();
@@ -116,16 +114,8 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MusicPlayerHolderComponent mMusicPlayerHolderComponent =
-                DaggerMusicPlayerHolderComponent
-                        .builder()
-                        .musicPlayerHolderModule(new MusicPlayerHolderModule())
-                        .applicationComponent(
-                                ((MyApplication)getActivity().getApplicationContext())
-                                        .getApplicationComponent())
-                        .build();
-
-        mMusicPlayerHolderComponent
+        ((MusicPlayerHolderFragment) getParentFragment())
+                .getMusicPlayerHolderComponent()
                 .fragmentComponentBuilder()
                 .fragmentModule(new FragmentModule())
                 .build()
@@ -142,8 +132,9 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     }
 
     @Override
-    public void displaySong(String title, String albumArtPath) {
-        miniPlayerSongTitleTv.setText(title);
+    public void displaySong(String title, String subtitle, String albumArtPath) {
+        songTitleTv.setText(title);
+        subtitleTv.setText(subtitle);
 
         RequestOptions options = new RequestOptions();
         options.centerCrop();
@@ -153,14 +144,14 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
                     .asBitmap()
                     .load(albumArtPath)
                     .apply(options)
-                    .into(miniPlayerNavUpIv);
+                    .into(albumArtIv);
         } else {
-            Glide.with(getActivity()).clear(miniPlayerNavUpIv);
+            Glide.with(getActivity()).clear(albumArtIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                miniPlayerNavUpIv.setImageDrawable(
+                albumArtIv.setImageDrawable(
                         getActivity().getDrawable(R.drawable.default_song_art));
             } else {
-                miniPlayerNavUpIv.setImageDrawable(
+                albumArtIv.setImageDrawable(
                         getActivity()
                                 .getResources()
                                 .getDrawable(R.drawable.default_song_art));
@@ -171,22 +162,22 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
     @Override
     public void showPauseIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_white_48dp, null));
+            playPauseIv.setImageDrawable(getResources()
+                    .getDrawable(R.drawable.ic_pause_circle_filled_grey_40dp, null));
         } else {
-            miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_pause_white_48dp));
+            playPauseIv.setImageDrawable(getResources()
+                    .getDrawable(R.drawable.ic_pause_circle_filled_grey_40dp));
         }
     }
 
     @Override
     public void showPlayIcon() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_white_48dp, null));
+            playPauseIv.setImageDrawable(getResources()
+                    .getDrawable(R.drawable.ic_play_circle_filled_grey_40dp, null));
         } else {
-            miniPlayerPlayPauseIv.setImageDrawable(getResources()
-                    .getDrawable(R.drawable.ic_play_arrow_white_48dp));
+            playPauseIv.setImageDrawable(getResources()
+                    .getDrawable(R.drawable.ic_play_circle_filled_grey_40dp));
         }
     }
 
@@ -238,12 +229,12 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             shuffleNotifyIv
                     .setImageDrawable(
-                            getActivity().getDrawable(R.drawable.ic_shuffle_black_12dp));
+                            getActivity().getDrawable(R.drawable.ic_shuffle_grey_12dp));
         } else {
             shuffleNotifyIv.setImageDrawable(
                     getActivity()
                             .getResources()
-                            .getDrawable(R.drawable.ic_shuffle_black_12dp));
+                            .getDrawable(R.drawable.ic_shuffle_grey_12dp));
         }
     }
 
@@ -268,12 +259,12 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             repeatNotifyIv
                     .setImageDrawable(
-                            getActivity().getDrawable(R.drawable.ic_repeat_black_12dp));
+                            getActivity().getDrawable(R.drawable.ic_repeat_grey_12dp));
         } else {
             repeatNotifyIv.setImageDrawable(
                     getActivity()
                             .getResources()
-                            .getDrawable(R.drawable.ic_repeat_black_12dp));
+                            .getDrawable(R.drawable.ic_repeat_grey_12dp));
         }
     }
 
@@ -283,17 +274,44 @@ public class MiniPlayerFragment extends BaseFragment<MiniPlayerMvpPresenter>
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             repeatNotifyIv
                     .setImageDrawable(
-                            getActivity().getDrawable(R.drawable.ic_repeat_one_black_12dp));
+                            getActivity().getDrawable(R.drawable.ic_repeat_one_grey_12dp));
         } else {
             repeatNotifyIv.setImageDrawable(
                     getActivity()
                             .getResources()
-                            .getDrawable(R.drawable.ic_repeat_one_black_12dp));
+                            .getDrawable(R.drawable.ic_repeat_one_grey_12dp));
         }
     }
 
     @Override
     public void displayToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setUiDarkColor(int oldColor, int newColor) {
+        ValueAnimator colorAnimation = ValueAnimator
+                .ofObject(new ArgbEvaluator(), oldColor, newColor);
+        colorAnimation.setDuration(200); // milliseconds
+        colorAnimation.setRepeatCount(0);
+        colorAnimation.setStartDelay(0);
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                playPauseIv.setColorFilter((Integer) animator.getAnimatedValue());
+                songTitleTv.setTextColor((Integer) animator.getAnimatedValue());
+
+                miniPlayerMpb.setProgressTintList(
+                            ColorStateList.valueOf(
+                                    (Integer) animator.getAnimatedValue()));
+            }
+        });
+        colorAnimation.start();
+    }
+
+    @Override
+    public void setUiLightColor(int oldColor, int newColor) {
+        // do nothing
     }
 }

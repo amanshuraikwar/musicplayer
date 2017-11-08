@@ -84,7 +84,7 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
     private MediaListHeaderOnClickListener autoPlaylistAddClickListener =
             new MediaListHeaderOnClickListener() {
                 @Override
-                public void onIconIvClick() {
+                public void onActionClick() {
                     Log.d(TAG, "addPlaylist:clicked");
                     mPresenter.onAddPlaylistBtnClick();
                 }
@@ -160,8 +160,8 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
     @Override
     public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
         itemsRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList),
-                        new MediaListTypeFactory()));
+                new MediaRecyclerViewAdapter(getActivity(),
+                        new MediaListTypeFactory(), getVisitableList(itemList)));
     }
 
     /**
@@ -198,11 +198,11 @@ public class PlaylistsFragment extends BaseFragment<PlaylistsMvpPresenter>
         }
 
         List<BaseVisitable> visitableList = new ArrayList<>();
-        visitableList.add(new MediaListHeaderVisitable("Auto", false, 0));
+        visitableList.add(new MediaListHeaderVisitable("Auto"));
         visitableList.addAll(autoVisitableList);
 
         MediaListHeaderVisitable visitable = new MediaListHeaderVisitable("User", true,
-                R.drawable.ic_add_very_white_24dp);
+                "CREATE");
         visitable.setOnClickListener(autoPlaylistAddClickListener);
 
         visitableList.add(visitable);

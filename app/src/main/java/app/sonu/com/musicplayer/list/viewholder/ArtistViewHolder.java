@@ -5,7 +5,11 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,11 +23,22 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import app.sonu.com.musicplayer.R;
+import app.sonu.com.musicplayer.list.MediaListTypeFactory;
 import app.sonu.com.musicplayer.list.base.BaseViewHolder;
+import app.sonu.com.musicplayer.list.base.BaseVisitable;
+import app.sonu.com.musicplayer.list.onclicklistener.MediaItemSquareOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.ArtistVisitable;
 import app.sonu.com.musicplayer.list.onclicklistener.ArtistOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.MediaItemSquareVisitable;
+import app.sonu.com.musicplayer.model.Playlist;
+import app.sonu.com.musicplayer.ui.adapter.MediaListBuilder;
+import app.sonu.com.musicplayer.ui.adapter.simple.SimpleMediaListAdapter;
 import app.sonu.com.musicplayer.util.ColorUtil;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 import butterknife.BindView;
 
 /**
@@ -47,6 +62,9 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
     @BindView(R.id.iconIv)
     ImageView iconIv;
 
+    @BindView(R.id.horizontalRv)
+    RecyclerView horizontalRv;
+
     public ArtistViewHolder(View itemView) {
         super(itemView);
     }
@@ -54,7 +72,7 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
     @Override
     public void bind(final ArtistVisitable visitable,
                      final ArtistOnClickListener onClickListener,
-                     Context context) {
+                     final FragmentActivity activity) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
@@ -62,39 +80,19 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
         options.centerCrop().placeholder(R.drawable.default_artist_art_square);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
-            Glide.with(context)
+            Glide.with(activity)
                     .asBitmap()
                     .load(visitable.getMediaItem().getDescription().getIconUri().getEncodedPath())
                     .apply(options)
-                    .listener(new RequestListener<Bitmap>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e,
-                                                    Object model,
-                                                    Target<Bitmap> target,
-                                                    boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Bitmap resource,
-                                                       Object model,
-                                                       Target<Bitmap> target,
-                                                       DataSource dataSource,
-                                                       boolean isFirstResource) {
-
-                            updateUiColor(resource);
-                            return false;
-                        }
-                    })
                     .transition(BitmapTransitionOptions.withCrossFade())
                     .into(iconIv);
         } else {
-            Glide.with(context).clear(iconIv);
+            Glide.with(activity).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_artist_art_square));
+                iconIv.setImageDrawable(activity.getDrawable(R.drawable.default_artist_art_square));
             } else {
                 iconIv.setImageDrawable(
-                        context
+                        activity
                                 .getResources()
                                 .getDrawable(R.drawable.default_artist_art_square));
             }
@@ -106,30 +104,58 @@ public class ArtistViewHolder extends BaseViewHolder<ArtistVisitable, ArtistOnCl
                 onClickListener.onArtistClick(visitable.getMediaItem(), iconIv);
             }
         });
-    }
 
-    private void updateUiColor(Bitmap resource) {
+        horizontalRv.setVisibility(View.GONE);
 
-        if (resource == null) {
-            setUiColorWithSwatch(null);
-        } else {
-            ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    setUiColorWithSwatch(ColorUtil.getColorSwatch(palette));
+        iconIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (horizontalRv.getVisibility() == View.VISIBLE) {
+                    horizontalRv.setVisibility(View.GONE);
+                } else {
+                    horizontalRv.setVisibility(View.VISIBLE);
+
+                    horizontalRv.setLayoutManager(new LinearLayoutManager(activity,
+                            LinearLayoutManager.HORIZONTAL, false));
+                    horizontalRv.setAdapter(new SimpleMediaListAdapter(activity,
+                            new MediaListTypeFactory(),
+                            MediaIdHelper
+                                    .createHierarchyAwareMediaId(
+                                            null,
+                                            MediaIdHelper.MEDIA_ID_ALBUMS_OF_ARTIST,
+                                            MediaIdHelper
+                                                    .getHierarchyId(
+                                                            visitable
+                                                                    .getMediaItem()
+                                                                    .getDescription()
+                                                                    .getMediaId())),
+                            new MediaListBuilder() {
+                                @Override
+                                public List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> itemList) {
+                                    List<BaseVisitable> visitableList = new ArrayList<>();
+
+                                    for (MediaBrowserCompat.MediaItem item : itemList) {
+                                        MediaItemSquareVisitable visitable1 =
+                                                new MediaItemSquareVisitable(item, R.drawable.ic_album_grey_24dp);
+                                        visitable1.setOnClickListener(new MediaItemSquareOnClickListener() {
+                                            @Override
+                                            public void onClick(MediaBrowserCompat.MediaItem item) {
+                                                onClickListener.onArtistAlbumClick(item);
+                                            }
+
+                                            @Override
+                                            public void OnClick() {
+
+                                            }
+                                        });
+                                        visitableList.add(visitable1);
+                                    }
+
+                                    return visitableList;
+                                }
+                    }));
                 }
-            });
-        }
-    }
-
-    private void setUiColorWithSwatch(Palette.Swatch swatch) {
-
-        int backgroundColor = ColorUtil.getBackgroundColor(swatch);
-        int titleColor = ColorUtil.getTitleColor(swatch);
-        int bodyColor = ColorUtil.getBodyColor(swatch);
-
-        parentView.setBackgroundColor(backgroundColor);
-        titleTv.setTextColor(titleColor);
-        subtitleTv.setTextColor(bodyColor);
+            }
+        });
     }
 }

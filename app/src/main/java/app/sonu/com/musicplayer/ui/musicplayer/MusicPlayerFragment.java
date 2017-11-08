@@ -138,7 +138,7 @@ public class MusicPlayerFragment extends BaseFragment<MusicPlayerMvpPresenter>
             public void onPanelStateChanged(View panel,
                                             SlidingUpPanelLayout.PanelState previousState,
                                             SlidingUpPanelLayout.PanelState newState) {
-                // todo tooggle small album art
+                mPresenter.onBottomHalfPanelStateChanged(newState);
             }
         });
 

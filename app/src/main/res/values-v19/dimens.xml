@@ -2,6 +2,5 @@
 <resources>
     <dimen name="search_view_margin_top">29dp</dimen>
     <dimen name="status_bar_padding">25dp</dimen>
-    <dimen name="music_player_bottom_half_height">296dp</dimen>
     <dimen name="detail_title_bar_height">121dp</dimen>
 </resources>

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,8 @@ import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderPaddedVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderVisitable;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 
 import app.sonu.com.musicplayer.list.onclicklistener.ArtistOnClickListener;
@@ -47,6 +50,12 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
         public void onArtistClick(MediaBrowserCompat.MediaItem item, View animatingView) {
             Log.d(TAG, "onArtistClick:item="+item);
             mPresenter.onArtistClicked(item, animatingView);
+        }
+
+        @Override
+        public void onArtistAlbumClick(MediaBrowserCompat.MediaItem item) {
+            Log.d(TAG, "onArtistAlbumClick:item="+item);
+            mPresenter.onArtistAlbumClicked(item);
         }
 
         @Override
@@ -95,7 +104,7 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
 
         if (itemsRv.getLayoutManager() == null) {
             RecyclerView.LayoutManager layoutManager =
-                    new GridLayoutManager(getActivity().getApplicationContext(), 2);
+                    new LinearLayoutManager(getActivity().getApplicationContext());
             itemsRv.setLayoutManager(layoutManager);
         }
 
@@ -120,8 +129,8 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
     @Override
     public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
         itemsRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList),
-                        new MediaListTypeFactory()));
+                new MediaRecyclerViewAdapter(getActivity(),
+                        new MediaListTypeFactory(), getVisitableList(itemList)));
     }
 
     @Override
@@ -141,6 +150,7 @@ public class ArtistsFragment extends BaseFragment<ArtistsMvpPresenter> implement
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> artistList) {
         List<BaseVisitable> visitableList = new ArrayList<>();
+        visitableList.add(new MediaListHeaderVisitable("All Artists"));
         for (MediaBrowserCompat.MediaItem item : artistList) {
             ArtistVisitable artistVisitable = new ArtistVisitable(item);
             artistVisitable.setOnClickListener(artistOnClickListener);

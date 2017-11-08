@@ -3,7 +3,9 @@ package app.sonu.com.musicplayer.list.viewholder;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,8 +37,8 @@ public class QueueItemViewHolder extends BaseViewHolder<QueueItemVisitable, Queu
     @BindView(R.id.subtitleTv)
     TextView subtitleTv;
 
-    @BindView(R.id.moreOptionsIv)
-    ImageView moreOptionsIv;
+    @BindView(R.id.optionsIb)
+    ImageButton optionsIb;
 
     @BindView(R.id.parentRl)
     View parentRl;
@@ -51,7 +53,7 @@ public class QueueItemViewHolder extends BaseViewHolder<QueueItemVisitable, Queu
     @Override
     public void bind(final QueueItemVisitable visitable,
                      final QueueItemOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
         indexTv.setText(String.valueOf(visitable.getIndexToDisplay()));

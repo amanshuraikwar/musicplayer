@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 import android.view.View;
@@ -46,24 +47,24 @@ public class AlbumArtViewHolder extends BaseViewHolder<AlbumArtVisitable, BaseLi
     @Override
     public void bind(final AlbumArtVisitable visitable,
                      final BaseListItemOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
 
         final RequestOptions options = new RequestOptions();
         options.centerCrop().placeholder(R.drawable.default_song_art);
 
         if (visitable.getQueueItem().getDescription().getIconUri() != null) {
-            Glide.with(context)
+            Glide.with(activity)
                     .load(visitable.getQueueItem().getDescription().getIconUri().getEncodedPath())
                     .apply(options)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(iconIv);
         } else {
-            Glide.with(context).clear(iconIv);
+            Glide.with(activity).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_song_art));
+                iconIv.setImageDrawable(activity.getDrawable(R.drawable.default_song_art));
             } else {
                 iconIv.setImageDrawable(
-                        context
+                        activity
                                 .getResources()
                                 .getDrawable(R.drawable.default_song_art));
             }

@@ -86,6 +86,12 @@ public class ArtistsPresenter extends BasePresenter<ArtistsMvpView>
         mAppBus.artistClickSubject.onNext(new Pair<>(item, animatingView));
     }
 
+    @Override
+    public void onArtistAlbumClicked(MediaBrowserCompat.MediaItem item) {
+        Log.d(TAG, "onArtistAlbumClicked:album=" + item);
+        mAppBus.albumClickSubject.onNext(new Pair<>(item, new View(mContext)));
+    }
+
     // media browser callback
     @Override
     public void onMediaBrowserConnected() {

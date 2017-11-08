@@ -26,4 +26,8 @@ public interface PlaybackControlsMvpView extends BaseMvpView {
     void resetSeekbar();
     void displayToast(String message);
     void showAddToPlaylistsDialog(String mediaId);
+    void showMiniAlbumArt();
+    void hideMiniAlbumArt();
+    void setMetadataGravityCenter();
+    void setMetadataGravityStart();
 }

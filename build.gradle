@@ -5,8 +5,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'com.android.tools.build:gradle:3.0.0'
+//        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.jakewharton:butterknife-gradle-plugin:8.5.1'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -22,6 +22,7 @@ allprojects {
         }
         mavenCentral()
         maven { url "https://jitpack.io" }
+        google()
     }
 }
 
@@ -31,10 +32,10 @@ ext {
     minSdkVersion = 19
     targetSdkVersion = 26
     compileSdkVersion = 26
-    buildToolsVersion = '26.0.1'
+    buildToolsVersion = '26.0.2'
 
     // App dependencies
-    supportLibraryVersion = '26.0.1'
+    supportLibraryVersion = '27.0.0'
     gsonVersion = '2.8.0'
 
     dagger2Version = '2.7'
@@ -51,7 +52,7 @@ ext {
     fastscrollVersion = '1.0.16'
     materialSearchViewVersion = '1.4.0'
 
-    multidexVersion = '1.0.1'
+    multidexVersion = '1.0.2'
     constraintlayoutVersion = '1.0.2'
 
     //Test dependencies

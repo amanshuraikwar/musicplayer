@@ -132,8 +132,8 @@ public class AddSongsToPlaylistsFragment extends BaseDialogFragment<AddSongsToPl
     @Override
     public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
         itemsRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList),
-                        new MediaListTypeFactory()));
+                new MediaRecyclerViewAdapter(getActivity(),
+                        new MediaListTypeFactory(), getVisitableList(itemList)));
     }
 
     @Override

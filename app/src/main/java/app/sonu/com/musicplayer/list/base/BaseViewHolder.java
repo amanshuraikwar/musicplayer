@@ -1,6 +1,7 @@
 package app.sonu.com.musicplayer.list.base;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -24,5 +25,6 @@ public abstract class BaseViewHolder
      * @param visitable visitable instance
      * @param onClickListener onclick listener attached
      */
-    public abstract void bind(Visitable visitable, OnClickListener onClickListener, Context context);
+    public abstract void bind(Visitable visitable, OnClickListener onClickListener,
+                              FragmentActivity activity);
 }

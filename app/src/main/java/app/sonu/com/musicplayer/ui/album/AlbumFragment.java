@@ -11,6 +11,8 @@ import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.list.base.BaseVisitable;
 import app.sonu.com.musicplayer.list.visitable.AlbumSongVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderPaddedVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderVisitable;
 import app.sonu.com.musicplayer.ui.base.mediaitemdetail.MediaItemDetailFragment;
 import app.sonu.com.musicplayer.ui.base.musicplayerholder.MusicPlayerHolderActivity;
 
@@ -54,7 +56,8 @@ public class AlbumFragment extends MediaItemDetailFragment<AlbumMvpPresenter>
         Log.d(TAG, "getVisitableList:called");
 
         List<BaseVisitable> visitableList = new ArrayList<>();
-
+        visitableList.add(new MediaListHeaderPaddedVisitable("Songs", true,
+                "SHUFFLE"));
         for (MediaBrowserCompat.MediaItem songItem : songList) {
             AlbumSongVisitable visitable = new AlbumSongVisitable(songItem);
             visitable.setOnClickListener(songOnClickListener);

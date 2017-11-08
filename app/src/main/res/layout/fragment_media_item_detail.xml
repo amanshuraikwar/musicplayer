@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
-    android:id="@+id/elasticDragDismissLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/elasticDragDismissLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/whiteSmoke"
-    app:dragDismissDistance="174dp"
-    app:dragDismissScale="0.95"
-    android:fitsSystemWindows="false">
+    android:background="@color/lightGrey">
 
     <app.sonu.com.musicplayer.ui.view.StateAwareAppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Light">
+        android:layout_height="wrap_content">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="?attr/colorAccent"
+            app:contentScrim="@color/darkGrey"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/detail_title_bar_height">
+                android:layout_height="wrap_content">
 
                 <app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout
                     android:id="@+id/artWfsl"
@@ -39,109 +35,86 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/default_album_art"/>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="256dp"
-                        android:background="@drawable/gradient_background_dark_top_down"
-                        android:clickable="false"/>
+                        android:src="@drawable/default_album_art"
+                        tools:ignore="ContentDescription" />
                 </app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="256dp"
+                    android:background="@drawable/gradient_background_dark_top_down"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="256dp"
+                    android:background="@drawable/gradient_background_dark_bottom_up_dark"
+                    android:layout_gravity="bottom"/>
+
+                <LinearLayout
+                    android:id="@+id/metadataRl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/titleTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/home_icon_size_padding"
+                        android:text="@string/sample_album_title"
+                        android:lines="1"
+                        android:textAppearance="@style/titleTextStyleLarge"/>
+
+                    <TextView
+                        android:id="@+id/subtitleTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/home_icon_size_padding"
+                        android:text="@string/sample_artist_name"
+                        android:lines="1"
+                        android:textAppearance="@style/headerTextStyle"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="16dp"/>
+                </LinearLayout>
             </FrameLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/detail_title_bar_height"
+                android:layout_height="wrap_content"
                 app:layout_collapseMode="pin"/>
 
-            <RelativeLayout
-                android:id="@+id/metadataRl"
-                android:layout_width="match_parent"
+            <ImageButton
+                android:id="@+id/backIb"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/blueGrey300"
-                android:layout_gravity="bottom"
-                app:layout_collapseMode="pin"
-                android:paddingTop="@dimen/status_bar_padding">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:paddingStart="@dimen/home_icon_size_padding"
-                    android:paddingEnd="16dp">
-                    
-                    <TextView
-                        android:id="@+id/titleTv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Random Access Memories"
-                        android:textSize="24sp"
-                        android:lines="1"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_below="@id/titleTv"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:id="@+id/subtitleIconIv"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:paddingTop="4dp"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="8dp"
-                            android:paddingBottom="4dp"
-                            android:background="?selectableItemBackgroundBorderless"
-                            android:clickable="true"/>
-
-                        <TextView
-                            android:id="@+id/subtitleTv"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Daft Punk"
-                            android:textSize="14sp"
-                            android:lines="1"/>
-                    </LinearLayout>
-                </RelativeLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_collapseMode="pin"
-                android:layout_marginTop="@dimen/status_bar_padding">
-
-                <ImageButton
-                    android:id="@+id/backIb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:src="@drawable/ic_arrow_back_very_white_24dp"
-                    android:background="?selectableItemBackgroundBorderless"/>
-            </RelativeLayout>
+                android:src="@drawable/ic_arrow_back_grey_24dp"
+                android:padding="16dp"
+                android:tint="@color/white"
+                android:background="?selectableItemBackgroundBorderless"
+                tools:ignore="ContentDescription"
+                app:layout_collapseMode="pin"/>
         </android.support.design.widget.CollapsingToolbarLayout>
-    </app.sonu.com.musicplayer.ui.view.StateAwareAppBarLayout>
 
+    </app.sonu.com.musicplayer.ui.view.StateAwareAppBarLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/shuffleFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_shuffle_white_smoke_24dp"
-        android:layout_gravity="bottom|right|end"
-        android:layout_margin="16dp"/>
-
+        app:backgroundTint="@color/white"
+        app:layout_anchor="@id/appBarLayout"
+        app:layout_anchorGravity="bottom|end|right"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_play_arrow_grey_24dp"
+        android:tint="@color/darkGrey"
+        android:visibility="gone"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/itemsRv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:background="@color/veryWhite"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </android.support.design.widget.CoordinatorLayout>

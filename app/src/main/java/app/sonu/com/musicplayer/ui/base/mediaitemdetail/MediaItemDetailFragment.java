@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,10 +21,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -69,9 +72,6 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
     @BindView(R.id.appBarLayout)
     StateAwareAppBarLayout appBarLayout;
 
-    @BindView(R.id.backIb)
-    ImageButton backIb;
-
     @BindView(R.id.shuffleFab)
     FloatingActionButton shuffleFab;
 
@@ -81,13 +81,16 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
     @BindView(R.id.subtitleTv)
     TextView subtitleTv;
 
-    @BindView(R.id.subtitleIconIv)
-    ImageView subtitleIconIv;
-
     @BindView(R.id.metadataRl)
     View metadataRl;
 
-    protected int backgroundColor, bodyColor, titleColor;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.backIb)
+    ImageButton backIb;
+
+    protected int darkColor;
 
     protected SongOnClickListener songOnClickListener = new SongOnClickListener() {
         @Override
@@ -138,18 +141,10 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
             itemsRv.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         }
 
-        appBarLayout.setOnStateChangeListener(new StateAwareAppBarLayout.OnStateChangeListener() {
+        shuffleFab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onStateChange(StateAwareAppBarLayout.State toolbarChange) {
-                Log.d(TAG, "state="+toolbarChange);
-                switch (toolbarChange) {
-                    case COLLAPSED:
-                        backIb.setColorFilter(titleColor, PorterDuff.Mode.SRC_IN);
-                        break;
-                    default:
-                        backIb.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-                        break;
-                }
+            public void onClick(View v) {
+                mPresenter.onShuffleAllClick();
             }
         });
 
@@ -160,22 +155,7 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
             }
         });
 
-        shuffleFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPresenter.onShuffleAllClick();
-            }
-        });
-
         mPresenter.onCreateView();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            subtitleIconIv.setImageDrawable(getActivity().getDrawable(getSubtitleIconArtId()));
-        } else {
-            subtitleIconIv.setImageDrawable(
-                    getResources()
-                            .getDrawable(getSubtitleIconArtId()));
-        }
 
         return view;
     }
@@ -240,38 +220,36 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
     @Override
     public void displayMediaList(List<MediaBrowserCompat.MediaItem> itemList) {
         itemsRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList), new MediaListTypeFactory()));
+                new MediaRecyclerViewAdapter(getActivity(), new MediaListTypeFactory(),
+                        getVisitableList(itemList)));
     }
 
     private void updateUiColor(Bitmap resource) {
 
         if (resource == null) {
-            setUiColorWithSwatch(null);
+            setUiColorWithPalette(null);
         } else {
             ColorUtil.generatePalette(resource, new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(Palette palette) {
-                    setUiColorWithSwatch(ColorUtil.getColorSwatch(palette));
+                    setUiColorWithPalette(palette);
                 }
             });
         }
     }
 
-    private void setUiColorWithSwatch(Palette.Swatch swatch) {
+    private void setUiColorWithPalette(Palette palette) {
 
-        backgroundColor = ColorUtil.getBackgroundColor(swatch);
-        titleColor = ColorUtil.getTitleColor(swatch);
-        bodyColor = ColorUtil.getBodyColor(swatch);
+        darkColor = ColorUtil.getDarkColor(palette);
+        toolbarLayout.setContentScrimColor(darkColor);
+        shuffleFab.setColorFilter(darkColor, PorterDuff.Mode.SRC_IN);
 
-        toolbarLayout.setContentScrimColor(backgroundColor);
-        titleTv.setTextColor(titleColor);
-        subtitleTv.setTextColor(bodyColor);
-        metadataRl.setBackgroundColor(backgroundColor);
+        final Window window = getActivity().getWindow();
 
-        shuffleFab.setBackgroundTintList(ColorStateList.valueOf(titleColor));
-        shuffleFab.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_IN);
-
-        subtitleIconIv.setColorFilter(bodyColor, PorterDuff.Mode.SRC_IN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.getDecorView().setSystemUiVisibility(0);
+            window.setStatusBarColor(darkColor);
+        }
     }
 
     @Override
@@ -298,11 +276,7 @@ public abstract class MediaItemDetailFragment<MvpPresenter extends MediaItemDeta
     }
 
     protected int getSubtitleIconArtId() {
-        return R.drawable.ic_info_outline_black_24dp;
-    }
-
-    protected ImageView getSubtitleIconIv() {
-        return subtitleIconIv;
+        return R.drawable.ic_info_outline_grey_24dp;
     }
 
     /**

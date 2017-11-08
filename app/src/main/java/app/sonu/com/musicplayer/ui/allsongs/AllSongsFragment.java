@@ -25,7 +25,14 @@ import app.sonu.com.musicplayer.di.component.DaggerMusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.component.MusicPlayerHolderComponent;
 import app.sonu.com.musicplayer.di.module.FragmentModule;
 import app.sonu.com.musicplayer.di.module.MusicPlayerHolderModule;
+import app.sonu.com.musicplayer.list.onclicklistener.MediaItemSquareOnClickListener;
+import app.sonu.com.musicplayer.list.onclicklistener.MediaListHeaderOnClickListener;
+import app.sonu.com.musicplayer.list.visitable.HorizontalMediaListVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaItemSquareVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderVisitable;
 import app.sonu.com.musicplayer.mediaplayer.MusicService;
+import app.sonu.com.musicplayer.mediaplayer.playlist.PlaylistsSource;
+import app.sonu.com.musicplayer.ui.adapter.MediaListBuilder;
 import app.sonu.com.musicplayer.ui.addsongstoplaylists.AddSongsToPlaylistsFragment;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 
@@ -34,6 +41,7 @@ import app.sonu.com.musicplayer.list.adapter.MediaRecyclerViewAdapter;
 import app.sonu.com.musicplayer.list.onclicklistener.SongOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.ShuffleAllSongsVisitable;
 import app.sonu.com.musicplayer.list.visitable.SongVisitable;
+import app.sonu.com.musicplayer.util.MediaIdHelper;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -48,6 +56,18 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
 
     @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
+
+    private MediaItemSquareOnClickListener mediaItemSquareOnClickListener = new MediaItemSquareOnClickListener() {
+        @Override
+        public void onClick(MediaBrowserCompat.MediaItem item) {
+            mPresenter.onSongClicked(item);
+        }
+
+        @Override
+        public void OnClick() {
+
+        }
+    };
 
     private SongOnClickListener songOnClickListener = new SongOnClickListener() {
         @Override
@@ -73,6 +93,18 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
                 }
             });
             popup.show();
+        }
+
+        @Override
+        public void OnClick() {
+
+        }
+    };
+
+    private MediaListHeaderOnClickListener mediaListHeaderOnClickListener = new MediaListHeaderOnClickListener() {
+        @Override
+        public void onActionClick() {
+            mPresenter.onShuffleAllClick();
         }
 
         @Override
@@ -152,8 +184,8 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
     @Override
     public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
         itemsRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList),
-                        new MediaListTypeFactory()));
+                new MediaRecyclerViewAdapter(getActivity(),
+                        new MediaListTypeFactory(), getVisitableList(itemList)));
     }
 
     /**
@@ -163,8 +195,31 @@ public class AllSongsFragment extends BaseFragment<AllSongsMvpPresenter> impleme
      */
     private List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> songList) {
         List<BaseVisitable> visitableList = new ArrayList<>();
-        ShuffleAllSongsVisitable visitable = new ShuffleAllSongsVisitable();
-        visitable.setOnClickListener(shuffleAllOnClickListener);
+
+        visitableList.add(new MediaListHeaderVisitable("Favourites"));
+
+        visitableList.add(new HorizontalMediaListVisitable(
+                MediaIdHelper.createHierarchyAwareMediaId(null,
+                        MediaIdHelper.MEDIA_ID_PLAYLISTS, PlaylistsSource.FAVORITES_PLAYLIST_ID),
+                new MediaListBuilder() {
+            @Override
+            public List<BaseVisitable> getVisitableList(List<MediaBrowserCompat.MediaItem> itemList) {
+                List<BaseVisitable> visitableList = new ArrayList<>();
+
+                for (MediaBrowserCompat.MediaItem item : itemList) {
+                    MediaItemSquareVisitable visitable1 =
+                            new MediaItemSquareVisitable(item);
+                    visitable1.setOnClickListener(mediaItemSquareOnClickListener);
+                    visitableList.add(visitable1);
+                }
+
+                return visitableList;
+            }
+        }));
+
+        MediaListHeaderVisitable visitable = new MediaListHeaderVisitable("All Songs",
+                true, "SHUFFLE");
+        visitable.setOnClickListener(mediaListHeaderOnClickListener);
         visitableList.add(visitable);
 
         for (MediaBrowserCompat.MediaItem item : songList) {

@@ -143,6 +143,11 @@ public class MusicPlayerPresenter extends BasePresenter<MusicPlayerMvpView>
         mMusicPlayerPanelPublishSubject.onNext(0);
     }
 
+    @Override
+    public void onBottomHalfPanelStateChanged(SlidingUpPanelLayout.PanelState state) {
+        mSlidingUpPanelBus.bottomHalfPanelStateChangedSubject.onNext(state);
+    }
+
     //media browser implementations
     @Override
     public void onMediaBrowserConnected() {

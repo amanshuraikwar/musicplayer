@@ -76,7 +76,8 @@ public abstract class MediaListFragment<MvpPresenter extends MediaListMvpPresent
     @Override
     public void displayMediaList(List<MediaBrowserCompat.MediaItem> itemList) {
         itemsRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList), new MediaListTypeFactory()));
+                new MediaRecyclerViewAdapter(getActivity(), new MediaListTypeFactory(),
+                        getVisitableList(itemList)));
     }
 
     @Override

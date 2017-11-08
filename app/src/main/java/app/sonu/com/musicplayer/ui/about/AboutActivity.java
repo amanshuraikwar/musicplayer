@@ -2,11 +2,16 @@ package app.sonu.com.musicplayer.ui.about;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
@@ -24,22 +29,20 @@ public class AboutActivity extends AppCompatActivity{
     @BindView(R.id.elasticDragDismissLayout)
     ElasticDragDismissFrameLayout elasticDragDismissLayout;
 
-    @BindView(R.id.colorView)
-    View colorView;
+    @BindView(R.id.projectGithubIv)
+    ImageView projectGithubIv;
 
-    int colors[] = {
-            Color.parseColor("#ffffff"),
-            Color.parseColor("#ffffff"),
-            Color.parseColor("#ffffff"),
-            Color.parseColor("#ECEFF1")};
+    @BindView(R.id.arLinkedinIv)
+    ImageView arLinkedinIv;
 
-    ValueAnimator colorAnimation = ValueAnimator
-            .ofObject(new ArgbEvaluator(),
-                    colors[0],
-                    colors[1],
-                    colors[2],
-                    colors[3],
-                    colors[0]);
+    @BindView(R.id.arGithubIv)
+    ImageView arGithubIv;
+
+    @BindView(R.id.arInstagramIv)
+    ImageView arInstagramIv;
+
+    @BindView(R.id.doneBtn)
+    Button doneBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,25 +67,56 @@ public class AboutActivity extends AppCompatActivity{
             }
         });
 
-        colorAnimation.setDuration(10000); // milliseconds
-        colorAnimation.setRepeatCount(ValueAnimator.INFINITE);
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
+        projectGithubIv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                elasticDragDismissLayout.setBackgroundColor((int) animator.getAnimatedValue());
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://github.com/amanshuraikwar/musicplayer"));
+                startActivity(intent);
             }
-
         });
 
-        colorAnimation.start();
+        arLinkedinIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://www.linkedin.com/in/amanshu-raikwar-36b534103/"));
+                startActivity(intent);
+            }
+        });
 
+        arGithubIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://github.com/amanshuraikwar"));
+                startActivity(intent);
+            }
+        });
+
+        arInstagramIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://instagram.com/amanshuraikwar"));
+                startActivity(intent);
+            }
+        });
+
+        doneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        colorAnimation.cancel();
-        colorAnimation.end();
-    }
 }

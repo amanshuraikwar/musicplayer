@@ -2,18 +2,19 @@
 <com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/elasticDragDismissLayout"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:dragDismissDistance="174dp"
-    app:dragDismissScale="0.95">
+    app:dragDismissDistance="@dimen/elastic_drag_dismiss_distance"
+    app:dragDismissScale="@dimen/elastic_drag_dismiss_scale">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layoutMode="opticalBounds"
-        android:layout_marginBottom="40dp">
+        android:layout_marginBottom="48dp"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,202 +23,211 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@color/blueGrey1">
+
+                <ImageView
+                    android:id="@+id/projectGithubIv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_github_grey_24dp"
+                    android:layout_gravity="bottom|end"
+                    android:padding="8dp"
+                    android:tint="@color/blueGrey"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    tools:ignore="ContentDescription" />
 
                 <app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout
                     android:id="@+id/colorView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <ImageView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_music_note_light_128dp"
-                    android:tint="@color/blueGrey50"/>
+                    android:orientation="horizontal"
+                    android:layout_gravity="center">
 
-                <TextView
+                    <View
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@color/blueGrey2"/>
+
+                    <View
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@color/blueGrey3"/>
+                    <View
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@color/blueGrey4"/>
+
+                    <View
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@color/blueGrey"/>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:layout_gravity="center"
-                    android:text="@string/app_name_spaced"
-                    android:textSize="45sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                    android:orientation="horizontal"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="C A "
+                        android:textSize="@dimen/title_text_size_extra_large"
+                        android:textColor="@color/darkBlueGrey"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="S S "
+                        android:textSize="@dimen/title_text_size_extra_large"
+                        android:textColor="@color/darkBlueGrey"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="E T "
+                        android:textSize="@dimen/title_text_size_extra_large"
+                        android:textColor="@color/blueGrey1"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="T E "
+                        android:textSize="@dimen/title_text_size_extra_large"
+                        android:textColor="@color/blueGrey1"
+                        android:textStyle="bold"/>
+                </LinearLayout>
             </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="4dp"
-                android:text="@string/about_heading"
-                android:textSize="21sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/about_description"
-                android:textSize="15sp"
-                android:textColor="@color/grey"/>
-
-
+                android:textAppearance="@style/titleTextStyle"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="4dp"
-                android:text="@string/open_source_heading"
-                android:textSize="21sp"/>
+                android:text="@string/developed_by_title"
+                android:textAppearance="@style/titleTextStyleSmall"/>
 
-            <TextView
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/open_source_description"
-                android:textSize="15sp"
-                android:textColor="@color/grey"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="4dp"
-                android:text="@string/github_heading"
-                android:textSize="21sp"/>
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:linksClickable="true"
-                android:autoLink="web"
-                android:text="@string/github_link"
-                android:textSize="15sp"
-                android:textColor="@color/grey"/>
+                <android.support.v7.widget.CardView
+                    android:id="@+id/myImageCv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="4dp"
-                android:text="@string/instagram_heading"
-                android:textSize="21sp"/>
+                    <ImageView
+                        android:layout_width="@dimen/avatar_size"
+                        android:layout_height="@dimen/avatar_size"
+                        android:src="@drawable/me"
+                        tools:ignore="ContentDescription" />
+                </android.support.v7.widget.CardView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/instagram_description"
-                android:textSize="15sp"
-                android:textColor="@color/grey"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_toEndOf="@+id/myImageCv"
+                    android:layout_marginStart="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:linksClickable="true"
-                android:autoLink="web"
-                android:text="@string/instagram_link"
-                android:textSize="15sp"
-                android:textColor="@color/grey"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/developer_name"
+                        android:textAppearance="@style/titleTextStyle"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:textSize="15sp"
-                android:text="@string/developer_name"
-                android:textColor="@color/black"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/bodyTextStyleSmall"
+                        android:text="@string/ar_email"/>
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                android:textStyle="italic"
-                android:textSize="12sp"
-                android:linksClickable="true"
-                android:autoLink="web"
-                android:textColor="@color/grey"
-                android:text="@string/developer_github_link"/>
+                <ImageView
+                    android:id="@+id/arLinkedinIv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:padding="4dp"
+                    android:layout_toStartOf="@+id/arGithubIv"
+                    android:src="@drawable/ic_linkedin_grey_24dp"
+                    android:layout_below="@+id/myImageCv"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    tools:ignore="ContentDescription" />
+
+                <ImageView
+                    android:id="@+id/arGithubIv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:padding="4dp"
+                    android:layout_toStartOf="@+id/arInstagramIv"
+                    android:src="@drawable/ic_github_grey_24dp"
+                    android:layout_below="@+id/myImageCv"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    tools:ignore="ContentDescription" />
+
+                <ImageView
+                    android:id="@+id/arInstagramIv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_instagram_grey_24dp"
+                    android:layout_below="@+id/myImageCv"
+                    android:layout_alignParentEnd="true"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    tools:ignore="ContentDescription" />
+            </RelativeLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center"
-        android:background="@color/blueGrey900"
         android:layout_gravity="bottom">
 
-        <TextView
+        <Button
+            android:id="@+id/doneBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/developer_note_1"
-            android:textSize="12sp"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/veryWhite"/>
-
-        <com.like.LikeButton
-            app:icon_type="heart"
-            app:icon_size="24dp"
-            app:circle_start_color="@color/whiteSmoke"
-            app:like_drawable="@drawable/ic_heart_solid_light_pink_24dp"
-            app:unlike_drawable="@drawable/ic_heart_outline_white_24dp"
-            app:dots_primary_color="@color/lightPink"
-            app:dots_secondary_color="@color/whiteSmoke"
-            app:circle_end_color="@color/lightPink"
-            app:anim_scale_factor="1.6"
-            android:id="@+id/heartLikeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/developer_note_2"
-            android:textSize="12sp"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/veryWhite"/>
-    </LinearLayout>
+            android:layout_gravity="end"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:text="@string/done_btn_text"/>
+    </android.support.v7.widget.CardView>
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

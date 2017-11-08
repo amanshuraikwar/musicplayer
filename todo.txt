@@ -4,7 +4,7 @@
 [done] resolve the bug with fragments
 [done] design search ui
 [done] after dismissing the activity, when restarted and the music was playing repeat mode and shuffle mode are not shown correctly
-[done] update queue index using queue playlistId of elements when activity is restarted after dismissed and music was playing
+[done] update queue index using queue playlistId of visitableList when activity is restarted after dismissed and music was playing
 [done] model localplayback class again
 [done] resolve the bug with notificaiton
 [done] resolve the bug with no activity playback

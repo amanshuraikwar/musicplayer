@@ -12,17 +12,19 @@ import android.support.v7.graphics.Palette;
 
 public class ColorUtil {
 
-    private static final int BACKGROUND_COLOR_FALLBACK = Color.parseColor("#eeeeee");
-    private static final int TITLE_COLOR_FALLBACK = Color.parseColor("#2f2f2f");
-    private static final int BODY_COLOR_FALLBACK = Color.parseColor("#757575");
+    private static final int BACKGROUND_COLOR_FALLBACK = Color.parseColor("#ffffff");
+    private static final int TITLE_COLOR_FALLBACK = Color.parseColor("#212121");
+    private static final int BODY_COLOR_FALLBACK = Color.parseColor("#616161");
 
-    private static final int TITLE_COLOR_DARK = Color.parseColor("#2f2f2f");
-    private static final int BODY_COLOR_DARK = Color.parseColor("#757575");
+    private static final int TITLE_COLOR_DARK = Color.parseColor("#212121");
+    private static final int BODY_COLOR_DARK = Color.parseColor("#616161");
 
     private static final int TITLE_COLOR_LIGHT = Color.parseColor("#ffffff");
     private static final int BODY_COLOR_LIGHT = Color.parseColor("#eeeeee");
 
-    @Nullable
+    private static final int FALLBACK_DARK_COLOR = Color.parseColor("#424242");
+    private static final int FALLBACK_LIGHT_COLOR = Color.parseColor("#eeeeee");
+
     public static void generatePalette(@NonNull Bitmap bitmap,
                                        Palette.PaletteAsyncListener paletteAsyncListener) {
         Palette.from(bitmap).generate(paletteAsyncListener);
@@ -66,6 +68,23 @@ public class ColorUtil {
         }
     }
 
+    public static int getDarkColor(@Nullable Palette palette) {
+        if (palette != null) {
+            return palette.getDarkVibrantColor(FALLBACK_DARK_COLOR);
+        }
+
+        return FALLBACK_DARK_COLOR;
+    }
+
+    public static int getLightColor(@Nullable Palette palette) {
+        if (palette != null) {
+            return palette.getLightVibrantColor(FALLBACK_LIGHT_COLOR);
+        }
+
+        return FALLBACK_LIGHT_COLOR;
+    }
+
+    @Deprecated
     public static Palette.Swatch getColorSwatch(@Nullable Palette palette) {
         if (palette != null) {
             if (palette.getVibrantSwatch() != null) {

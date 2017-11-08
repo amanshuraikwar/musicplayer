@@ -19,9 +19,9 @@ public interface PlaylistsSource {
     int FAVORITES_PLAYLIST_COLOR = Color.parseColor("#F06292");
     int DEFAULT_PLAYLIST_COLOR = Color.parseColor("#484848");
 
-    int LAST_ADDED_PLAYLIST_ICON_DRAWABLE_ID = R.drawable.ic_playlist_play_blue_grey_300_24dp;
-    int FAVORITES_PLAYLIST_ICON_DRAWABLE_ID = R.drawable.ic_heart_solid_light_pink_24dp;
-    int DEFAULT_PLAYLIST_ICON_DRAWABLE_ID = R.drawable.ic_playlist_play_blue_grey_300_24dp;
+    int LAST_ADDED_PLAYLIST_ICON_DRAWABLE_ID = R.drawable.ic_playlist_play_grey_24dp;
+    int FAVORITES_PLAYLIST_ICON_DRAWABLE_ID = R.drawable.ic_heart_solid_grey_24dp;
+    int DEFAULT_PLAYLIST_ICON_DRAWABLE_ID = R.drawable.ic_playlist_play_grey_24dp;
 
     String FAVORITES_PLAYLIST_ID = "1";
     String LAST_ADDED_PLAYLIST_ID = "2";

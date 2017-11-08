@@ -270,6 +270,8 @@ public class MusicService extends MediaBrowserServiceCompat
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_PLAYLISTS, null);
                         case MediaIdHelper.PLAYLISTS_FOR_SONG_ROOT_HINT:
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_PLAYLISTS_FOR_SONG, null);
+                        case MediaIdHelper.ALBUMS_OF_ARTIST_ROOT_HINT:
+                            return new BrowserRoot(MediaIdHelper.MEDIA_ID_ALBUMS_OF_ARTIST, null);
                         default:
                             return new BrowserRoot(MediaIdHelper.MEDIA_ID_EMPTY_ROOT, null);
                     }
@@ -409,9 +411,9 @@ public class MusicService extends MediaBrowserServiceCompat
     public void onShuffleModeChanged(int mode) {
         Log.d(TAG, "onShuffleModeChanged:mode="+mode);
         if (mode == 0) {
-            mMediaSession.setShuffleModeEnabled(false);
+            mMediaSession.setShuffleMode(0);
         } else if (mode == 1) {
-            mMediaSession.setShuffleModeEnabled(true);
+            mMediaSession.setShuffleMode(1);
         }
     }
 
@@ -494,8 +496,8 @@ public class MusicService extends MediaBrowserServiceCompat
 
         //todo deprecated in 26.0.0-beta-2
         @Override
-        public void onSetShuffleModeEnabled(boolean enabled) {
-            mPlaybackManager.getMediaSessionCallback().onSetShuffleModeEnabled(enabled);
+        public void onSetShuffleMode(int mode) {
+            mPlaybackManager.getMediaSessionCallback().onSetShuffleMode(mode);
         }
 
         @Override

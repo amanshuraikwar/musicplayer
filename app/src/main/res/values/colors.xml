@@ -1,36 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/veryWhite</color>
-    <color name="colorPrimaryDark">@color/whiteSmoke</color>
-    <color name="colorAccent">@color/charcoal</color>
+    <color name="colorPrimary">@color/yellow</color>
+    <color name="colorPrimaryDark">@color/darkBlueGrey</color>
+    <color name="colorAccent">@color/blueGrey</color>
 
-    <color name="blackTransparent">#880a0a0a</color>
-    <color name="veryWhite">#ffffff</color>
-    <color name="whiteSmoke">#eeeeee</color>
-
-    <color name="greyTransparent">#88757575</color>
-    <color name="coalTransparent">#882f2f2f</color>
-    <color name="fullTransparent">#00000000</color>
-
-    <color name="lightGrey">#e0e0e0</color>
-    <color name="grey500">#9E9E9E</color>
+    <color name="white">#ffffff</color>
+    <color name="lightGrey">#eeeeee</color>
     <color name="grey">#757575</color>
-    <color name="charcoal">#484848</color>
-    <color name="aqua">#6ad0a4</color>
-    <color name="lightAqua">#8ee6c3</color>
-    <color name="darkGrey">#616161</color>
-    <color name="black">#212121</color>
-    <color name="coal">#2f2f2f</color>
-    <color name="blue">#2196f3</color>
-    <color name="lightPink">#F06292</color>
+    <color name="darkGrey">#424242</color>
+    <color name="black">#000000</color>
 
-    <color name="lightBlue50">#E1F5FE</color>
-    <color name="cyan50">#E0F7FA</color>
-    <color name="teal50">#E0F2F1</color>
+    <color name="blueGrey1">#eceff1</color>
+    <color name="blueGrey2">#cfd8dc</color>
+    <color name="blueGrey3">#90a4ae</color>
+    <color name="blueGrey4">#78909c</color>
+    <color name="blueGrey">#607d8b</color>
+    <color name="darkBlueGrey">#263238</color>
 
-    <color name="blueGrey50">#ECEFF1</color>
-    <color name="blueGrey100">#cfd8dc</color>
-    <color name="blueGrey200">#b0bec5</color>
-    <color name="blueGrey300">#78909C</color>
-    <color name="blueGrey900">#263238</color>
+    <!-- experimental colors-->
+    <color name="yellow">#FFEB3B</color>
+    <color name="pink">#e91e63</color>
 </resources>

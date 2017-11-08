@@ -19,4 +19,6 @@ public interface PlaybackControlsMvpPresenter extends BaseMvpPresenter<PlaybackC
     void onShuffleButtonClick();
     void onRepeatButtonClick();
     void addToPlaylistIvClick();
+    void onDarkColorChanged(int oldColor, int newColor);
+    void onLightColorChanged(int oldColor, int newColor);
 }

@@ -8,11 +8,15 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.util.Pair;
 import android.util.Log;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.List;
 
 import app.sonu.com.musicplayer.AppBus;
+import app.sonu.com.musicplayer.PerSlidingUpPanelBus;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
@@ -22,6 +26,8 @@ import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.util.DurationUtil;
 import app.sonu.com.musicplayer.util.LogHelper;
 import app.sonu.com.musicplayer.util.MediaMetadataHelper;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by sonu on 5/10/17.
@@ -36,6 +42,9 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
     private Context mContext;
     private PlaybackStateCompat mLastPlaybackState;
     private MediaMetadataCompat mMetadata;
+    private PerSlidingUpPanelBus mSlidingUpPanelBus;
+
+    private Disposable bottomHalfPanelStateDisposable;
 
     private final MediaBrowserManager.MediaControllerCallback mMediaControllerCallback =
             new MediaBrowserManager.MediaControllerCallback(){
@@ -54,9 +63,9 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
                 }
 
                 @Override
-                public void onShuffleModeChanged(boolean enabled) {
+                public void onShuffleModeChanged(int mode) {
                     Log.d(TAG, "onShuffleModeChanged:called");
-                    updateShuffleMode(enabled);
+                    updateShuffleMode(mode);
                 }
 
                 @Override
@@ -68,17 +77,21 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
 
     public PlaybackControlsPresenter(DataManager dataManager,
                                      MediaBrowserManager browserManager,
-                                     AppBus appBus) {
+                                     AppBus appBus,
+                                     PerSlidingUpPanelBus slidingUpPanelBus) {
         super(dataManager);
         mMediaBrowserManager = browserManager;
         mMediaBrowserManager.setCallback(this);
         mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
+        mSlidingUpPanelBus = slidingUpPanelBus;
     }
 
     @Override
     public void onDetach() {
         Log.d(TAG, "onDetach:called");
         mMediaBrowserManager.disconnectMediaBrowser();
+
+        bottomHalfPanelStateDisposable.dispose();
     }
 
     @Override
@@ -93,6 +106,22 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
         mContext = activity;
 
         mMediaBrowserManager.initMediaBrowser(activity);
+
+        bottomHalfPanelStateDisposable =
+                mSlidingUpPanelBus.bottomHalfPanelStateChangedSubject.subscribe(new Consumer<SlidingUpPanelLayout.PanelState>() {
+                    @Override
+                    public void accept(SlidingUpPanelLayout.PanelState state) throws Exception {
+                        if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                            mMvpView.showMiniAlbumArt();
+                            mMvpView.setMetadataGravityStart();
+                        }
+
+                        if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                            mMvpView.hideMiniAlbumArt();
+                            mMvpView.setMetadataGravityCenter();
+                        }
+                    }
+                });
     }
 
     @Override
@@ -156,18 +185,18 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
     public void onShuffleButtonClick() {
 
         Log.w(TAG, "shuffle mode got on click="
-                +mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
+                +mMediaBrowserManager.getMediaController().getShuffleMode());
 
-        if (mMediaBrowserManager.getMediaController().isShuffleModeEnabled()) {
+        if (mMediaBrowserManager.getMediaController().getShuffleMode() == 1) {
             mMediaBrowserManager
                     .getMediaController()
                     .getTransportControls()
-                    .setShuffleModeEnabled(false);
+                    .setShuffleMode(0);
         } else {
             mMediaBrowserManager
                     .getMediaController()
                     .getTransportControls()
-                    .setShuffleModeEnabled(true);
+                    .setShuffleMode(1);
         }
     }
 
@@ -202,6 +231,16 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
                 mMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
     }
 
+    @Override
+    public void onDarkColorChanged(int oldColor, int newColor) {
+        mSlidingUpPanelBus.darkColorChangedSubject.onNext(new Pair<>(oldColor, newColor));
+    }
+
+    @Override
+    public void onLightColorChanged(int oldColor, int newColor) {
+        mSlidingUpPanelBus.lightColorChangedSubject.onNext(new Pair<>(oldColor, newColor));
+    }
+
     //media browser implementations
     @Override
     public void onMediaBrowserConnected() {
@@ -230,7 +269,7 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
         mMetadata = mMediaBrowserManager.getMediaController().getMetadata();
         displayMetadata(mMetadata);
 
-        updateShuffleMode(mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
+        updateShuffleMode(mMediaBrowserManager.getMediaController().getShuffleMode());
         updateRepeatMode(mMediaBrowserManager.getMediaController().getRepeatMode());
     }
 
@@ -282,8 +321,8 @@ public class PlaybackControlsPresenter extends BasePresenter<PlaybackControlsMvp
         }
     }
 
-    private void updateShuffleMode(boolean enabled) {
-        if (enabled) {
+    private void updateShuffleMode(int mode) {
+        if (mode == 1) {
             mMvpView.setShuffleModeEnabled();
         } else {
             mMvpView.setShuffleModeDisabled();

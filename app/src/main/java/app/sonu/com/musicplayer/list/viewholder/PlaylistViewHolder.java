@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -52,7 +53,7 @@ public class PlaylistViewHolder extends BaseViewHolder<PlaylistVisitable, Playli
     @Override
     public void bind(final PlaylistVisitable visitable,
                      final PlaylistOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
@@ -69,21 +70,21 @@ public class PlaylistViewHolder extends BaseViewHolder<PlaylistVisitable, Playli
 
             if (iconDrawableId != 0) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    iconIv.setImageDrawable(context.getDrawable(iconDrawableId));
+                    iconIv.setImageDrawable(activity.getDrawable(iconDrawableId));
                 } else {
                     iconIv.setImageDrawable(
-                            context
+                            activity
                                     .getResources()
                                     .getDrawable(iconDrawableId));
                 }
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    iconIv.setImageDrawable(context.getDrawable(R.drawable.ic_playlist_play_blue_grey_300_24dp));
+                    iconIv.setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_play_grey_24dp));
                 } else {
                     iconIv.setImageDrawable(
-                            context
+                            activity
                                     .getResources()
-                                    .getDrawable(R.drawable.ic_playlist_play_blue_grey_300_24dp));
+                                    .getDrawable(R.drawable.ic_playlist_play_grey_24dp));
                 }
             }
 
@@ -93,12 +94,12 @@ public class PlaylistViewHolder extends BaseViewHolder<PlaylistVisitable, Playli
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     iconIv
                             .setColorFilter(
-                                    context.getResources().getColor(R.color.charcoal, null),
+                                    activity.getResources().getColor(R.color.black, null),
                                     PorterDuff.Mode.SRC_IN);
                 } else {
                     iconIv
                             .setColorFilter(
-                                    context.getResources().getColor(R.color.charcoal),
+                                    activity.getResources().getColor(R.color.black),
                                     PorterDuff.Mode.SRC_IN);
                 }
             }

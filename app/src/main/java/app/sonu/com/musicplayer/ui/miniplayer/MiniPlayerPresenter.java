@@ -6,16 +6,20 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import java.util.List;
 
 import app.sonu.com.musicplayer.AppBus;
+import app.sonu.com.musicplayer.PerSlidingUpPanelBus;
 import app.sonu.com.musicplayer.R;
 import app.sonu.com.musicplayer.ui.base.BasePresenter;
 import app.sonu.com.musicplayer.data.DataManager;
 import app.sonu.com.musicplayer.mediaplayer.MediaBrowserManager;
 import app.sonu.com.musicplayer.util.MediaMetadataHelper;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -30,8 +34,10 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
     private Context mContext;
     private MediaBrowserManager mMediaBrowserManager;
     private PublishSubject<Integer> mMusicPlayerPanelPublishSubject;
+    private PerSlidingUpPanelBus mSlidingUpPanelBus;
 
     private PlaybackStateCompat mLastPlaybackState;
+    private Disposable darkColorChangedDisposable, lightColorChangedDisposable;
 
     private final MediaBrowserManager.MediaControllerCallback mMediaControllerCallback =
             new MediaBrowserManager.MediaControllerCallback(){
@@ -49,8 +55,8 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
                 }
 
                 @Override
-                public void onShuffleModeChanged(boolean enabled) {
-                    updateShuffleMode(enabled);
+                public void onShuffleModeChanged(int mode) {
+                    updateShuffleMode(mode);
                 }
 
                 @Override
@@ -61,18 +67,24 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
 
     public MiniPlayerPresenter(DataManager dataManager,
                                MediaBrowserManager browserManager,
-                               AppBus appBus) {
+                               AppBus appBus,
+                               PerSlidingUpPanelBus slidingUpPanelBus) {
         super(dataManager);
         mMediaBrowserManager = browserManager;
         mMediaBrowserManager.setCallback(this);
         mMediaBrowserManager.setControllerCallback(mMediaControllerCallback);
         mMusicPlayerPanelPublishSubject = appBus.musicPlayerPanelStateSubject;
+
+        mSlidingUpPanelBus = slidingUpPanelBus;
     }
 
     @Override
     public void onDetach() {
         Log.d(TAG, "onDetach:called");
         mMediaBrowserManager.disconnectMediaBrowser();
+
+        darkColorChangedDisposable.dispose();
+        lightColorChangedDisposable.dispose();
     }
 
     @Override
@@ -85,6 +97,22 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
         Log.d(TAG, "onCreate:called");
         mContext = activity;
         mMediaBrowserManager.initMediaBrowser(activity);
+
+        darkColorChangedDisposable =
+                mSlidingUpPanelBus.darkColorChangedSubject.subscribe(new Consumer<Pair<Integer, Integer>>() {
+                    @Override
+                    public void accept(Pair<Integer, Integer> integerIntegerPair) throws Exception {
+                        mMvpView.setUiDarkColor(integerIntegerPair.first, integerIntegerPair.second);
+                    }
+                });
+
+        lightColorChangedDisposable =
+                mSlidingUpPanelBus.lightColorChangedSubject.subscribe(new Consumer<Pair<Integer, Integer>>() {
+                    @Override
+                    public void accept(Pair<Integer, Integer> integerIntegerPair) throws Exception {
+                        mMvpView.setUiLightColor(integerIntegerPair.first, integerIntegerPair.second);
+                    }
+                });
     }
 
     @Override
@@ -154,7 +182,7 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
         mLastPlaybackState = mMediaBrowserManager.getMediaController().getPlaybackState();
         updatePlaybackState();
         displayMetadata(mMediaBrowserManager.getMediaController().getMetadata());
-        updateShuffleMode(mMediaBrowserManager.getMediaController().isShuffleModeEnabled());
+        updateShuffleMode(mMediaBrowserManager.getMediaController().getShuffleMode());
         updateRepeatMode(mMediaBrowserManager.getMediaController().getRepeatMode());
     }
 
@@ -175,6 +203,7 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
         }
         mMvpView.displaySong(
                 MediaMetadataHelper.getSongDisplayTitle(metadata),
+                MediaMetadataHelper.getSongDisplaySubtitle(metadata),
                 metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
         mMvpView.updateDuration(
                 metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
@@ -199,8 +228,8 @@ public class MiniPlayerPresenter extends BasePresenter<MiniPlayerMvpView>
         }
     }
 
-    private void updateShuffleMode(boolean enabled) {
-        if (enabled) {
+    private void updateShuffleMode(int mode) {
+        if (mode == 1) {
             mMvpView.setShuffleModeEnabled();
         } else {
             mMvpView.setShuffleModeDisabled();

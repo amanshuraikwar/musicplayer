@@ -1,3 +1,4 @@
+
 package app.sonu.com.musicplayer.ui.search;
 
 import android.content.Context;
@@ -34,7 +35,7 @@ import app.sonu.com.musicplayer.list.onclicklistener.ArtistSearchResultOnClickLi
 import app.sonu.com.musicplayer.list.onclicklistener.SongSearchResultOnClickListener;
 import app.sonu.com.musicplayer.list.visitable.AlbumSearchResultVisitable;
 import app.sonu.com.musicplayer.list.visitable.ArtistSearchResultVisitable;
-import app.sonu.com.musicplayer.list.visitable.SearchListHeaderVisitable;
+import app.sonu.com.musicplayer.list.visitable.MediaListHeaderPaddedVisitable;
 import app.sonu.com.musicplayer.list.visitable.SongSearchResultVisitable;
 import app.sonu.com.musicplayer.ui.base.BaseFragment;
 import app.sonu.com.musicplayer.util.SearchHelper;
@@ -218,8 +219,8 @@ public class SearchFragment extends BaseFragment<SearchMvpPresenter> implements 
     @Override
     public void displayList(List<MediaBrowserCompat.MediaItem> itemList) {
         itemsRv.setAdapter(
-                new MediaRecyclerViewAdapter(getVisitableList(itemList),
-                        new MediaListTypeFactory()));
+                new MediaRecyclerViewAdapter(getActivity(),
+                        new MediaListTypeFactory(), getVisitableList(itemList)));
     }
 
     /**
@@ -242,7 +243,7 @@ public class SearchFragment extends BaseFragment<SearchMvpPresenter> implements 
 
             if (!currentItemHeader.equals(itemHeader)) {
                 currentItemHeader = itemHeader;
-                visitableList.add(new SearchListHeaderVisitable(itemHeader));
+                visitableList.add(new MediaListHeaderPaddedVisitable(itemHeader));
             }
 
             BaseVisitable visitable = null;

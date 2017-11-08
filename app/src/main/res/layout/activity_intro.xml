@@ -1,70 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="@color/blueGrey50">
+    android:background="@color/white">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/blueGrey1">
+
+        <ImageView
+            android:id="@+id/projectGithubIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:padding="8dp"
+            android:src="@drawable/ic_github_grey_24dp"
+            android:tint="@color/blueGrey"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="ContentDescription" />
 
         <app.sonu.com.musicplayer.ui.view.WidthFitSquareLayout
             android:id="@+id/colorView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_music_note_light_128dp"
-            android:tint="@color/blueGrey100"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <View
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@color/blueGrey2"/>
+
+            <View
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@color/blueGrey3"/>
+            <View
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@color/blueGrey4"/>
+
+            <View
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@color/blueGrey"/>
+        </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:layout_gravity="center">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/app_name_spaced"
-                android:textSize="45sp"
-                android:textColor="@color/blueGrey900"
-                android:textStyle="bold"
-                android:gravity="center"/>
+                android:layout_gravity="center"
+                android:text="C A "
+                android:textSize="@dimen/title_text_size_extra_large"
+                android:textColor="@color/darkBlueGrey"
+                android:textStyle="bold"/>
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/app_description"
-                android:textColor="@color/blueGrey300"
-                android:gravity="center"
-                android:textSize="14sp"/>
+                android:layout_gravity="center"
+                android:text="S S "
+                android:textSize="@dimen/title_text_size_extra_large"
+                android:textColor="@color/darkBlueGrey"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="E T "
+                android:textSize="@dimen/title_text_size_extra_large"
+                android:textColor="@color/blueGrey1"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="T E "
+                android:textSize="@dimen/title_text_size_extra_large"
+                android:textColor="@color/blueGrey1"
+                android:textStyle="bold"/>
         </LinearLayout>
     </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/permissions_title"
+        android:textAppearance="@style/titleTextStyleSmall"/>
 
     <TextView
         android:id="@+id/givePermissionsTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/give_permission_description"
-        android:textColor="@color/blueGrey900"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:layout_margin="16dp"/>
+        android:textAppearance="@style/titleTextStyle"/>
 
     <Button
         android:id="@+id/givePermissionsBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="end"
         android:text="@string/give_permission_text"
-        android:textColor="@color/blueGrey900"/>
+        android:layout_marginEnd="16dp"/>
 </LinearLayout>

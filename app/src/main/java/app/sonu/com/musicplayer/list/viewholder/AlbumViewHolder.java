@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.graphics.Palette;
 import android.view.View;
 import android.widget.ImageView;
@@ -56,7 +57,7 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
     @Override
     public void bind(final AlbumVisitable visitable,
                      final AlbumOnClickListener onClickListener,
-                     Context context) {
+                     FragmentActivity activity) {
         titleTv.setText(visitable.getMediaItem().getDescription().getTitle());
         subtitleTv.setText(visitable.getMediaItem().getDescription().getSubtitle());
 
@@ -64,7 +65,7 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
         options.centerCrop().placeholder(R.drawable.default_album_art);
 
         if (visitable.getMediaItem().getDescription().getIconUri() != null) {
-            Glide.with(context)
+            Glide.with(activity)
                     .asBitmap()
                     .load(visitable.getMediaItem().getDescription().getIconUri().getEncodedPath())
                     .apply(options)
@@ -91,12 +92,12 @@ public class AlbumViewHolder extends BaseViewHolder<AlbumVisitable, AlbumOnClick
                     .transition(BitmapTransitionOptions.withCrossFade())
                     .into(iconIv);
         } else {
-            Glide.with(context).clear(iconIv);
+            Glide.with(activity).clear(iconIv);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconIv.setImageDrawable(context.getDrawable(R.drawable.default_album_art));
+                iconIv.setImageDrawable(activity.getDrawable(R.drawable.default_album_art));
             } else {
                 iconIv.setImageDrawable(
-                        context
+                        activity
                                 .getResources()
                                 .getDrawable(R.drawable.default_album_art));
             }

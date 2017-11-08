@@ -7,10 +7,11 @@
     android:id="@+id/musicPlayerSupl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:gravity="bottom"
     sothree:umanoOverlay="false"
     sothree:umanoPanelHeight="@dimen/music_player_bottom_half_height"
-    sothree:umanoShadowHeight="2dp"
+    sothree:umanoShadowHeight="0dp"
     sothree:umanoInitialState="collapsed">
 
     <RelativeLayout
@@ -18,28 +19,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment
-            android:id="@+id/albumCoverFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="app.sonu.com.musicplayer.ui.albumcover.AlbumCoverFragment" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/gradient_background_height"
-            android:background="@drawable/gradient_background_dark_top_down"
-            android:clickable="false"/>
-
         <ImageView
             android:id="@+id/collapseIv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:layout_marginTop="@dimen/status_bar_padding"
-            android:layout_alignParentStart="true"
-            android:src="@drawable/ic_close_white_24dp"
             android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_keyboard_arrow_down_grey_24dp"
+            android:tint="@color/black"
             android:clickable="true"
+            android:focusable="true"
             tools:ignore="ContentDescription" />
 
         <com.like.LikeButton
@@ -47,17 +36,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="@dimen/status_bar_padding"
             tools:ignore="RelativeOverlap"
             app:icon_type="heart"
             app:icon_size="26dp"
-            app:circle_start_color="@color/whiteSmoke"
-            app:like_drawable="@drawable/ic_heart_solid_light_pink_24dp"
-            app:unlike_drawable="@drawable/ic_heart_outline_white_24dp"
-            app:dots_primary_color="@color/lightPink"
-            app:dots_secondary_color="@color/whiteSmoke"
-            app:circle_end_color="@color/lightPink"
+            app:circle_start_color="@color/black"
+            app:like_drawable="@drawable/ic_heart_solid_black_24dp"
+            app:unlike_drawable="@drawable/ic_heart_outline_black_24dp"
+            app:dots_primary_color="@color/black"
+            app:dots_secondary_color="@color/white"
+            app:circle_end_color="@color/black"
             app:anim_scale_factor="2.15"/>
+
+        <fragment
+            android:id="@+id/albumCoverFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="app.sonu.com.musicplayer.ui.albumcover.AlbumCoverFragment"
+            android:layout_below="@+id/collapseIv"/>
     </RelativeLayout>
 
     <LinearLayout

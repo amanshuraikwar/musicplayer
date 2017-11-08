@@ -14,4 +14,5 @@ public interface ArtistsMvpPresenter extends BaseMvpPresenter<ArtistsMvpView> {
     void onCreate(FragmentActivity activity);
     void onCreateView();
     void onArtistClicked(MediaBrowserCompat.MediaItem item, View animatingView);
+    void onArtistAlbumClicked(MediaBrowserCompat.MediaItem item);
 }
