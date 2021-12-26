@@ -1,5 +1,5 @@
-# musicplayer
-### [not actively maintained]
+# Music Player (No Longer Maintained)
+
 An android music player app with a flat vibe and some cool new upcoming features.
 
 <p float="left">
